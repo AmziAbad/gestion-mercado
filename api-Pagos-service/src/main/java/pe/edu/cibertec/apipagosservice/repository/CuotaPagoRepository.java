@@ -3,7 +3,6 @@ package pe.edu.cibertec.apipagosservice.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import pe.edu.cibertec.apipagosservice.dto.ServicioDTO;
 import pe.edu.cibertec.apipagosservice.entity.CuotaPago;
 import pe.edu.cibertec.apipagosservice.entity.EstadoPago;
 
@@ -21,4 +20,6 @@ public interface CuotaPagoRepository extends JpaRepository<CuotaPago, Integer> {
 
     //Opcional: para listar cuotas de un puesto
     List<CuotaPago> findByIdPuesto(Integer idPuesto);
+
+    List<CuotaPago> findByIdPuestoAndEstado(Integer idPuesto, EstadoPago estado);
 }

@@ -2,8 +2,8 @@ package pe.edu.cibertec.apipagosservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.cibertec.apipagosservice.dto.DeudaDTO;
 import pe.edu.cibertec.apipagosservice.entity.CuotaPago;
-import pe.edu.cibertec.apipagosservice.repository.CuotaPagoRepository;
 import pe.edu.cibertec.apipagosservice.service.PagoService;
 
 import java.util.List;
@@ -13,14 +13,11 @@ import java.util.Map;
 @RequestMapping("/api/v1/pagos")
 public class PagoController {
     @Autowired
-    private CuotaPagoRepository pagoRepo;
-
-    @Autowired
     private PagoService pagoService;
 
     @GetMapping
     public List<CuotaPago> listarPagos() {
-        return pagoRepo.findAll();
+        return pagoService.listarPagos();
     }
 
     @PostMapping("/generar")
@@ -40,5 +37,25 @@ public class PagoController {
     {
         return pagoService.pagarCuota(id, pago);
 
+    }
+
+    @GetMapping("/cuotas/puesto/{idPuesto}")
+    public List<CuotaPago> listarCuotasPorPuesto(@PathVariable Integer idPuesto) {
+        return pagoService.listarCuotasPorPuesto(idPuesto);
+    }
+
+    @GetMapping("/cuotas/puesto/{idPuesto}/pendientes")
+    public List<CuotaPago> listarCuotasPendientesPorPuesto(@PathVariable Integer idPuesto) {
+        return pagoService.listarCuotasPendientesPorPuesto(idPuesto);
+    }
+
+    @GetMapping("/deuda/puesto/{idPuesto}")
+    public DeudaDTO obtenerDeudaPorPuesto(@PathVariable Integer idPuesto) {
+        return pagoService.obtenerDeudaPorPuesto(idPuesto);
+    }
+
+    @GetMapping("/deuda/socio/{idSocio}")
+    public DeudaDTO obtenerDeudaPorSocio(@PathVariable Integer idSocio) {
+        return pagoService.obtenerDeudaPorSocio(idSocio);
     }
 }

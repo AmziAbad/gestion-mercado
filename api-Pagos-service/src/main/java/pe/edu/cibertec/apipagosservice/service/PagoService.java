@@ -1,78 +1,23 @@
 package pe.edu.cibertec.apipagosservice.service;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import pe.edu.cibertec.apipagosservice.dto.PuestoDTO;
-import pe.edu.cibertec.apipagosservice.dto.ServicioDTO;
+import pe.edu.cibertec.apipagosservice.dto.DeudaDTO;
 import pe.edu.cibertec.apipagosservice.entity.CuotaPago;
-import pe.edu.cibertec.apipagosservice.entity.EstadoPago;
-import pe.edu.cibertec.apipagosservice.entity.MetodoPago;
-import pe.edu.cibertec.apipagosservice.repository.CuotaPagoRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-@Service
-@RequiredArgsConstructor
-public class PagoService {
-    private final ServicioClient  servicioClient;
-    private final CuotaPagoRepository cuotaRepo;
-    private final PuestoClient puestoClient;
+public interface PagoService {
+    List<CuotaPago> listarPagos();
 
-    @Transactional
-    public int generarCuotasMensuales(int mes, int anio) {
-        int cont = 0;
+    int generarCuotasMensuales(int mes, int anio);
 
-        List<ServicioDTO> servicios = servicioClient.getServiciosActivos();
-        List<PuestoDTO> puestosOcupados = puestoClient.getPuestosOcupados();
+    CuotaPago pagarCuota(Integer id, Map<String, String> pago);
 
-        if (puestosOcupados.isEmpty()) return 0;
+    List<CuotaPago> listarCuotasPorPuesto(Integer idPuesto);
 
-        for (ServicioDTO serv : servicios) {
-            double montoCuota;
-            if ("FIJO".equals(serv.getTipoCobro())) {
-                montoCuota = serv.getMontoFijoPuesto();
-            } else {
-                montoCuota = serv.getCostoTotalExterno() / puestosOcupados.size();
-            }
+    List<CuotaPago> listarCuotasPendientesPorPuesto(Integer idPuesto);
 
-            for (PuestoDTO puesto : puestosOcupados) {
-                boolean existe = cuotaRepo.existsByIdPuestoAndIdServicioAndMesAndAnio(
-                        puesto.getIdPuesto(), serv.getIdServicio(), mes, anio
-                );
+    DeudaDTO obtenerDeudaPorPuesto(Integer idPuesto);
 
-                if (!existe) {
-                    CuotaPago cuota = CuotaPago.builder()
-                            .idPuesto(puesto.getIdPuesto())
-                            .idServicio(serv.getIdServicio())
-                            .monto(montoCuota)
-                            .mes(mes)
-                            .anio(anio)
-                            .estado(EstadoPago.PENDIENTE)
-                            .build();
-                    cuotaRepo.save(cuota);
-                    cont++;
-                }
-            }
-        }
-        return cont;
-    }
-
-    public CuotaPago pagarCuota(Integer id, Map<String, String> pago) {
-        return cuotaRepo.findById(id).map(c -> {
-            c.setEstado(EstadoPago.PAGADO);
-            c.setFechaPago(LocalDateTime.now());
-            if (pago != null) {
-                String metodo = pago.get("metodoPago");
-                if (metodo != null && !metodo.isBlank()) {
-                    c.setMetodoPago(MetodoPago.valueOf(metodo));
-                }
-                c.setNumeroOperacion(pago.get("numeroOperacion"));
-            }
-            return cuotaRepo.save(c);
-        }).orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
-    }
-
+    DeudaDTO obtenerDeudaPorSocio(Integer idSocio);
 }

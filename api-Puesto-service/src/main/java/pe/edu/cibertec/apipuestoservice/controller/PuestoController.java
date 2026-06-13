@@ -10,83 +10,72 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pe.edu.cibertec.apipuestoservice.entity.EstadoPuesto;
+import pe.edu.cibertec.apipuestoservice.dto.ActualizarTitularRequest;
 import pe.edu.cibertec.apipuestoservice.entity.Puesto;
-import pe.edu.cibertec.apipuestoservice.repository.PuestoRepository;
+import pe.edu.cibertec.apipuestoservice.service.PuestoService;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 public class PuestoController {
-    private final PuestoRepository puestoRepository;
+    private final PuestoService puestoService;
 
-    public PuestoController(PuestoRepository puestoRepository) {
-        this.puestoRepository = puestoRepository;
+    public PuestoController(PuestoService puestoService) {
+        this.puestoService = puestoService;
     }
 
     @GetMapping({"/api/v1/puestos", "/puestos"})
     public List<Puesto> listar() {
-        return puestoRepository.findAllOrdered();
+        return puestoService.listar();
     }
 
     @GetMapping({"/api/v1/puestos/ocupados", "/puestos/ocupados"})
     public List<Puesto> listarOcupados() {
-        return puestoRepository.findByEstadoPuesto(EstadoPuesto.OCUPADO);
+        return puestoService.listarOcupados();
     }
 
     @GetMapping({"/api/v1/puestos/socio/{idSocio}", "/puestos/socio/{idSocio}"})
     public List<Puesto> listarPorSocio(@PathVariable Integer idSocio) {
-        return puestoRepository.findByIdSocioActual(idSocio);
+        return puestoService.listarPorSocio(idSocio);
     }
 
     @GetMapping({"/api/v1/puestos/pabellon/{nombre}", "/puestos/pabellon/{nombre}"})
     public List<Puesto> listarPorPabellon(@PathVariable String nombre) {
-        return puestoRepository.findByPabellonIgnoreCase(nombre);
+        return puestoService.listarPorPabellon(nombre);
     }
 
     @GetMapping({"/api/v1/puestos/{id}", "/puestos/{id}"})
     public ResponseEntity<Puesto> obtener(@PathVariable Integer id) {
-        return puestoRepository.findById(id)
+        return puestoService.obtener(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping({"/api/v1/puestos", "/puestos"})
     public ResponseEntity<Puesto> crear(@Valid @RequestBody Puesto puesto) {
-        completarDefaults(puesto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(puestoRepository.save(puesto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(puestoService.crear(puesto));
     }
 
     @PutMapping({"/api/v1/puestos/{id}", "/puestos/{id}"})
     public ResponseEntity<Puesto> actualizar(@PathVariable Integer id,
                                              @Valid @RequestBody Puesto puesto) {
-        if (!puestoRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        puesto.setIdPuesto(id);
-        completarDefaults(puesto);
-        return ResponseEntity.ok(puestoRepository.save(puesto));
+        return puestoService.actualizar(id, puesto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping({"/api/v1/puestos/{id}/titular", "/puestos/{id}/titular"})
+    public ResponseEntity<Puesto> actualizarTitular(@PathVariable Integer id,
+                                                    @RequestBody ActualizarTitularRequest request) {
+        return puestoService.actualizarTitular(id, request)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping({"/api/v1/puestos/{id}", "/puestos/{id}"})
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        if (!puestoRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        puestoRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    private void completarDefaults(Puesto puesto) {
-        if (puesto.getMedidas() == null || puesto.getMedidas().isBlank()) {
-            puesto.setMedidas("2x2m");
-        }
-        if (puesto.getPrecio() == null) {
-            puesto.setPrecio(BigDecimal.ZERO);
-        }
-        if (puesto.getEstadoPuesto() == null) {
-            puesto.setEstadoPuesto(EstadoPuesto.VACANTE);
-        }
+        return puestoService.eliminar(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

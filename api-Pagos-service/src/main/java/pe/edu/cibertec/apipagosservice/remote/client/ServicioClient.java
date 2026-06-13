@@ -1,8 +1,7 @@
-package pe.edu.cibertec.apipagosservice.service;
+package pe.edu.cibertec.apipagosservice.remote.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import pe.edu.cibertec.apipagosservice.dto.ServicioDTO;
 
 import java.util.List;
@@ -11,7 +10,4 @@ import java.util.List;
 public interface ServicioClient {
     @GetMapping("/servicios/activos")
     List<ServicioDTO> getServiciosActivos();
-
-    @GetMapping("/servicios/{id}")
-    ServicioDTO getServicioById(@PathVariable Integer id);
 }
