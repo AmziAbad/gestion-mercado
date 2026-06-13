@@ -7,7 +7,7 @@ import pe.edu.cibertec.apipagosservice.dto.ServicioDTO;
 
 import java.util.List;
 
-@FeignClient(name = "api-Service-service")
+@FeignClient(name = "api-Servicio-service")
 public interface ServicioClient {
     @GetMapping("/servicios/activos")
     List<ServicioDTO> getServiciosActivos();
