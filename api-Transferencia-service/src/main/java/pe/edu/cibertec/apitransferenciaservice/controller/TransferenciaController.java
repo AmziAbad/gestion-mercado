@@ -10,7 +10,6 @@ import pe.edu.cibertec.apitransferenciaservice.service.TransferenciaService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/transferencias")
 public class TransferenciaController {
 
     private final TransferenciaService transferenciaService;
@@ -19,12 +18,24 @@ public class TransferenciaController {
         this.transferenciaService = transferenciaService;
     }
 
-    @GetMapping
+    @GetMapping("/api/v1/transferencias")
     public List<Transferencia> listar() {
         return transferenciaService.listar();
     }
 
-    @PostMapping
+    @GetMapping("/api/v1/transferencias/{id}")
+    public ResponseEntity<Transferencia> obtener(@PathVariable Integer id) {
+        return transferenciaService.obtener(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/api/v1/transferencias/puesto/{idPuesto}")
+    public List<Transferencia> listarPorPuesto(@PathVariable Integer idPuesto) {
+        return transferenciaService.listarPorPuesto(idPuesto);
+    }
+
+    @PostMapping("/api/v1/transferencias")
     public ResponseEntity<?> registrar(@RequestBody TransferenciaRequest request) {
         try {
             Transferencia nuevaTransferencia = transferenciaService.registrar(request);

@@ -32,7 +32,7 @@ public class SocioServiceImpl implements SocioService {
 
     @Override
     public Optional<Socio> buscarPorDni(String dni) {
-        return socioRepository.findByDni(dni);
+        return socioRepository.findByDni(dni.trim());
     }
 
     @Override
