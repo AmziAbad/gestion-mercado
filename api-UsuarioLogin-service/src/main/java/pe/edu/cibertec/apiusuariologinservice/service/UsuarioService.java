@@ -1,7 +1,9 @@
 package pe.edu.cibertec.apiusuariologinservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import pe.edu.cibertec.apiusuariologinservice.config.JwtUtil;
 import pe.edu.cibertec.apiusuariologinservice.dto.LoginRequest;
 import pe.edu.cibertec.apiusuariologinservice.dto.LoginResponse;
 import pe.edu.cibertec.apiusuariologinservice.entity.Usuario;
@@ -14,8 +16,13 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public LoginResponse autenticar(LoginRequest request) {
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    public LoginResponse autenticar(LoginRequest request) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(request.getUsername());
 
         if (usuarioOpt.isEmpty()) {
@@ -24,19 +31,19 @@ public class UsuarioService {
 
         Usuario usuario = usuarioOpt.get();
 
-
         if (!usuario.getActivo()) {
             throw new RuntimeException("El usuario se encuentra inactivo");
         }
 
-        // Validar contraseña,Compara texto plano temporalmente, luego implementaremos BCrypt
-        if (!usuario.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
             throw new RuntimeException("Contraseña incorrecta");
         }
 
+        String token = jwtUtil.generarToken(usuario.getUsername(), usuario.getRol().name());
 
         return new LoginResponse(
                 "Autenticación exitosa",
+                token,
                 usuario.getUsername(),
                 usuario.getRol().name(),
                 usuario.getActivo()
