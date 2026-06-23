@@ -9,4 +9,7 @@ import pe.edu.cibertec.apitransferenciaservice.dto.SocioDTO;
 public interface SocioClient {
     @GetMapping("/api/v1/socios/{id}")
     SocioDTO obtener(@PathVariable("id") Integer id);
+
+    @org.springframework.web.bind.annotation.PutMapping("/api/v1/socios/{id}/verificar-actividad")
+    void verificarActividad(@PathVariable("id") Integer id);
 }

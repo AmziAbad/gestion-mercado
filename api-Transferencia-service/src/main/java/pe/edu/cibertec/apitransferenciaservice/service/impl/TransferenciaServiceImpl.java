@@ -58,6 +58,17 @@ public class TransferenciaServiceImpl implements TransferenciaService {
 
         Transferencia transferencia = transferenciaRepository.saveAndFlush(construirTransferencia(request));
         actualizarTitular(request);
+        
+        // Módulo C -> Módulo A: Verificamos si el socio saliente se quedó sin puestos tras el traspaso
+        if (request.getIdSocioSaliente() != null) {
+            try {
+                socioClient.verificarActividad(request.getIdSocioSaliente());
+            } catch (Exception e) {
+                // Si la verificación falla, no detenemos el traspaso (compensación simple)
+                System.out.println("No se pudo verificar la actividad del socio saliente: " + e.getMessage());
+            }
+        }
+        
         return transferencia;
     }
 
