@@ -20,4 +20,6 @@ public interface SocioService {
     boolean eliminar(Integer id);
 
     List<SocioResumenDTO> obtenerResumenSocios();
+
+    void verificarEstadoActivo(Integer idSocio);
 }

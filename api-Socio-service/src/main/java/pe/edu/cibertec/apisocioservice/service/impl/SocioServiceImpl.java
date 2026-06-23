@@ -81,4 +81,19 @@ public class SocioServiceImpl implements SocioService {
                 .estado(totalDeuda > 0 ? "EN DEUDA" : "AL DIA")
                 .build();
     }
+
+    @Override
+    public void verificarEstadoActivo(Integer idSocio) {
+        socioRepository.findById(idSocio).ifPresent(socio -> {
+            long cantidadPuestos = puestoClient.listarPorSocio(idSocio).size();
+            
+            if (cantidadPuestos == 0) {
+                socio.setActivo(false);
+                socioRepository.save(socio);
+            } else if (!socio.getActivo()) {
+                socio.setActivo(true);
+                socioRepository.save(socio);
+            }
+        });
+    }
 }

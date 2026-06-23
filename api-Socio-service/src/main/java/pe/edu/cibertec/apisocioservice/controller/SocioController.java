@@ -57,4 +57,10 @@ public class SocioController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
+
+    @PutMapping("/{id}/verificar-actividad")
+    public ResponseEntity<Void> verificarActividad(@PathVariable Integer id) {
+        socioService.verificarEstadoActivo(id);
+        return ResponseEntity.ok().build();
+    }
 }
