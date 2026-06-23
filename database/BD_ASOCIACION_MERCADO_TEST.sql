@@ -55,10 +55,11 @@ CREATE TABLE cuotas_pago (
     mes INT NOT NULL,
     anio INT NOT NULL,
     monto DECIMAL(10,2) NOT NULL,
-    estado ENUM('PENDIENTE', 'PAGADO') DEFAULT 'PENDIENTE',
+    estado ENUM('PENDIENTE', 'PAGADO', 'EXONERADO') DEFAULT 'PENDIENTE',
     fecha_pago DATETIME,
     metodo_pago ENUM('EFECTIVO', 'TRANSFERENCIA', 'YAPE_PLIN', 'TARJETA'),
-    numero_operacion VARCHAR(50)
+    numero_operacion VARCHAR(50),
+    motivo_exoneracion VARCHAR(255)
 );
 
 CREATE TABLE transferencias (
