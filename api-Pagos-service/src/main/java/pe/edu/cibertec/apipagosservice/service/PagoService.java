@@ -20,4 +20,12 @@ public interface PagoService {
     DeudaDTO obtenerDeudaPorPuesto(Integer idPuesto);
 
     DeudaDTO obtenerDeudaPorSocio(Integer idSocio);
+
+    CuotaPago generarDeudaEspecifica(Integer idPuesto, Integer idServicio, Double monto, Integer mes, Integer anio);
+
+    CuotaPago exonerarCuota(Integer id, String motivo);
+
+    CuotaPago revertirPago(Integer id);
+
+    pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO generarComprobante(Integer idCuota);
 }

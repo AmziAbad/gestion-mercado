@@ -58,4 +58,33 @@ public class PagoController {
     public DeudaDTO obtenerDeudaPorSocio(@PathVariable Integer idSocio) {
         return pagoService.obtenerDeudaPorSocio(idSocio);
     }
+
+    @PostMapping("/deuda/puesto/{idPuesto}/generar")
+    public CuotaPago generarDeudaEspecifica(@PathVariable Integer idPuesto,
+                                            @RequestBody Map<String, Object> body) {
+        Integer idServicio = (Integer) body.get("idServicio");
+        Double monto = Double.valueOf(body.get("monto").toString());
+        Integer mes = (Integer) body.get("mes");
+        Integer anio = (Integer) body.get("anio");
+        return pagoService.generarDeudaEspecifica(idPuesto, idServicio, monto, mes, anio);
+    }
+
+    @PutMapping("/cuotas/{id}/exonerar")
+    public CuotaPago exonerarCuota(@PathVariable Integer id, @RequestBody Map<String, String> body) {
+        String motivo = body.get("motivo");
+        if (motivo == null || motivo.isBlank()) {
+            throw new RuntimeException("El motivo de exoneración es obligatorio");
+        }
+        return pagoService.exonerarCuota(id, motivo);
+    }
+
+    @PutMapping("/cuotas/{id}/revertir-pago")
+    public CuotaPago revertirPago(@PathVariable Integer id) {
+        return pagoService.revertirPago(id);
+    }
+
+    @GetMapping("/cuotas/{id}/comprobante")
+    public pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO generarComprobante(@PathVariable Integer id) {
+        return pagoService.generarComprobante(id);
+    }
 }
