@@ -62,13 +62,16 @@ public class PuestoServiceImpl implements PuestoService {
     public Optional<Puesto> actualizarTitular(Integer id, ActualizarTitularRequest request) {
         return puestoRepository.findById(id)
                 .map(puesto -> {
-                    puesto.setIdSocioActual(request.getIdSocioActual());
+                    Integer nuevoSocio = (request.getIdSocioActual() != null && request.getIdSocioActual() <= 0) 
+                                         ? null 
+                                         : request.getIdSocioActual();
+                    
+                    puesto.setIdSocioActual(nuevoSocio);
+                    
                     if (request.getEstadoPuesto() != null) {
                         puesto.setEstadoPuesto(request.getEstadoPuesto());
                     } else {
-                        puesto.setEstadoPuesto(request.getIdSocioActual() == null
-                                ? EstadoPuesto.VACANTE
-                                : EstadoPuesto.OCUPADO);
+                        puesto.setEstadoPuesto(nuevoSocio == null ? EstadoPuesto.VACANTE : EstadoPuesto.OCUPADO);
                     }
                     return puestoRepository.save(puesto);
                 });
@@ -90,8 +93,15 @@ public class PuestoServiceImpl implements PuestoService {
         if (puesto.getPrecio() == null) {
             puesto.setPrecio(BigDecimal.ZERO);
         }
-        if (puesto.getEstadoPuesto() == null) {
+        
+        if (puesto.getIdSocioActual() != null && puesto.getIdSocioActual() <= 0) {
+            puesto.setIdSocioActual(null);
+        }
+        
+        if (puesto.getIdSocioActual() == null) {
             puesto.setEstadoPuesto(EstadoPuesto.VACANTE);
+        } else if (puesto.getEstadoPuesto() == null || puesto.getEstadoPuesto() == EstadoPuesto.VACANTE) {
+            puesto.setEstadoPuesto(EstadoPuesto.OCUPADO);
         }
     }
 }
