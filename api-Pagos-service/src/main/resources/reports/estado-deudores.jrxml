@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="estado_deudores"
+              pageWidth="595"
+              pageHeight="842"
+              columnWidth="535"
+              leftMargin="30"
+              rightMargin="30"
+              topMargin="30"
+              bottomMargin="30"
+              whenNoDataType="AllSectionsNoDetail"
+              uuid="ba59bdb6-a1ce-4e07-bf3b-402f1d0c5f3e">
+    <parameter name="totalPuestosConDeuda" class="java.lang.Integer"/>
+    <parameter name="totalCuotasPendientes" class="java.lang.Integer"/>
+    <parameter name="totalDeuda" class="java.lang.Double"/>
+    <field name="puesto" class="java.lang.String"/>
+    <field name="pabellon" class="java.lang.String"/>
+    <field name="socio" class="java.lang.String"/>
+    <field name="servicio" class="java.lang.String"/>
+    <field name="periodo" class="java.lang.String"/>
+    <field name="monto" class="java.lang.Double"/>
+    <field name="totalPuesto" class="java.lang.Double"/>
+    <title>
+        <band height="80">
+            <staticText>
+                <reportElement x="0" y="0" width="535" height="24"/>
+                <textElement textAlignment="Center">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Estado de Deudores]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="0" y="35" width="535" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Puestos con deuda: " + $P{totalPuestosConDeuda} + "    Cuotas pendientes: " + $P{totalCuotasPendientes}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="55" width="535" height="18"/>
+                <textElement textAlignment="Center"/>
+                <textFieldExpression><![CDATA["Total deuda: S/ " + String.format("%.2f", $P{totalDeuda})]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+    <columnHeader>
+        <band height="24">
+            <staticText><reportElement x="0" y="0" width="55" height="20"/><textElement><font isBold="true"/></textElement><text><![CDATA[Puesto]]></text></staticText>
+            <staticText><reportElement x="55" y="0" width="60" height="20"/><textElement><font isBold="true"/></textElement><text><![CDATA[Pabellon]]></text></staticText>
+            <staticText><reportElement x="115" y="0" width="120" height="20"/><textElement><font isBold="true"/></textElement><text><![CDATA[Socio]]></text></staticText>
+            <staticText><reportElement x="235" y="0" width="120" height="20"/><textElement><font isBold="true"/></textElement><text><![CDATA[Servicio]]></text></staticText>
+            <staticText><reportElement x="355" y="0" width="60" height="20"/><textElement><font isBold="true"/></textElement><text><![CDATA[Periodo]]></text></staticText>
+            <staticText><reportElement x="415" y="0" width="60" height="20"/><textElement textAlignment="Right"><font isBold="true"/></textElement><text><![CDATA[Monto]]></text></staticText>
+            <staticText><reportElement x="475" y="0" width="60" height="20"/><textElement textAlignment="Right"><font isBold="true"/></textElement><text><![CDATA[Total]]></text></staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="22">
+            <textField><reportElement x="0" y="0" width="55" height="18"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{puesto}]]></textFieldExpression></textField>
+            <textField><reportElement x="55" y="0" width="60" height="18"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{pabellon}]]></textFieldExpression></textField>
+            <textField><reportElement x="115" y="0" width="120" height="18"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{socio}]]></textFieldExpression></textField>
+            <textField><reportElement x="235" y="0" width="120" height="18"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{servicio}]]></textFieldExpression></textField>
+            <textField><reportElement x="355" y="0" width="60" height="18"/><textElement><font size="8"/></textElement><textFieldExpression><![CDATA[$F{periodo}]]></textFieldExpression></textField>
+            <textField pattern="#,##0.00"><reportElement x="415" y="0" width="60" height="18"/><textElement textAlignment="Right"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{monto}]]></textFieldExpression></textField>
+            <textField pattern="#,##0.00"><reportElement x="475" y="0" width="60" height="18"/><textElement textAlignment="Right"><font size="8"/></textElement><textFieldExpression><![CDATA[$F{totalPuesto}]]></textFieldExpression></textField>
+        </band>
+    </detail>
+</jasperReport>

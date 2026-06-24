@@ -3,8 +3,10 @@ package pe.edu.cibertec.apipuestoservice.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.edu.cibertec.apipuestoservice.dto.ActualizarTitularRequest;
+import pe.edu.cibertec.apipuestoservice.dto.SocioDTO;
 import pe.edu.cibertec.apipuestoservice.entity.EstadoPuesto;
 import pe.edu.cibertec.apipuestoservice.entity.Puesto;
+import pe.edu.cibertec.apipuestoservice.remote.client.SocioClient;
 import pe.edu.cibertec.apipuestoservice.repository.PuestoRepository;
 import pe.edu.cibertec.apipuestoservice.service.PuestoService;
 
@@ -16,6 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PuestoServiceImpl implements PuestoService {
     private final PuestoRepository puestoRepository;
+    private final SocioClient socioClient;
 
     @Override
     public List<Puesto> listar() {
@@ -62,18 +65,20 @@ public class PuestoServiceImpl implements PuestoService {
     public Optional<Puesto> actualizarTitular(Integer id, ActualizarTitularRequest request) {
         return puestoRepository.findById(id)
                 .map(puesto -> {
-                    Integer nuevoSocio = (request.getIdSocioActual() != null && request.getIdSocioActual() <= 0) 
-                                         ? null 
-                                         : request.getIdSocioActual();
-                    
+                    Integer socioAnterior = puesto.getIdSocioActual();
+                    Integer nuevoSocio = normalizarSocio(request.getIdSocioActual());
+
                     puesto.setIdSocioActual(nuevoSocio);
-                    
+
                     if (request.getEstadoPuesto() != null) {
                         puesto.setEstadoPuesto(request.getEstadoPuesto());
                     } else {
-                        puesto.setEstadoPuesto(nuevoSocio == null ? EstadoPuesto.VACANTE : EstadoPuesto.OCUPADO);
+                        puesto.setEstadoPuesto(esSocioAsociacion(nuevoSocio) ? EstadoPuesto.VACANTE : EstadoPuesto.OCUPADO);
                     }
-                    return puestoRepository.save(puesto);
+                    Puesto actualizado = puestoRepository.save(puesto);
+                    verificarActividadSocio(socioAnterior);
+                    verificarActividadSocio(nuevoSocio);
+                    return actualizado;
                 });
     }
 
@@ -94,14 +99,43 @@ public class PuestoServiceImpl implements PuestoService {
             puesto.setPrecio(BigDecimal.ZERO);
         }
         
-        if (puesto.getIdSocioActual() != null && puesto.getIdSocioActual() <= 0) {
-            puesto.setIdSocioActual(null);
-        }
-        
-        if (puesto.getIdSocioActual() == null) {
+        puesto.setIdSocioActual(normalizarSocio(puesto.getIdSocioActual()));
+
+        if (esSocioAsociacion(puesto.getIdSocioActual()) && puesto.getEstadoPuesto() == null) {
             puesto.setEstadoPuesto(EstadoPuesto.VACANTE);
-        } else if (puesto.getEstadoPuesto() == null || puesto.getEstadoPuesto() == EstadoPuesto.VACANTE) {
+        } else if (!esSocioAsociacion(puesto.getIdSocioActual())
+                && (puesto.getEstadoPuesto() == null || puesto.getEstadoPuesto() == EstadoPuesto.VACANTE)) {
             puesto.setEstadoPuesto(EstadoPuesto.OCUPADO);
         }
+    }
+
+    private Integer normalizarSocio(Integer idSocio) {
+        if (idSocio == null || idSocio <= 0) {
+            return obtenerIdSocioAsociacion();
+        }
+        return idSocio;
+    }
+
+    private boolean esSocioAsociacion(Integer idSocio) {
+        return idSocio != null && idSocio.equals(obtenerIdSocioAsociacion());
+    }
+
+    private void verificarActividadSocio(Integer idSocio) {
+        if (idSocio == null || esSocioAsociacion(idSocio)) {
+            return;
+        }
+        try {
+            socioClient.verificarActividad(idSocio);
+        } catch (Exception e) {
+            System.out.println("No se pudo verificar la actividad del socio " + idSocio + ": " + e.getMessage());
+        }
+    }
+
+    private Integer obtenerIdSocioAsociacion() {
+        SocioDTO asociacion = socioClient.obtenerAsociacion();
+        if (asociacion == null || asociacion.getIdSocio() == null) {
+            throw new RuntimeException("No existe un socio marcado como Asociación.");
+        }
+        return asociacion.getIdSocio();
     }
 }

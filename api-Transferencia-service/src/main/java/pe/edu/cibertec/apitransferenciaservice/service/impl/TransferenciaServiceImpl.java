@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pe.edu.cibertec.apitransferenciaservice.dto.ActualizarTitularRequest;
 import pe.edu.cibertec.apitransferenciaservice.dto.DeudaDTO;
 import pe.edu.cibertec.apitransferenciaservice.dto.PuestoDTO;
+import pe.edu.cibertec.apitransferenciaservice.dto.SocioDTO;
 import pe.edu.cibertec.apitransferenciaservice.dto.TransferenciaRequest;
 import pe.edu.cibertec.apitransferenciaservice.entity.Transferencia;
 import pe.edu.cibertec.apitransferenciaservice.remote.client.PagoClient;
@@ -111,10 +112,10 @@ public class TransferenciaServiceImpl implements TransferenciaService {
         Integer socioActual = puesto.getIdSocioActual();
         Integer socioSaliente = request.getIdSocioSaliente();
 
-        if (socioActual == null && socioSaliente != null) {
+        if ((socioActual == null || esSocioAsociacion(socioActual)) && socioSaliente != null) {
             throw new RuntimeException("El puesto no tiene socio saliente registrado.");
         }
-        if (socioActual != null && !socioActual.equals(socioSaliente)) {
+        if (socioActual != null && !esSocioAsociacion(socioActual) && !socioActual.equals(socioSaliente)) {
             throw new RuntimeException("El socio saliente no coincide con el titular actual del puesto.");
         }
     }
@@ -164,5 +165,13 @@ public class TransferenciaServiceImpl implements TransferenciaService {
         titularRequest.setEstadoPuesto("OCUPADO");
 
         puestoClient.actualizarTitular(request.getIdPuesto(), titularRequest);
+    }
+
+    private boolean esSocioAsociacion(Integer idSocio) {
+        if (idSocio == null) {
+            return false;
+        }
+        SocioDTO asociacion = socioClient.obtenerAsociacion();
+        return asociacion != null && idSocio.equals(asociacion.getIdSocio());
     }
 }

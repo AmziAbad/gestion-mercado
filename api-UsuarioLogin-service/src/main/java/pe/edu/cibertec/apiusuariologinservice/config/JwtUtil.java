@@ -14,12 +14,12 @@ import java.util.Map;
 public class JwtUtil {
 
     private final Key secretKey;
-    private final long expirationTime;
+    private final long expirationMillis;
 
     public JwtUtil(@Value("${jwt.secret}") String jwtSecret,
-                   @Value("${jwt.expiration-ms:86400000}") long expirationTime) {
+                   @Value("${jwt.expiration-seconds}") long expirationSeconds) {
         this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        this.expirationTime = expirationTime;
+        this.expirationMillis = expirationSeconds * 1000;
     }
 
     public String generarToken(String username, String rol) {
@@ -30,7 +30,7 @@ public class JwtUtil {
                 .claims(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .expiration(new Date(System.currentTimeMillis() + expirationMillis))
                 .signWith(secretKey)
                 .compact();
     }

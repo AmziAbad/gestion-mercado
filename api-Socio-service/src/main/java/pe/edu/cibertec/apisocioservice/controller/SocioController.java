@@ -39,6 +39,13 @@ public class SocioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/asociacion")
+    public ResponseEntity<Socio> obtenerAsociacion() {
+        return socioService.obtenerAsociacion()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<Socio> guardar(@RequestBody Socio socio) {
         return ResponseEntity.ok(socioService.guardar(socio));

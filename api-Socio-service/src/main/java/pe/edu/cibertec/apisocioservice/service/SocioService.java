@@ -13,6 +13,8 @@ public interface SocioService {
 
     Optional<Socio> buscarPorDni(String dni);
 
+    Optional<Socio> obtenerAsociacion();
+
     Socio guardar(Socio socio);
 
     Optional<Socio> actualizar(Integer id, Socio socio);

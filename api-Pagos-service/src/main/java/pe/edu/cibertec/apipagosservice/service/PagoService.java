@@ -2,8 +2,11 @@ package pe.edu.cibertec.apipagosservice.service;
 
 import pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO;
 import pe.edu.cibertec.apipagosservice.dto.DeudaDTO;
+import pe.edu.cibertec.apipagosservice.dto.EstadoDeudoresDTO;
+import pe.edu.cibertec.apipagosservice.dto.FlujoCajaDiarioDTO;
 import pe.edu.cibertec.apipagosservice.entity.CuotaPago;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -30,7 +33,11 @@ public interface PagoService {
 
     CuotaPago anularYReemplazarCuota(Integer id, String motivo, Integer idServicio, Double monto, Integer mes, Integer anio);
 
-    CuotaPago revertirPago(Integer id);
+    CuotaPago revertirPago(Integer id, String motivo);
 
     ComprobanteDTO generarComprobante(Integer idCuota);
+
+    FlujoCajaDiarioDTO obtenerFlujoCajaDiario(LocalDate fecha);
+
+    EstadoDeudoresDTO obtenerEstadoDeudores();
 }

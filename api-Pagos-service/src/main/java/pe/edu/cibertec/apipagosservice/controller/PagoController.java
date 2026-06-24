@@ -1,12 +1,20 @@
 package pe.edu.cibertec.apipagosservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO;
 import pe.edu.cibertec.apipagosservice.dto.DeudaDTO;
+import pe.edu.cibertec.apipagosservice.dto.EstadoDeudoresDTO;
+import pe.edu.cibertec.apipagosservice.dto.FlujoCajaDiarioDTO;
 import pe.edu.cibertec.apipagosservice.entity.CuotaPago;
 import pe.edu.cibertec.apipagosservice.service.PagoService;
+import pe.edu.cibertec.apipagosservice.service.ReportePdfService;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +23,9 @@ import java.util.Map;
 public class PagoController {
     @Autowired
     private PagoService pagoService;
+
+    @Autowired
+    private ReportePdfService reportePdfService;
 
     @GetMapping
     public List<CuotaPago> listarPagos() {
@@ -105,13 +116,44 @@ public class PagoController {
     }
 
     @PutMapping("/cuotas/{id}/revertir-pago")
-    public CuotaPago revertirPago(@PathVariable Integer id) {
-        return pagoService.revertirPago(id);
+    public CuotaPago revertirPago(@PathVariable Integer id,
+                                  @RequestBody(required = false) Map<String, String> body) {
+        String motivo = body != null ? body.get("motivo") : null;
+        if (motivo == null || motivo.isBlank()) {
+            throw new RuntimeException("El motivo de anulación del pago es obligatorio");
+        }
+        return pagoService.revertirPago(id, motivo);
     }
 
     @GetMapping("/cuotas/{id}/comprobante")
     public ComprobanteDTO generarComprobante(@PathVariable Integer id) {
         return pagoService.generarComprobante(id);
+    }
+
+    @GetMapping("/reportes/flujo-caja")
+    public FlujoCajaDiarioDTO obtenerFlujoCajaDiario(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        return pagoService.obtenerFlujoCajaDiario(fecha);
+    }
+
+    @GetMapping("/reportes/deudores")
+    public EstadoDeudoresDTO obtenerEstadoDeudores() {
+        return pagoService.obtenerEstadoDeudores();
+    }
+
+    @GetMapping("/reportes/flujo-caja/pdf")
+    public ResponseEntity<byte[]> descargarFlujoCajaDiarioPdf(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
+        FlujoCajaDiarioDTO reporte = pagoService.obtenerFlujoCajaDiario(fecha);
+        byte[] pdf = reportePdfService.generarFlujoCajaDiarioPdf(reporte);
+        return responderPdf(pdf, "flujo-caja-" + fecha + ".pdf");
+    }
+
+    @GetMapping("/reportes/deudores/pdf")
+    public ResponseEntity<byte[]> descargarEstadoDeudoresPdf() {
+        EstadoDeudoresDTO reporte = pagoService.obtenerEstadoDeudores();
+        byte[] pdf = reportePdfService.generarEstadoDeudoresPdf(reporte);
+        return responderPdf(pdf, "estado-deudores.pdf");
     }
 
     private Integer toInteger(Object value) {
@@ -120,5 +162,12 @@ public class PagoController {
 
     private Double toDouble(Object value) {
         return value != null ? Double.valueOf(value.toString()) : null;
+    }
+
+    private ResponseEntity<byte[]> responderPdf(byte[] pdf, String nombreArchivo) {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + nombreArchivo)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 }

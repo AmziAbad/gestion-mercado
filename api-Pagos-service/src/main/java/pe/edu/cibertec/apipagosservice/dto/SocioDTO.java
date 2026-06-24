@@ -1,4 +1,4 @@
-package pe.edu.cibertec.apitransferenciaservice.dto;
+package pe.edu.cibertec.apipagosservice.dto;
 
 import lombok.Data;
 
@@ -6,8 +6,10 @@ import lombok.Data;
 public class SocioDTO {
     private Integer idSocio;
     private String dni;
+    private String ruc;
     private String nombre;
     private String apellido;
+    private String telefono;
+    private String correo;
     private Boolean activo;
-    private Boolean esAsociacion;
 }

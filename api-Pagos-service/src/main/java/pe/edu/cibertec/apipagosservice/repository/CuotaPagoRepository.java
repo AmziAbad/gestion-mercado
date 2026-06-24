@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import pe.edu.cibertec.apipagosservice.entity.CuotaPago;
 import pe.edu.cibertec.apipagosservice.entity.EstadoPago;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CuotaPagoRepository extends JpaRepository<CuotaPago, Integer> {
@@ -22,4 +23,10 @@ public interface CuotaPagoRepository extends JpaRepository<CuotaPago, Integer> {
     List<CuotaPago> findByIdPuesto(Integer idPuesto);
 
     List<CuotaPago> findByIdPuestoAndEstado(Integer idPuesto, EstadoPago estado);
+
+    List<CuotaPago> findByEstado(EstadoPago estado);
+
+    List<CuotaPago> findByEstadoAndFechaPagoBetween(
+            EstadoPago estado, LocalDateTime desde, LocalDateTime hasta
+    );
 }

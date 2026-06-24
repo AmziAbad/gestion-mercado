@@ -4,20 +4,31 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO;
+import pe.edu.cibertec.apipagosservice.dto.DetalleDeudaDTO;
+import pe.edu.cibertec.apipagosservice.dto.DetalleFlujoCajaDTO;
 import pe.edu.cibertec.apipagosservice.dto.DeudaDTO;
+import pe.edu.cibertec.apipagosservice.dto.DeudorDTO;
+import pe.edu.cibertec.apipagosservice.dto.EstadoDeudoresDTO;
+import pe.edu.cibertec.apipagosservice.dto.FlujoCajaDiarioDTO;
 import pe.edu.cibertec.apipagosservice.dto.PuestoDTO;
 import pe.edu.cibertec.apipagosservice.dto.ServicioDTO;
+import pe.edu.cibertec.apipagosservice.dto.SocioDTO;
 import pe.edu.cibertec.apipagosservice.entity.CuotaPago;
 import pe.edu.cibertec.apipagosservice.entity.EstadoPago;
 import pe.edu.cibertec.apipagosservice.entity.MetodoPago;
 import pe.edu.cibertec.apipagosservice.remote.client.PuestoClient;
 import pe.edu.cibertec.apipagosservice.remote.client.ServicioClient;
+import pe.edu.cibertec.apipagosservice.remote.client.SocioClient;
 import pe.edu.cibertec.apipagosservice.repository.CuotaPagoRepository;
 import pe.edu.cibertec.apipagosservice.service.PagoService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +36,7 @@ public class PagoServiceImpl implements PagoService {
     private final ServicioClient servicioClient;
     private final CuotaPagoRepository cuotaRepo;
     private final PuestoClient puestoClient;
+    private final SocioClient socioClient;
 
     @Override
     public List<CuotaPago> listarPagos() {
@@ -159,6 +171,7 @@ public class PagoServiceImpl implements PagoService {
             }
             c.setEstado(EstadoPago.EXONERADO);
             c.setMotivoExoneracion(motivo);
+            c.setFechaExoneracion(LocalDateTime.now());
             return cuotaRepo.save(c);
         }).orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
     }
@@ -205,16 +218,20 @@ public class PagoServiceImpl implements PagoService {
     }
 
     @Override
-    public CuotaPago revertirPago(Integer id) {
+    public CuotaPago revertirPago(Integer id, String motivo) {
         return cuotaRepo.findById(id).map(c -> {
             if (c.getEstado() != EstadoPago.PAGADO) {
                 throw new RuntimeException("Solo se puede revertir una cuota pagada");
             }
             c.setEstado(EstadoPago.PENDIENTE);
+            c.setMotivoAnulacionPago(motivo);
+            c.setFechaAnulacionPago(LocalDateTime.now());
             c.setFechaPago(null);
             c.setMetodoPago(null);
             c.setNumeroOperacion(null);
+            c.setNumeroComprobante(null);
             c.setMotivoExoneracion(null);
+            c.setFechaExoneracion(null);
             return cuotaRepo.save(c);
         }).orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
     }
@@ -280,6 +297,87 @@ public class PagoServiceImpl implements PagoService {
                 .build();
     }
 
+    @Override
+    public FlujoCajaDiarioDTO obtenerFlujoCajaDiario(LocalDate fecha) {
+        LocalDate fechaReporte = fecha != null ? fecha : LocalDate.now();
+        LocalDateTime desde = fechaReporte.atStartOfDay();
+        LocalDateTime hasta = fechaReporte.plusDays(1).atStartOfDay();
+
+        Map<Integer, PuestoDTO> puestos = new HashMap<>();
+        Map<Integer, SocioDTO> socios = new HashMap<>();
+        Map<Integer, ServicioDTO> servicios = new HashMap<>();
+
+        List<DetalleFlujoCajaDTO> pagos = cuotaRepo
+                .findByEstadoAndFechaPagoBetween(EstadoPago.PAGADO, desde, hasta)
+                .stream()
+                .sorted(Comparator.comparing(CuotaPago::getFechaPago))
+                .map(cuota -> {
+                    PuestoDTO puesto = obtenerPuestoSeguro(cuota.getIdPuesto(), puestos);
+                    ServicioDTO servicio = obtenerServicioSeguro(cuota.getIdServicio(), servicios);
+                    SocioDTO socio = puesto != null && puesto.getIdSocioActual() != null
+                            ? obtenerSocioSeguro(puesto.getIdSocioActual(), socios)
+                            : null;
+
+                    return DetalleFlujoCajaDTO.builder()
+                            .idCuota(cuota.getIdCuota())
+                            .idPuesto(cuota.getIdPuesto())
+                            .numeroPuesto(puesto != null ? puesto.getNumeroPuesto() : null)
+                            .idSocio(puesto != null ? puesto.getIdSocioActual() : null)
+                            .nombreSocio(nombreSocio(socio))
+                            .idServicio(cuota.getIdServicio())
+                            .nombreServicio(servicio != null ? servicio.getNombreServicio() : null)
+                            .monto(cuota.getMonto())
+                            .metodoPago(cuota.getMetodoPago())
+                            .numeroOperacion(cuota.getNumeroOperacion())
+                            .numeroComprobante(cuota.getNumeroComprobante())
+                            .fechaPago(cuota.getFechaPago())
+                            .build();
+                })
+                .toList();
+
+        double total = pagos.stream()
+                .mapToDouble(pago -> pago.getMonto() != null ? pago.getMonto() : 0.0)
+                .sum();
+
+        return FlujoCajaDiarioDTO.builder()
+                .fecha(fechaReporte)
+                .totalPagos(pagos.size())
+                .totalRecaudado(total)
+                .pagos(pagos)
+                .build();
+    }
+
+    @Override
+    public EstadoDeudoresDTO obtenerEstadoDeudores() {
+        Map<Integer, PuestoDTO> puestos = new HashMap<>();
+        Map<Integer, SocioDTO> socios = new HashMap<>();
+        Map<Integer, ServicioDTO> servicios = new HashMap<>();
+
+        Map<Integer, List<CuotaPago>> cuotasPorPuesto = cuotaRepo.findByEstado(EstadoPago.PENDIENTE)
+                .stream()
+                .collect(Collectors.groupingBy(CuotaPago::getIdPuesto));
+
+        List<DeudorDTO> deudores = cuotasPorPuesto.entrySet()
+                .stream()
+                .map(entry -> construirDeudor(entry.getKey(), entry.getValue(), puestos, socios, servicios))
+                .sorted(Comparator.comparing(DeudorDTO::getNumeroPuesto, Comparator.nullsLast(String::compareTo)))
+                .toList();
+
+        int totalCuotas = deudores.stream()
+                .mapToInt(DeudorDTO::getTotalCuotasPendientes)
+                .sum();
+        double totalDeuda = deudores.stream()
+                .mapToDouble(deudor -> deudor.getTotalDeuda() != null ? deudor.getTotalDeuda() : 0.0)
+                .sum();
+
+        return EstadoDeudoresDTO.builder()
+                .totalPuestosConDeuda(deudores.size())
+                .totalCuotasPendientes(totalCuotas)
+                .totalDeuda(totalDeuda)
+                .deudores(deudores)
+                .build();
+    }
+
     private void validarCuotaAnulable(CuotaPago cuota) {
         if (cuota.getEstado() == EstadoPago.PAGADO) {
             throw new RuntimeException("No se puede anular una cuota pagada. Primero revierta el pago.");
@@ -292,5 +390,106 @@ public class PagoServiceImpl implements PagoService {
     private String generarNumeroComprobante(CuotaPago cuota) {
         return "CP-" + cuota.getAnio() + String.format("%02d", cuota.getMes())
                 + "-" + String.format("%06d", cuota.getIdCuota());
+    }
+
+    private DeudorDTO construirDeudor(Integer idPuesto, List<CuotaPago> cuotas,
+                                      Map<Integer, PuestoDTO> puestos,
+                                      Map<Integer, SocioDTO> socios,
+                                      Map<Integer, ServicioDTO> servicios) {
+        PuestoDTO puesto = obtenerPuestoSeguro(idPuesto, puestos);
+        SocioDTO socio = puesto != null && puesto.getIdSocioActual() != null
+                ? obtenerSocioSeguro(puesto.getIdSocioActual(), socios)
+                : null;
+
+        List<DetalleDeudaDTO> detalle = cuotas.stream()
+                .sorted(Comparator.comparing(CuotaPago::getAnio).thenComparing(CuotaPago::getMes))
+                .map(cuota -> {
+                    ServicioDTO servicio = obtenerServicioSeguro(cuota.getIdServicio(), servicios);
+                    return DetalleDeudaDTO.builder()
+                            .idCuota(cuota.getIdCuota())
+                            .idServicio(cuota.getIdServicio())
+                            .nombreServicio(servicio != null ? servicio.getNombreServicio() : null)
+                            .mes(cuota.getMes())
+                            .anio(cuota.getAnio())
+                            .monto(cuota.getMonto())
+                            .build();
+                })
+                .toList();
+
+        double total = cuotas.stream()
+                .mapToDouble(cuota -> cuota.getMonto() != null ? cuota.getMonto() : 0.0)
+                .sum();
+
+        return DeudorDTO.builder()
+                .idPuesto(idPuesto)
+                .numeroPuesto(puesto != null ? puesto.getNumeroPuesto() : null)
+                .pabellon(puesto != null ? puesto.getPabellon() : null)
+                .idSocio(puesto != null ? puesto.getIdSocioActual() : null)
+                .nombreSocio(nombreSocio(socio))
+                .totalCuotasPendientes(cuotas.size())
+                .totalDeuda(total)
+                .cuotas(detalle)
+                .build();
+    }
+
+    private PuestoDTO obtenerPuestoSeguro(Integer idPuesto, Map<Integer, PuestoDTO> cache) {
+        if (idPuesto == null) {
+            return null;
+        }
+        if (cache.containsKey(idPuesto)) {
+            return cache.get(idPuesto);
+        }
+        try {
+            PuestoDTO puesto = puestoClient.getPuestoById(idPuesto);
+            cache.put(idPuesto, puesto);
+            return puesto;
+        } catch (Exception e) {
+            cache.put(idPuesto, null);
+            return null;
+        }
+    }
+
+    private ServicioDTO obtenerServicioSeguro(Integer idServicio, Map<Integer, ServicioDTO> cache) {
+        if (idServicio == null) {
+            return null;
+        }
+        if (cache.containsKey(idServicio)) {
+            return cache.get(idServicio);
+        }
+        try {
+            ServicioDTO servicio = servicioClient.getServicioById(idServicio);
+            cache.put(idServicio, servicio);
+            return servicio;
+        } catch (Exception e) {
+            cache.put(idServicio, null);
+            return null;
+        }
+    }
+
+    private SocioDTO obtenerSocioSeguro(Integer idSocio, Map<Integer, SocioDTO> cache) {
+        if (idSocio == null) {
+            return null;
+        }
+        if (cache.containsKey(idSocio)) {
+            return cache.get(idSocio);
+        }
+        try {
+            SocioDTO socio = socioClient.getSocioById(idSocio);
+            cache.put(idSocio, socio);
+            return socio;
+        } catch (Exception e) {
+            cache.put(idSocio, null);
+            return null;
+        }
+    }
+
+    private String nombreSocio(SocioDTO socio) {
+        if (socio == null) {
+            return null;
+        }
+        String nombre = socio.getNombre() != null ? socio.getNombre() : "";
+        String apellido = socio.getApellido() != null ? socio.getApellido() : "";
+        String nombreCompleto = (nombre + " " + apellido).trim();
+        return nombreCompleto.isBlank() ? null : nombreCompleto;
     }
 }

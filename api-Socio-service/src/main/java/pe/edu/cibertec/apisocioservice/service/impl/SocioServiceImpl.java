@@ -36,6 +36,11 @@ public class SocioServiceImpl implements SocioService {
     }
 
     @Override
+    public Optional<Socio> obtenerAsociacion() {
+        return socioRepository.findFirstByEsAsociacionTrue();
+    }
+
+    @Override
     public Socio guardar(Socio socio) {
         return socioRepository.save(socio);
     }
@@ -85,6 +90,12 @@ public class SocioServiceImpl implements SocioService {
     @Override
     public void verificarEstadoActivo(Integer idSocio) {
         socioRepository.findById(idSocio).ifPresent(socio -> {
+            if (Boolean.TRUE.equals(socio.getEsAsociacion())) {
+                socio.setActivo(true);
+                socioRepository.save(socio);
+                return;
+            }
+
             long cantidadPuestos = puestoClient.listarPorSocio(idSocio).size();
             
             if (cantidadPuestos == 0) {

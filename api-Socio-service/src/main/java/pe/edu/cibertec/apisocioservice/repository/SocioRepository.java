@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface SocioRepository extends JpaRepository<Socio, Integer> {
     @Query("SELECT s FROM Socio s WHERE TRIM(s.dni) = :dni")
     Optional<Socio> findByDni(@Param("dni") String dni);
+
+    Optional<Socio> findFirstByEsAsociacionTrue();
 }

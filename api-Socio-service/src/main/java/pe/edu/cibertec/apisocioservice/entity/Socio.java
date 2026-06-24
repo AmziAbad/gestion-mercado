@@ -30,4 +30,6 @@ public class Socio {
     @Column(name = "estado_solvencia")
     private Boolean estadoSolvencia = true;
     private Boolean activo = false;
+    @Column(name = "es_asociacion")
+    private Boolean esAsociacion = false;
 }

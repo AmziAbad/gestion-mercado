@@ -41,11 +41,20 @@ public class CuotaPago {
     @Column(name = "motivo_exoneracion")
     private String motivoExoneracion;
 
+    @Column(name = "fecha_exoneracion")
+    private LocalDateTime fechaExoneracion;
+
     @Column(name = "motivo_anulacion")
     private String motivoAnulacion;
 
     @Column(name = "fecha_anulacion")
     private LocalDateTime fechaAnulacion;
+
+    @Column(name = "motivo_anulacion_pago")
+    private String motivoAnulacionPago;
+
+    @Column(name = "fecha_anulacion_pago")
+    private LocalDateTime fechaAnulacionPago;
 
     @Column(name = "id_cuota_origen")
     private Integer idCuotaOrigen;

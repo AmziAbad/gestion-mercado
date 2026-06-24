@@ -1,4 +1,4 @@
-package pe.edu.cibertec.apitransferenciaservice.dto;
+package pe.edu.cibertec.apipuestoservice.dto;
 
 import lombok.Data;
 
