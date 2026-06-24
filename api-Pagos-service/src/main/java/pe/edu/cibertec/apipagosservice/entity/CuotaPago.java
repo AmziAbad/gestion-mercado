@@ -35,5 +35,7 @@ public class CuotaPago {
     @Column(name = "numero_operacion")
     private String numeroOperacion;
 
+    @Column(name = "motivo_exoneracion")
+    private String motivoExoneracion;
 
 }

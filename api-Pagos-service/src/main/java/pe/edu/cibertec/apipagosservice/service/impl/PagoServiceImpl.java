@@ -73,15 +73,26 @@ public class PagoServiceImpl implements PagoService {
     @Override
     public CuotaPago pagarCuota(Integer id, Map<String, String> pago) {
         return cuotaRepo.findById(id).map(c -> {
+            if (c.getEstado() == EstadoPago.PAGADO || c.getEstado() == EstadoPago.EXONERADO) {
+                throw new RuntimeException("La cuota ya está pagada o exonerada");
+            }
+            
+            if (pago == null || pago.get("numeroOperacion") == null || pago.get("numeroOperacion").isBlank()) {
+                throw new RuntimeException("El número de operación (comprobante) es obligatorio para registrar el pago");
+            }
+            
             c.setEstado(EstadoPago.PAGADO);
             c.setFechaPago(LocalDateTime.now());
-            if (pago != null) {
-                String metodo = pago.get("metodoPago");
-                if (metodo != null && !metodo.isBlank()) {
-                    c.setMetodoPago(MetodoPago.valueOf(metodo));
-                }
-                c.setNumeroOperacion(pago.get("numeroOperacion"));
+            
+            String metodo = pago.get("metodoPago");
+            if (metodo != null && !metodo.isBlank()) {
+                c.setMetodoPago(MetodoPago.valueOf(metodo));
+            } else {
+                c.setMetodoPago(MetodoPago.EFECTIVO);
             }
+            
+            c.setNumeroOperacion(pago.get("numeroOperacion"));
+            
             return cuotaRepo.save(c);
         }).orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
     }
@@ -119,6 +130,78 @@ public class PagoServiceImpl implements PagoService {
                 .idSocio(idSocio)
                 .totalDeuda(total)
                 .tieneDeuda(total > 0)
+                .build();
+    }
+
+    @Override
+    public CuotaPago generarDeudaEspecifica(Integer idPuesto, Integer idServicio, Double monto, Integer mes, Integer anio) {
+        CuotaPago cuota = CuotaPago.builder()
+                .idPuesto(idPuesto)
+                .idServicio(idServicio)
+                .monto(monto)
+                .mes(mes)
+                .anio(anio)
+                .estado(EstadoPago.PENDIENTE)
+                .build();
+        return cuotaRepo.save(cuota);
+    }
+
+    @Override
+    public CuotaPago exonerarCuota(Integer id, String motivo) {
+        return cuotaRepo.findById(id).map(c -> {
+            if (c.getEstado() == EstadoPago.PAGADO) {
+                throw new RuntimeException("No se puede exonerar una cuota que ya está pagada");
+            }
+            c.setEstado(EstadoPago.EXONERADO);
+            c.setMotivoExoneracion(motivo);
+            return cuotaRepo.save(c);
+        }).orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
+    }
+
+    @Override
+    public CuotaPago revertirPago(Integer id) {
+        return cuotaRepo.findById(id).map(c -> {
+            c.setEstado(EstadoPago.PENDIENTE);
+            c.setFechaPago(null);
+            c.setMetodoPago(null);
+            c.setNumeroOperacion(null);
+            c.setMotivoExoneracion(null);
+            return cuotaRepo.save(c);
+        }).orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
+    }
+
+    @Override
+    public pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO generarComprobante(Integer idCuota) {
+        CuotaPago cuota = cuotaRepo.findById(idCuota)
+                .orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
+
+        if (cuota.getEstado() != EstadoPago.PAGADO) {
+            throw new RuntimeException("No se puede generar comprobante de una cuota que no ha sido pagada");
+        }
+
+        // Obtener detalles adicionales usando Feign Clients
+        String nombreServicio = "Servicio ID: " + cuota.getIdServicio();
+        try {
+            // Intentar obtener el nombre real del servicio
+            pe.edu.cibertec.apipagosservice.dto.ServicioDTO serv = servicioClient.getServiciosActivos().stream()
+                    .filter(s -> s.getIdServicio().equals(cuota.getIdServicio()))
+                    .findFirst().orElse(null);
+            if (serv != null) nombreServicio = serv.getNombreServicio();
+        } catch (Exception e) {
+            // Ignorar y usar ID si falla
+        }
+
+        return pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO.builder()
+                .titulo("COMPROBANTE DE PAGO - ASOCIACIÓN DE COMERCIANTES")
+                .idCuota(cuota.getIdCuota())
+                .numeroOperacion(cuota.getNumeroOperacion())
+                .fechaEmision(cuota.getFechaPago())
+                .montoPagado(cuota.getMonto())
+                .metodoPago(cuota.getMetodoPago())
+                .detallePuesto("Puesto asociado ID: " + cuota.getIdPuesto())
+                .detalleServicio(nombreServicio)
+                .periodo(cuota.getMes() + "/" + cuota.getAnio())
+                .mensaje("¡Gracias por su pago puntual!")
                 .build();
     }
 }
