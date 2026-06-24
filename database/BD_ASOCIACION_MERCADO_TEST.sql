@@ -55,11 +55,16 @@ CREATE TABLE cuotas_pago (
     mes INT NOT NULL,
     anio INT NOT NULL,
     monto DECIMAL(10,2) NOT NULL,
-    estado ENUM('PENDIENTE', 'PAGADO', 'EXONERADO') DEFAULT 'PENDIENTE',
+    estado ENUM('PENDIENTE', 'PAGADO', 'EXONERADO', 'ANULADO') DEFAULT 'PENDIENTE',
     fecha_pago DATETIME,
     metodo_pago ENUM('EFECTIVO', 'TRANSFERENCIA', 'YAPE_PLIN', 'TARJETA'),
     numero_operacion VARCHAR(50),
-    motivo_exoneracion VARCHAR(255)
+    numero_comprobante VARCHAR(50),
+    motivo_exoneracion VARCHAR(255),
+    motivo_anulacion VARCHAR(255),
+    fecha_anulacion DATETIME,
+    id_cuota_origen INT,
+    id_cuota_reemplazo INT
 );
 
 CREATE TABLE transferencias (
@@ -70,16 +75,18 @@ CREATE TABLE transferencias (
     id_usuario_tramite INT NOT NULL,
     costo_transferencia DECIMAL(10,2) DEFAULT 0.00,
     fecha_tramite TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    asume_deuda BOOLEAN DEFAULT FALSE,
+    monto_deuda_asumida DECIMAL(10,2) DEFAULT 0.00,
     observacion TEXT
 );
 
--- Passwords en texto plano para el estado actual del microservicio.
--- Cuando se migre BCryptPasswordEncoder, reemplazar estos valores por hashes BCrypt.
+-- Passwords de prueba cifrados con BCrypt.
+-- Claves originales para pruebas: admin123, teso123, recep123, bloq123.
 INSERT INTO usuarios (username, password, nombre_completo, dni, correo, telefono, rol, activo) VALUES
-('admin', 'admin123', 'Administrador General', '70000001', 'admin@mercado.test', '999111001', 'ADMIN', TRUE),
-('tesoreria', 'teso123', 'Rosa Torres Vega', '70000002', 'tesoreria@mercado.test', '999111002', 'TESORERO', TRUE),
-('recepcion', 'recep123', 'Carlos Medina Ruiz', '70000003', 'recepcion@mercado.test', '999111003', 'RECEPCIONISTA', TRUE),
-('bloqueado', 'bloq123', 'Usuario Inactivo Demo', '70000004', 'bloqueado@mercado.test', '999111004', 'ADMIN', FALSE);
+('admin', '$2a$10$1x70xDMVmuQzhjaXpUeHROjpvxyvYLxaf7k0RgyqH8.73qrInEU7O', 'Administrador General', '70000001', 'admin@mercado.test', '999111001', 'ADMIN', TRUE),
+('tesoreria', '$2a$10$uDJ2Djde4NMij33FIWk5GeY8eS2n5wsBzQRB8tMKbCaKwv6i/EpQq', 'Rosa Torres Vega', '70000002', 'tesoreria@mercado.test', '999111002', 'TESORERO', TRUE),
+('recepcion', '$2a$10$zIVIlnpLd9AiBuSCIR03YOtAh8EfxRYNwwHKHRD5Y6OEKU/FYzkLu', 'Carlos Medina Ruiz', '70000003', 'recepcion@mercado.test', '999111003', 'RECEPCIONISTA', TRUE),
+('bloqueado', '$2a$10$QkbQar1oqUwka2p5UM7ySuUsyDSb5WA9wAxyGotSD5JxsMdqjWpX2', 'Usuario Inactivo Demo', '70000004', 'bloqueado@mercado.test', '999111004', 'ADMIN', FALSE);
 
 INSERT INTO socios (dni, ruc, nombre, apellido, telefono, correo, direccion, estado_solvencia, activo) VALUES
 ('40101010', '10401010101', 'Mariana', 'Quispe Rojas', '987111001', 'mariana.quispe@test.com', 'Av. Los Comerciantes 101', FALSE, TRUE),
@@ -109,19 +116,19 @@ INSERT INTO servicios (nombre, nombre_servicio, tipo_cobro, costo_total_externo,
 ('Luz', 'Consumo electrico comun', 'PRORRATEO', 350.00, NULL, TRUE),
 ('Internet', 'Internet administrativo', 'FIJO', NULL, 15.00, FALSE);
 
-INSERT INTO cuotas_pago (id_puesto, id_servicio, mes, anio, monto, estado, fecha_pago, metodo_pago, numero_operacion) VALUES
-(1, 1, 5, 2026, 35.00, 'PAGADO', '2026-05-10 09:30:00', 'EFECTIVO', 'REC-202605-0001'),
-(1, 2, 5, 2026, 70.00, 'PAGADO', '2026-05-10 09:30:00', 'EFECTIVO', 'REC-202605-0002'),
-(1, 3, 6, 2026, 30.00, 'PENDIENTE', NULL, NULL, NULL),
-(2, 1, 6, 2026, 35.00, 'PENDIENTE', NULL, NULL, NULL),
-(2, 4, 6, 2026, 20.00, 'PENDIENTE', NULL, NULL, NULL),
-(3, 1, 6, 2026, 35.00, 'PAGADO', '2026-06-12 14:20:00', 'YAPE_PLIN', 'YP-778899'),
-(3, 2, 6, 2026, 70.00, 'PAGADO', '2026-06-12 14:20:00', 'YAPE_PLIN', 'YP-778900'),
-(5, 1, 6, 2026, 35.00, 'PENDIENTE', NULL, NULL, NULL),
-(5, 5, 6, 2026, 58.33, 'PENDIENTE', NULL, NULL, NULL),
-(6, 1, 6, 2026, 35.00, 'PENDIENTE', NULL, NULL, NULL),
-(8, 4, 6, 2026, 20.00, 'PAGADO', '2026-06-13 08:45:00', 'TRANSFERENCIA', 'TRX-20260613-001'),
-(10, 1, 6, 2026, 35.00, 'PENDIENTE', NULL, NULL, NULL);
+INSERT INTO cuotas_pago (id_puesto, id_servicio, mes, anio, monto, estado, fecha_pago, metodo_pago, numero_operacion, numero_comprobante) VALUES
+(1, 1, 5, 2026, 35.00, 'PAGADO', '2026-05-10 09:30:00', 'EFECTIVO', 'REC-202605-0001', 'CP-202605-000001'),
+(1, 2, 5, 2026, 70.00, 'PAGADO', '2026-05-10 09:30:00', 'EFECTIVO', 'REC-202605-0002', 'CP-202605-000002'),
+(1, 3, 6, 2026, 30.00, 'PENDIENTE', NULL, NULL, NULL, NULL),
+(2, 1, 6, 2026, 35.00, 'PENDIENTE', NULL, NULL, NULL, NULL),
+(2, 4, 6, 2026, 20.00, 'PENDIENTE', NULL, NULL, NULL, NULL),
+(3, 1, 6, 2026, 35.00, 'PAGADO', '2026-06-12 14:20:00', 'YAPE_PLIN', 'YP-778899', 'CP-202606-000006'),
+(3, 2, 6, 2026, 70.00, 'PAGADO', '2026-06-12 14:20:00', 'YAPE_PLIN', 'YP-778900', 'CP-202606-000007'),
+(5, 1, 6, 2026, 35.00, 'PENDIENTE', NULL, NULL, NULL, NULL),
+(5, 5, 6, 2026, 58.33, 'PENDIENTE', NULL, NULL, NULL, NULL),
+(6, 1, 6, 2026, 35.00, 'PENDIENTE', NULL, NULL, NULL, NULL),
+(8, 4, 6, 2026, 20.00, 'PAGADO', '2026-06-13 08:45:00', 'TRANSFERENCIA', 'TRX-20260613-001', 'CP-202606-000011'),
+(10, 1, 6, 2026, 35.00, 'PENDIENTE', NULL, NULL, NULL, NULL);
 
 INSERT INTO transferencias (id_puesto, id_socio_saliente, id_socio_entrante, id_usuario_tramite, costo_transferencia, fecha_tramite, observacion) VALUES
 (10, NULL, 6, 1, 0.00, '2026-06-01 10:00:00', 'Asignacion inicial a la asociacion para pruebas.');

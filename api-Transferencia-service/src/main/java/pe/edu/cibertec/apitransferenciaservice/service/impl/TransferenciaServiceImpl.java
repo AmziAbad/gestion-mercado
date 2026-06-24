@@ -54,11 +54,11 @@ public class TransferenciaServiceImpl implements TransferenciaService {
         PuestoDTO puesto = obtenerPuesto(request.getIdPuesto());
         validarSocioEntrante(request.getIdSocioEntrante());
         validarSocioSaliente(request, puesto);
-        validarDeuda(request);
+        double totalDeuda = validarDeuda(request);
 
-        Transferencia transferencia = transferenciaRepository.saveAndFlush(construirTransferencia(request));
+        Transferencia transferencia = transferenciaRepository.saveAndFlush(construirTransferencia(request, totalDeuda));
         actualizarTitular(request);
-        
+
         // Módulo C -> Módulo A: Verificamos si el socio saliente se quedó sin puestos tras el traspaso
         if (request.getIdSocioSaliente() != null) {
             try {
@@ -68,7 +68,7 @@ public class TransferenciaServiceImpl implements TransferenciaService {
                 System.out.println("No se pudo verificar la actividad del socio saliente: " + e.getMessage());
             }
         }
-        
+
         return transferencia;
     }
 
@@ -119,7 +119,7 @@ public class TransferenciaServiceImpl implements TransferenciaService {
         }
     }
 
-    private void validarDeuda(TransferenciaRequest request) {
+    private double validarDeuda(TransferenciaRequest request) {
         DeudaDTO deuda = pagoClient.obtenerDeudaPorPuesto(request.getIdPuesto());
         double totalDeuda = deuda != null && deuda.getTotalDeuda() != null
                 ? deuda.getTotalDeuda()
@@ -131,9 +131,13 @@ public class TransferenciaServiceImpl implements TransferenciaService {
                     + totalDeuda
                     + ". El nuevo socio debe aceptar asumir la deuda pendiente para realizar el traspaso.");
         }
+
+        return totalDeuda;
     }
 
-    private Transferencia construirTransferencia(TransferenciaRequest request) {
+    private Transferencia construirTransferencia(TransferenciaRequest request, double totalDeuda) {
+        boolean deudaAsumida = totalDeuda > 0 && Boolean.TRUE.equals(request.getAsumeDeuda());
+
         return Transferencia.builder()
                 .idPuesto(request.getIdPuesto())
                 .idSocioSaliente(request.getIdSocioSaliente())
@@ -143,8 +147,12 @@ public class TransferenciaServiceImpl implements TransferenciaService {
                         ? request.getCostoTransferencia()
                         : BigDecimal.ZERO)
                 .fechaTramite(LocalDateTime.now())
+                .asumeDeuda(deudaAsumida)
+                .montoDeudaAsumida(deudaAsumida
+                        ? BigDecimal.valueOf(totalDeuda)
+                        : BigDecimal.ZERO)
                 .observacion("Transferencia realizada"
-                        + (Boolean.TRUE.equals(request.getAsumeDeuda())
+                        + (deudaAsumida
                         ? " asumiendo deuda anterior."
                         : " sin deudas."))
                 .build();

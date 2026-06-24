@@ -3,6 +3,7 @@ package pe.edu.cibertec.apipagosservice.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO;
 import pe.edu.cibertec.apipagosservice.dto.DeudaDTO;
 import pe.edu.cibertec.apipagosservice.dto.PuestoDTO;
 import pe.edu.cibertec.apipagosservice.dto.ServicioDTO;
@@ -73,26 +74,27 @@ public class PagoServiceImpl implements PagoService {
     @Override
     public CuotaPago pagarCuota(Integer id, Map<String, String> pago) {
         return cuotaRepo.findById(id).map(c -> {
-            if (c.getEstado() == EstadoPago.PAGADO || c.getEstado() == EstadoPago.EXONERADO) {
-                throw new RuntimeException("La cuota ya está pagada o exonerada");
+            if (c.getEstado() == EstadoPago.PAGADO
+                    || c.getEstado() == EstadoPago.EXONERADO
+                    || c.getEstado() == EstadoPago.ANULADO) {
+                throw new RuntimeException("La cuota ya está pagada, exonerada o anulada");
             }
-            
-            if (pago == null || pago.get("numeroOperacion") == null || pago.get("numeroOperacion").isBlank()) {
-                throw new RuntimeException("El número de operación (comprobante) es obligatorio para registrar el pago");
-            }
-            
+
             c.setEstado(EstadoPago.PAGADO);
             c.setFechaPago(LocalDateTime.now());
-            
-            String metodo = pago.get("metodoPago");
+
+            String metodo = pago != null ? pago.get("metodoPago") : null;
             if (metodo != null && !metodo.isBlank()) {
                 c.setMetodoPago(MetodoPago.valueOf(metodo));
             } else {
                 c.setMetodoPago(MetodoPago.EFECTIVO);
             }
-            
-            c.setNumeroOperacion(pago.get("numeroOperacion"));
-            
+
+            if (pago != null && pago.get("numeroOperacion") != null && !pago.get("numeroOperacion").isBlank()) {
+                c.setNumeroOperacion(pago.get("numeroOperacion"));
+            }
+            c.setNumeroComprobante(generarNumeroComprobante(c));
+
             return cuotaRepo.save(c);
         }).orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
     }
@@ -152,6 +154,9 @@ public class PagoServiceImpl implements PagoService {
             if (c.getEstado() == EstadoPago.PAGADO) {
                 throw new RuntimeException("No se puede exonerar una cuota que ya está pagada");
             }
+            if (c.getEstado() == EstadoPago.ANULADO) {
+                throw new RuntimeException("No se puede exonerar una cuota anulada");
+            }
             c.setEstado(EstadoPago.EXONERADO);
             c.setMotivoExoneracion(motivo);
             return cuotaRepo.save(c);
@@ -159,8 +164,52 @@ public class PagoServiceImpl implements PagoService {
     }
 
     @Override
+    public CuotaPago anularCuota(Integer id, String motivo) {
+        return cuotaRepo.findById(id).map(c -> {
+            validarCuotaAnulable(c);
+            c.setEstado(EstadoPago.ANULADO);
+            c.setMotivoAnulacion(motivo);
+            c.setFechaAnulacion(LocalDateTime.now());
+            return cuotaRepo.save(c);
+        }).orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
+    }
+
+    @Override
+    @Transactional
+    public CuotaPago anularYReemplazarCuota(Integer id, String motivo, Integer idServicio, Double monto,
+                                            Integer mes, Integer anio) {
+        CuotaPago cuotaOriginal = cuotaRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
+
+        validarCuotaAnulable(cuotaOriginal);
+
+        cuotaOriginal.setEstado(EstadoPago.ANULADO);
+        cuotaOriginal.setMotivoAnulacion(motivo);
+        cuotaOriginal.setFechaAnulacion(LocalDateTime.now());
+
+        CuotaPago cuotaNueva = CuotaPago.builder()
+                .idPuesto(cuotaOriginal.getIdPuesto())
+                .idServicio(idServicio != null ? idServicio : cuotaOriginal.getIdServicio())
+                .monto(monto != null ? monto : cuotaOriginal.getMonto())
+                .mes(mes != null ? mes : cuotaOriginal.getMes())
+                .anio(anio != null ? anio : cuotaOriginal.getAnio())
+                .estado(EstadoPago.PENDIENTE)
+                .idCuotaOrigen(cuotaOriginal.getIdCuota())
+                .build();
+
+        cuotaNueva = cuotaRepo.save(cuotaNueva);
+        cuotaOriginal.setIdCuotaReemplazo(cuotaNueva.getIdCuota());
+        cuotaRepo.save(cuotaOriginal);
+
+        return cuotaNueva;
+    }
+
+    @Override
     public CuotaPago revertirPago(Integer id) {
         return cuotaRepo.findById(id).map(c -> {
+            if (c.getEstado() != EstadoPago.PAGADO) {
+                throw new RuntimeException("Solo se puede revertir una cuota pagada");
+            }
             c.setEstado(EstadoPago.PENDIENTE);
             c.setFechaPago(null);
             c.setMetodoPago(null);
@@ -171,7 +220,7 @@ public class PagoServiceImpl implements PagoService {
     }
 
     @Override
-    public pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO generarComprobante(Integer idCuota) {
+    public ComprobanteDTO generarComprobante(Integer idCuota) {
         CuotaPago cuota = cuotaRepo.findById(idCuota)
                 .orElseThrow(() -> new RuntimeException("Cuota no encontrada"));
 
@@ -179,29 +228,69 @@ public class PagoServiceImpl implements PagoService {
             throw new RuntimeException("No se puede generar comprobante de una cuota que no ha sido pagada");
         }
 
-        // Obtener detalles adicionales usando Feign Clients
-        String nombreServicio = "Servicio ID: " + cuota.getIdServicio();
-        try {
-            // Intentar obtener el nombre real del servicio
-            pe.edu.cibertec.apipagosservice.dto.ServicioDTO serv = servicioClient.getServiciosActivos().stream()
-                    .filter(s -> s.getIdServicio().equals(cuota.getIdServicio()))
-                    .findFirst().orElse(null);
-            if (serv != null) nombreServicio = serv.getNombreServicio();
-        } catch (Exception e) {
-            // Ignorar y usar ID si falla
+        String numeroComprobante = cuota.getNumeroComprobante();
+        if (numeroComprobante == null || numeroComprobante.isBlank()) {
+            numeroComprobante = generarNumeroComprobante(cuota);
         }
 
-        return pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO.builder()
+        String numeroPuesto = null;
+        String estadoPuesto = null;
+        String detallePuesto = "Puesto asociado ID: " + cuota.getIdPuesto();
+        String nombreServicio = null;
+        String detalleServicio = "Servicio ID: " + cuota.getIdServicio();
+
+        try {
+            PuestoDTO puesto = puestoClient.getPuestoById(cuota.getIdPuesto());
+            if (puesto != null) {
+                numeroPuesto = puesto.getNumeroPuesto();
+                estadoPuesto = puesto.getEstadoPuesto();
+                detallePuesto = "Puesto " + numeroPuesto + " (" + estadoPuesto + ")";
+            }
+        } catch (Exception e) {
+            // Se mantiene el detalle por ID si el microservicio de puestos no responde.
+        }
+
+        try {
+            ServicioDTO servicio = servicioClient.getServicioById(cuota.getIdServicio());
+            if (servicio != null) {
+                nombreServicio = servicio.getNombreServicio();
+                detalleServicio = nombreServicio;
+            }
+        } catch (Exception e) {
+            // Se mantiene el detalle por ID si el microservicio de servicios no responde.
+        }
+
+        return ComprobanteDTO.builder()
                 .titulo("COMPROBANTE DE PAGO - ASOCIACIÓN DE COMERCIANTES")
                 .idCuota(cuota.getIdCuota())
                 .numeroOperacion(cuota.getNumeroOperacion())
+                .numeroComprobante(numeroComprobante)
                 .fechaEmision(cuota.getFechaPago())
                 .montoPagado(cuota.getMonto())
                 .metodoPago(cuota.getMetodoPago())
-                .detallePuesto("Puesto asociado ID: " + cuota.getIdPuesto())
-                .detalleServicio(nombreServicio)
+                .idPuesto(cuota.getIdPuesto())
+                .numeroPuesto(numeroPuesto)
+                .estadoPuesto(estadoPuesto)
+                .idServicio(cuota.getIdServicio())
+                .nombreServicio(nombreServicio)
+                .detallePuesto(detallePuesto)
+                .detalleServicio(detalleServicio)
                 .periodo(cuota.getMes() + "/" + cuota.getAnio())
                 .mensaje("¡Gracias por su pago puntual!")
                 .build();
+    }
+
+    private void validarCuotaAnulable(CuotaPago cuota) {
+        if (cuota.getEstado() == EstadoPago.PAGADO) {
+            throw new RuntimeException("No se puede anular una cuota pagada. Primero revierta el pago.");
+        }
+        if (cuota.getEstado() == EstadoPago.ANULADO) {
+            throw new RuntimeException("La cuota ya se encuentra anulada");
+        }
+    }
+
+    private String generarNumeroComprobante(CuotaPago cuota) {
+        return "CP-" + cuota.getAnio() + String.format("%02d", cuota.getMes())
+                + "-" + String.format("%06d", cuota.getIdCuota());
     }
 }

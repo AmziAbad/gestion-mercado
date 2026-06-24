@@ -10,6 +10,5 @@ public class TransferenciaRequest {
     private Integer idSocioEntrante;
     private Integer idUsuarioTramite;
     private BigDecimal costoTransferencia;
-    // Este campo es solo para validación en la lógica (no va a la BD)
     private Boolean asumeDeuda;
 }

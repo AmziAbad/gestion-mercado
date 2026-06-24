@@ -38,7 +38,13 @@ public class Transferencia {
 
     @Column(name = "fecha_tramite")
     private LocalDateTime fechaTramite;
-    
+
+    @Column(name = "asume_deuda")
+    private Boolean asumeDeuda;
+
+    @Column(name = "monto_deuda_asumida")
+    private BigDecimal montoDeudaAsumida;
+
     @Column(name = "observacion")
     private String observacion;
 }

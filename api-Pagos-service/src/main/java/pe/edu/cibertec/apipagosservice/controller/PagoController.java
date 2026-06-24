@@ -2,6 +2,7 @@ package pe.edu.cibertec.apipagosservice.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO;
 import pe.edu.cibertec.apipagosservice.dto.DeudaDTO;
 import pe.edu.cibertec.apipagosservice.entity.CuotaPago;
 import pe.edu.cibertec.apipagosservice.service.PagoService;
@@ -78,13 +79,46 @@ public class PagoController {
         return pagoService.exonerarCuota(id, motivo);
     }
 
+    @PutMapping("/cuotas/{id}/anular")
+    public CuotaPago anularCuota(@PathVariable Integer id, @RequestBody Map<String, String> body) {
+        String motivo = body.get("motivo");
+        if (motivo == null || motivo.isBlank()) {
+            throw new RuntimeException("El motivo de anulación es obligatorio");
+        }
+        return pagoService.anularCuota(id, motivo);
+    }
+
+    @PostMapping("/cuotas/{id}/anular-y-reemplazar")
+    public CuotaPago anularYReemplazarCuota(@PathVariable Integer id,
+                                            @RequestBody Map<String, Object> body) {
+        String motivo = body.get("motivo") != null ? body.get("motivo").toString() : null;
+        if (motivo == null || motivo.isBlank()) {
+            throw new RuntimeException("El motivo de anulación es obligatorio");
+        }
+
+        Integer idServicio = toInteger(body.get("idServicio"));
+        Double monto = toDouble(body.get("monto"));
+        Integer mes = toInteger(body.get("mes"));
+        Integer anio = toInteger(body.get("anio"));
+
+        return pagoService.anularYReemplazarCuota(id, motivo, idServicio, monto, mes, anio);
+    }
+
     @PutMapping("/cuotas/{id}/revertir-pago")
     public CuotaPago revertirPago(@PathVariable Integer id) {
         return pagoService.revertirPago(id);
     }
 
     @GetMapping("/cuotas/{id}/comprobante")
-    public pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO generarComprobante(@PathVariable Integer id) {
+    public ComprobanteDTO generarComprobante(@PathVariable Integer id) {
         return pagoService.generarComprobante(id);
+    }
+
+    private Integer toInteger(Object value) {
+        return value != null ? Integer.valueOf(value.toString()) : null;
+    }
+
+    private Double toDouble(Object value) {
+        return value != null ? Double.valueOf(value.toString()) : null;
     }
 }

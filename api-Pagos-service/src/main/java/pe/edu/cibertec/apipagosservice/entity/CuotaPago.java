@@ -35,7 +35,22 @@ public class CuotaPago {
     @Column(name = "numero_operacion")
     private String numeroOperacion;
 
+    @Column(name = "numero_comprobante")
+    private String numeroComprobante;
+
     @Column(name = "motivo_exoneracion")
     private String motivoExoneracion;
+
+    @Column(name = "motivo_anulacion")
+    private String motivoAnulacion;
+
+    @Column(name = "fecha_anulacion")
+    private LocalDateTime fechaAnulacion;
+
+    @Column(name = "id_cuota_origen")
+    private Integer idCuotaOrigen;
+
+    @Column(name = "id_cuota_reemplazo")
+    private Integer idCuotaReemplazo;
 
 }

@@ -1,5 +1,5 @@
 package pe.edu.cibertec.apipagosservice.entity;
 
 public enum EstadoPago {
-    PENDIENTE, PAGADO, EXONERADO
+    PENDIENTE, PAGADO, EXONERADO, ANULADO
 }

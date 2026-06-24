@@ -1,5 +1,6 @@
 package pe.edu.cibertec.apipagosservice.service;
 
+import pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO;
 import pe.edu.cibertec.apipagosservice.dto.DeudaDTO;
 import pe.edu.cibertec.apipagosservice.entity.CuotaPago;
 
@@ -25,7 +26,11 @@ public interface PagoService {
 
     CuotaPago exonerarCuota(Integer id, String motivo);
 
+    CuotaPago anularCuota(Integer id, String motivo);
+
+    CuotaPago anularYReemplazarCuota(Integer id, String motivo, Integer idServicio, Double monto, Integer mes, Integer anio);
+
     CuotaPago revertirPago(Integer id);
 
-    pe.edu.cibertec.apipagosservice.dto.ComprobanteDTO generarComprobante(Integer idCuota);
+    ComprobanteDTO generarComprobante(Integer idCuota);
 }

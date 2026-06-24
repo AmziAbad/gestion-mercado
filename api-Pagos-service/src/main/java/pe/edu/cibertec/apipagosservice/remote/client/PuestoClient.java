@@ -12,6 +12,9 @@ public interface PuestoClient {
     @GetMapping("/puestos/ocupados")
     List<PuestoDTO> getPuestosOcupados();
 
+    @GetMapping("/api/v1/puestos/{id}")
+    PuestoDTO getPuestoById(@PathVariable("id") Integer id);
+
     @GetMapping("/puestos/socio/{idSocio}")
     List<PuestoDTO> getPuestosPorSocio(@PathVariable Integer idSocio);
 }
