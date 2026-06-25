@@ -1,0 +1,32 @@
+{
+  "/api-UsuarioLogin-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/api-Socio-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/api-Puesto-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/api-Servicio-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/api-Pagos-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/api-Transferencia-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

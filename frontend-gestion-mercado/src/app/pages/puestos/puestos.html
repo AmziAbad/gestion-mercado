@@ -1,0 +1,174 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h2>Puestos</h2>
+      <p>Control de unidades fisicas, estado operativo y titular actual.</p>
+    </div>
+    <div class="actions">
+      <input class="inline-input" type="text" placeholder="Pabellon" [(ngModel)]="pabellonFiltro" />
+      <button class="button button-outline" type="button" (click)="filtrarPabellon()">
+        Filtrar pabellon
+      </button>
+      <button class="button" type="button" (click)="prepararNuevo()">Nuevo puesto</button>
+    </div>
+  </header>
+
+  @if (mensaje() || error()) {
+    <section class="panel">
+      <div class="panel-body">
+        <span class="status" [class.status-ok]="mensaje()" [class.status-danger]="error()">
+          {{ mensaje() || error() }}
+        </span>
+      </div>
+    </section>
+  }
+
+  <section class="stats-grid">
+    <article class="metric">
+      <span>Total</span>
+      <strong>{{ total() }}</strong>
+      <small>Puestos registrados</small>
+    </article>
+    <article class="metric">
+      <span>Ocupados</span>
+      <strong>{{ ocupados() }}</strong>
+      <small>Con socio titular</small>
+    </article>
+    <article class="metric">
+      <span>Asociacion</span>
+      <strong>{{ asociacion() }}</strong>
+      <small>Sin titular externo</small>
+    </article>
+    <article class="metric">
+      <span>Mantenimiento</span>
+      <strong>{{ mantenimiento() }}</strong>
+      <small>Incidencias operativas</small>
+    </article>
+  </section>
+
+  @if (modalAbierto()) {
+    <div class="modal-backdrop">
+      <form class="modal" (ngSubmit)="guardar()">
+        <div class="panel-head">
+          <div>
+            <h3>{{ puestoForm.idPuesto ? 'Editar puesto' : 'Registrar puesto' }}</h3>
+            <p>Datos de la unidad fisica del mercado.</p>
+          </div>
+          <button class="button button-outline" type="button" (click)="cerrarModal()">
+            Cerrar
+          </button>
+        </div>
+        <div class="panel-body form-grid">
+          <label class="field">
+            <span class="label">Codigo</span>
+            <input type="text" name="numeroPuesto" required [(ngModel)]="puestoForm.numeroPuesto" />
+          </label>
+          <label class="field">
+            <span class="label">Pabellon</span>
+            <input type="text" name="pabellon" required [(ngModel)]="puestoForm.pabellon" />
+          </label>
+          <label class="field">
+            <span class="label">Medidas</span>
+            <input type="text" name="medidas" [(ngModel)]="puestoForm.medidas" />
+          </label>
+          <label class="field">
+            <span class="label">Precio</span>
+            <input
+              type="number"
+              name="precio"
+              min="0"
+              step="0.01"
+              [(ngModel)]="puestoForm.precio"
+            />
+          </label>
+          <label class="field">
+            <span class="label">Estado</span>
+            <select name="estadoPuesto" [(ngModel)]="puestoForm.estadoPuesto">
+              <option value="VACANTE">Vacante</option>
+              <option value="OCUPADO">Ocupado</option>
+              <option value="MANTENIMIENTO">Mantenimiento</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="label">ID socio actual</span>
+            <input
+              type="number"
+              name="idSocioActual"
+              min="1"
+              placeholder="Vacio usa Asociacion"
+              [(ngModel)]="puestoForm.idSocioActual"
+            />
+          </label>
+          <div class="modal-actions">
+            <button class="button button-outline" type="button" (click)="cerrarModal()">
+              Cancelar
+            </button>
+            <button class="button" type="submit" [disabled]="procesando()">Guardar puesto</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  }
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Listado de puestos</h3>
+        <p>Cambio de titularidad disponible desde transferencias.</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Pabellon</th>
+            <th>Medidas</th>
+            <th>Socio actual</th>
+            <th>Estado</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (puesto of puestos(); track puesto.idPuesto) {
+            <tr>
+              <td>{{ puesto.numeroPuesto }}</td>
+              <td>{{ puesto.pabellon }}</td>
+              <td>{{ puesto.medidas || 'Sin medidas' }}</td>
+              <td>{{ puesto.idSocioActual || 'Asociacion' }}</td>
+              <td>
+                <span
+                  class="status"
+                  [class.status-ok]="puesto.estadoPuesto === 'OCUPADO'"
+                  [class.status-warn]="puesto.estadoPuesto === 'MANTENIMIENTO'"
+                  [class.status-muted]="puesto.estadoPuesto === 'VACANTE'"
+                >
+                  {{ puesto.estadoPuesto }}
+                </span>
+              </td>
+              <td>
+                <button class="button button-outline" type="button" (click)="editar(puesto)">
+                  Editar
+                </button>
+                <button
+                  class="button button-outline"
+                  type="button"
+                  [disabled]="procesando()"
+                  (click)="eliminar(puesto)"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6">
+                {{ cargando() ? 'Cargando puestos...' : error() || 'No hay puestos.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

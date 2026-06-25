@@ -1,0 +1,145 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h2>Socios</h2>
+      <p>Registro de titulares, busqueda por DNI y resumen de deuda asociada.</p>
+    </div>
+    <div class="actions">
+      <input
+        class="inline-input"
+        type="text"
+        placeholder="DNI"
+        maxlength="8"
+        [(ngModel)]="dniBusqueda"
+      />
+      <button class="button button-outline" type="button" (click)="buscarDni()">Buscar DNI</button>
+      <button class="button" type="button" (click)="prepararNuevo()">Nuevo socio</button>
+    </div>
+  </header>
+
+  @if (mensaje() || error()) {
+    <section class="panel">
+      <div class="panel-body">
+        <span class="status" [class.status-ok]="mensaje()" [class.status-danger]="error()">
+          {{ mensaje() || error() }}
+        </span>
+      </div>
+    </section>
+  }
+
+  @if (modalAbierto()) {
+    <div class="modal-backdrop">
+      <form class="modal" (ngSubmit)="guardar()">
+        <div class="panel-head">
+          <div>
+            <h3>{{ socioForm.idSocio ? 'Editar socio' : 'Registrar socio' }}</h3>
+            <p>Datos del titular o comerciante asociado a puestos.</p>
+          </div>
+          <button class="button button-outline" type="button" (click)="cerrarModal()">
+            Cerrar
+          </button>
+        </div>
+        <div class="panel-body form-grid">
+          <label class="field">
+            <span class="label">DNI</span>
+            <input type="text" name="dni" maxlength="8" required [(ngModel)]="socioForm.dni" />
+          </label>
+          <label class="field">
+            <span class="label">Nombre</span>
+            <input type="text" name="nombre" required [(ngModel)]="socioForm.nombre" />
+          </label>
+          <label class="field">
+            <span class="label">Apellido</span>
+            <input type="text" name="apellido" required [(ngModel)]="socioForm.apellido" />
+          </label>
+          <label class="field">
+            <span class="label">Telefono</span>
+            <input type="text" name="telefono" [(ngModel)]="socioForm.telefono" />
+          </label>
+          <label class="field">
+            <span class="label">Correo</span>
+            <input type="email" name="correo" [(ngModel)]="socioForm.correo" />
+          </label>
+          <label class="field">
+            <span class="label">Direccion</span>
+            <input type="text" name="direccion" [(ngModel)]="socioForm.direccion" />
+          </label>
+          <label class="field">
+            <span class="label">Estado</span>
+            <select name="activo" [(ngModel)]="socioForm.activo">
+              <option [ngValue]="true">Activo</option>
+              <option [ngValue]="false">Inactivo</option>
+            </select>
+          </label>
+          <div class="modal-actions">
+            <button class="button button-outline" type="button" (click)="cerrarModal()">
+              Cancelar
+            </button>
+            <button class="button" type="submit" [disabled]="procesando()">Guardar socio</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  }
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Padron de socios</h3>
+        <p>Datos cargados desde api-Socio-service.</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>DNI</th>
+            <th>Socio</th>
+            <th>Telefono</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (socio of socios(); track socio.idSocio) {
+            <tr>
+              <td>{{ socio.dni }}</td>
+              <td>{{ socio.nombre }} {{ socio.apellido }}</td>
+              <td>{{ socio.telefono || 'Sin telefono' }}</td>
+              <td>{{ socio.correo || 'Sin correo' }}</td>
+              <td>
+                <span
+                  class="status"
+                  [class.status-ok]="socio.activo && !socio.esAsociacion"
+                  [class.status-muted]="socio.esAsociacion || !socio.activo"
+                >
+                  {{ socio.esAsociacion ? 'Asociacion' : socio.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button class="button button-outline" type="button" (click)="editar(socio)">
+                  Editar
+                </button>
+                <button
+                  class="button button-outline"
+                  type="button"
+                  [disabled]="socio.esAsociacion || procesando()"
+                  (click)="eliminar(socio)"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6">
+                {{ cargando() ? 'Cargando socios...' : error() || 'No hay socios.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

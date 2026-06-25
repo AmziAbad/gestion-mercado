@@ -1,0 +1,25 @@
+<main class="login-screen">
+  <section class="login-panel">
+    <h1>Inicio de Sesion</h1>
+    <p>Asociacion de Mercado</p>
+
+    <form class="login-form" (ngSubmit)="ingresar()">
+      <label class="field">
+        <span class="label">Usuario:</span>
+        <input type="text" name="username" [(ngModel)]="username" aria-label="Usuario" />
+      </label>
+      <label class="field">
+        <span class="label">Contrasena:</span>
+        <input type="password" name="password" [(ngModel)]="password" aria-label="Contrasena" />
+      </label>
+
+      @if (error()) {
+        <div class="alert-error">{{ error() }}</div>
+      }
+
+      <button class="button" type="submit" [disabled]="cargando()">
+        {{ cargando() ? 'Ingresando...' : 'Ingresar al Sistema' }}
+      </button>
+    </form>
+  </section>
+</main>

@@ -1,0 +1,276 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h2>Cobranzas y pagos</h2>
+      <p>Generacion de cuotas, consulta de deuda y registro manual de pagos.</p>
+    </div>
+    <div class="actions">
+      <button class="button button-outline" type="button" (click)="cargarCuotas()">
+        Actualizar cuotas
+      </button>
+      <button class="button button-outline" type="button" (click)="abrirModalGenerar()">
+        Generar cuotas
+      </button>
+      <button class="button" type="button" [disabled]="procesando()" (click)="abrirModalPago()">
+        Registrar pago
+      </button>
+    </div>
+  </header>
+
+  @if (mensaje() || error()) {
+    <section class="panel">
+      <div class="panel-body">
+        <span class="status" [class.status-ok]="mensaje()" [class.status-danger]="error()">
+          {{ mensaje() || error() }}
+        </span>
+      </div>
+    </section>
+  }
+
+  @if (modalActivo() === 'generar') {
+    <div class="modal-backdrop">
+      <form class="modal" (ngSubmit)="generarCuotas()">
+        <div class="panel-head">
+          <div>
+            <h3>Generar cuotas</h3>
+            <p>Generacion general para puestos ocupados por periodo.</p>
+          </div>
+          <button class="button button-outline" type="button" (click)="cerrarModal()">
+            Cerrar
+          </button>
+        </div>
+        <div class="panel-body form-grid">
+          <label class="field">
+            <span class="label">Mes</span>
+            <input
+              type="number"
+              name="mesGeneracion"
+              min="1"
+              max="12"
+              required
+              [(ngModel)]="mesGeneracion"
+            />
+          </label>
+          <label class="field">
+            <span class="label">Anio</span>
+            <input
+              type="number"
+              name="anioGeneracion"
+              min="2024"
+              required
+              [(ngModel)]="anioGeneracion"
+            />
+          </label>
+          <div class="modal-actions">
+            <button class="button button-outline" type="button" (click)="cerrarModal()">
+              Cancelar
+            </button>
+            <button class="button" type="submit" [disabled]="procesando()">Generar cuotas</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (modalActivo() === 'pago') {
+    <div class="modal-backdrop">
+      <form class="modal" (ngSubmit)="registrarPago()">
+        <div class="panel-head">
+          <div>
+            <h3>Registrar pago</h3>
+            <p>Pago total de una cuota pendiente.</p>
+          </div>
+          <button class="button button-outline" type="button" (click)="cerrarModal()">
+            Cerrar
+          </button>
+        </div>
+        <div class="panel-body form-grid">
+          <label class="field">
+            <span class="label">Cuota pendiente</span>
+            <select name="idCuotaSeleccionada" required [(ngModel)]="idCuotaSeleccionada">
+              @for (cuota of pendientes(); track cuota.idCuota) {
+                <option [ngValue]="cuota.idCuota">
+                  CP-{{ cuota.idCuota }} | Puesto {{ cuota.idPuesto }} |
+                  {{ formatoMoneda(cuota.monto) }}
+                </option>
+              }
+            </select>
+          </label>
+          <label class="field">
+            <span class="label">Metodo de pago</span>
+            <select name="metodoPago" required [(ngModel)]="metodoPago">
+              <option value="EFECTIVO">Efectivo</option>
+              <option value="TRANSFERENCIA">Transferencia</option>
+              <option value="YAPE_PLIN">Yape / Plin</option>
+              <option value="TARJETA">Tarjeta</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="label">Numero de operacion</span>
+            <input
+              type="text"
+              name="numeroOperacion"
+              placeholder="Opcional para efectivo"
+              [(ngModel)]="numeroOperacion"
+            />
+          </label>
+          <div class="modal-actions">
+            <button class="button button-outline" type="button" (click)="cerrarModal()">
+              Cancelar
+            </button>
+            <button class="button" type="submit" [disabled]="procesando() || !pendientes().length">
+              Registrar pago
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (modalActivo() === 'comprobante' && comprobante()) {
+    <div class="modal-backdrop">
+      <article class="modal">
+        <div class="panel-head">
+          <div>
+            <h3>{{ comprobante()?.titulo || 'Comprobante de pago' }}</h3>
+            <p>{{ comprobante()?.mensaje || 'Detalle del pago registrado.' }}</p>
+          </div>
+          <button class="button button-outline" type="button" (click)="cerrarModal()">
+            Cerrar
+          </button>
+        </div>
+        <div class="panel-body list">
+          <div class="list-item">
+            <span>Numero</span>
+            <strong>{{ comprobante()?.numeroComprobante }}</strong>
+          </div>
+          <div class="list-item">
+            <span>Operacion</span>
+            <strong>{{ comprobante()?.numeroOperacion || 'Sin operacion' }}</strong>
+          </div>
+          <div class="list-item">
+            <span>Puesto</span>
+            <strong>{{ comprobante()?.numeroPuesto || comprobante()?.idPuesto }}</strong>
+          </div>
+          <div class="list-item">
+            <span>Servicio</span>
+            <strong>{{ comprobante()?.nombreServicio || comprobante()?.idServicio }}</strong>
+          </div>
+          <div class="list-item">
+            <span>Periodo</span>
+            <strong>{{ comprobante()?.periodo || 'Sin periodo' }}</strong>
+          </div>
+          <div class="list-item">
+            <span>Metodo</span>
+            <strong>{{ comprobante()?.metodoPago || 'Sin metodo' }}</strong>
+          </div>
+          <div class="list-item">
+            <span>Monto pagado</span>
+            <strong class="amount">{{ formatoMoneda(comprobante()?.montoPagado) }}</strong>
+          </div>
+        </div>
+      </article>
+    </div>
+  }
+
+  <section class="grid-two">
+    <article class="panel">
+      <div class="panel-head">
+        <div>
+          <h3>Resumen de cobranzas</h3>
+          <p>Estado general de cuotas cargadas en el sistema.</p>
+        </div>
+      </div>
+      <div class="panel-body list">
+        <div class="list-item">
+          <span>Cuotas pendientes</span>
+          <strong>{{ pendientes().length }}</strong>
+        </div>
+        <div class="list-item">
+          <span>Total pendiente</span>
+          <strong>{{ formatoMoneda(totalPendiente()) }}</strong>
+        </div>
+        <div class="list-item">
+          <span>Cuotas cargadas</span>
+          <strong class="amount">{{ cuotas().length }}</strong>
+        </div>
+        <div class="list-item">
+          <span>Cuotas pagadas</span>
+          <strong class="amount">{{ pagadas().length }}</strong>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h3>Cuotas pendientes</h3>
+        <p>Pagos totales, sin pagos parciales ni pasarela externa.</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Cuota</th>
+            <th>Puesto</th>
+            <th>Socio</th>
+            <th>Concepto</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cuota of cuotas(); track cuota.idCuota) {
+            <tr>
+              <td>{{ cuota.numeroComprobante || 'CP-' + cuota.idCuota }}</td>
+              <td>{{ cuota.idPuesto }}</td>
+              <td>Socio por puesto</td>
+              <td>{{ cuota.idServicio }}</td>
+              <td>{{ formatoMoneda(cuota.monto) }}</td>
+              <td>
+                <span
+                  class="status"
+                  [class.status-ok]="cuota.estado === 'PAGADO'"
+                  [class.status-warn]="cuota.estado === 'PENDIENTE'"
+                  [class.status-muted]="cuota.estado === 'EXONERADO'"
+                  [class.status-danger]="cuota.estado === 'ANULADO'"
+                >
+                  {{ cuota.estado }}
+                </span>
+              </td>
+              <td>
+                @if (cuota.estado === 'PENDIENTE') {
+                  <button
+                    class="button button-outline"
+                    type="button"
+                    (click)="abrirModalPago(cuota.idCuota)"
+                  >
+                    Pagar
+                  </button>
+                }
+                @if (cuota.estado === 'PAGADO') {
+                  <button
+                    class="button button-outline"
+                    type="button"
+                    (click)="verComprobante(cuota.idCuota)"
+                  >
+                    Comprobante
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7">
+                {{ cargando() ? 'Cargando cuotas...' : error() || 'No hay cuotas registradas.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
