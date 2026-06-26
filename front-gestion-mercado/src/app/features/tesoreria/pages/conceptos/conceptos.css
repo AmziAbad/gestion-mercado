@@ -1,0 +1,9 @@
+.concepto-description {
+  grid-column: span 2;
+}
+
+@media (max-width: 980px) {
+  .concepto-description {
+    grid-column: span 1;
+  }
+}

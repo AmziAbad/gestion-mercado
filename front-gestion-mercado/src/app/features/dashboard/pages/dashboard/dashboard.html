@@ -1,0 +1,70 @@
+<div class="page">
+  <app-page-header
+    title="Panel general"
+    subtitle="Vista operativa del saneamiento financiero y la gobernanza patrimonial."
+  >
+    <button class="button button--secondary" type="button" (click)="load()" [disabled]="loading()">
+      Actualizar
+    </button>
+  </app-page-header>
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+
+  <section class="dashboard-grid">
+    <app-summary-card
+      label="Socios registrados"
+      [value]="summary().socios"
+      helper="Padron administrativo"
+    />
+    <app-summary-card
+      label="Puestos registrados"
+      [value]="summary().puestos"
+      helper="Unidades fisicas"
+    />
+    <app-summary-card
+      label="Contratos activos"
+      [value]="summary().contratosActivos"
+      helper="Ocupacion vigente"
+    />
+    <app-summary-card
+      label="Cuotas pendientes"
+      [value]="summary().cuotasPendientes"
+      helper="Deuda por cobrar"
+    />
+    <app-summary-card
+      label="Transferencias"
+      [value]="summary().transferencias"
+      helper="Traspasos registrados"
+    />
+    <app-summary-card
+      label="Eventos de auditoria"
+      [value]="summary().eventosAuditoria"
+      helper="Trazabilidad"
+    />
+  </section>
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Flujos cubiertos</h2>
+        <p class="panel__subtitle">Accesos principales alineados a los casos de uso del backend.</p>
+      </div>
+    </div>
+    <div class="panel__body dashboard-flow">
+      <article>
+        <strong>Patrimonio</strong>
+        <span>Socios, puestos, contratos, saneamiento y transferencias.</span>
+      </article>
+      <article>
+        <strong>Tesoreria</strong>
+        <span>Conceptos, cuotas, caja, pagos, comprobantes, anulaciones y extornos.</span>
+      </article>
+      <article>
+        <strong>Auditoria y reportes</strong>
+        <span>Eventos, anulaciones, padron de habiles, morosidad y flujo de caja.</span>
+      </article>
+    </div>
+  </section>
+</div>

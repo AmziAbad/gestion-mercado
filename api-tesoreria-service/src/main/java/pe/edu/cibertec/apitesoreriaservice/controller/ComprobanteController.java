@@ -9,7 +9,7 @@ import pe.edu.cibertec.apitesoreriaservice.dto.ComprobanteResponse;
 import pe.edu.cibertec.apitesoreriaservice.service.TesoreriaService;
 
 @RestController
-@RequestMapping("/api/v1/comprobantes")
+@RequestMapping("/comprobantes")
 public class ComprobanteController {
 
     private final TesoreriaService tesoreriaService;

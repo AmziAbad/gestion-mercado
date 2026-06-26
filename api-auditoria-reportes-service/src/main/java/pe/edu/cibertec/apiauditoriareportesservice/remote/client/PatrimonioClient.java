@@ -9,6 +9,6 @@ import java.util.List;
 @FeignClient(name = "api-patrimonio-service")
 public interface PatrimonioClient {
 
-    @GetMapping("/api/v1/socios/activos-con-contrato")
+    @GetMapping("/socios/activos-con-contrato")
     List<SocioRemoteResponse> listarSociosActivosConContrato();
 }

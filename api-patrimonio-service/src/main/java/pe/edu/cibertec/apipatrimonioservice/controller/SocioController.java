@@ -17,7 +17,7 @@ import pe.edu.cibertec.apipatrimonioservice.service.PatrimonioService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/socios")
+@RequestMapping("/socios")
 public class SocioController {
 
     private final PatrimonioService patrimonioService;

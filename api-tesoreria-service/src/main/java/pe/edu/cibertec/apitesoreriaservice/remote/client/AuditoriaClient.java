@@ -9,9 +9,9 @@ import pe.edu.cibertec.apitesoreriaservice.remote.dto.AuditoriaEventoRequest;
 @FeignClient(name = "api-auditoria-reportes-service")
 public interface AuditoriaClient {
 
-    @PostMapping("/api/v1/auditoria/eventos")
+    @PostMapping("/auditoria/eventos")
     void registrarEvento(@RequestBody AuditoriaEventoRequest request);
 
-    @PostMapping("/api/v1/auditoria/anulaciones")
+    @PostMapping("/auditoria/anulaciones")
     void registrarAnulacion(@RequestBody AuditoriaAnulacionRequest request);
 }

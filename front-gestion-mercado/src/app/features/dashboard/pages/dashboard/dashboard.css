@@ -1,0 +1,30 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.dashboard-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.dashboard-flow article {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.dashboard-flow span {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 980px) {
+  .dashboard-grid,
+  .dashboard-flow {
+    grid-template-columns: 1fr;
+  }
+}

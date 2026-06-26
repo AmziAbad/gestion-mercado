@@ -15,13 +15,13 @@ import java.util.List;
 @FeignClient(name = "api-tesoreria-service")
 public interface TesoreriaClient {
 
-    @GetMapping("/api/v1/estados-cuenta/socio/{idSocio}")
+    @GetMapping("/estados-cuenta/socio/{idSocio}")
     EstadoCuentaRemoteResponse estadoCuentaPorSocio(@PathVariable Integer idSocio);
 
-    @GetMapping("/api/v1/reportes/morosidad/datos")
+    @GetMapping("/reportes/morosidad/datos")
     List<DeudaPendienteRemoteResponse> morosidad();
 
-    @GetMapping("/api/v1/reportes/flujo-caja-diario/datos")
+    @GetMapping("/reportes/flujo-caja-diario/datos")
     List<FlujoCajaRemoteResponse> flujoCaja(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha
     );

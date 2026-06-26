@@ -1,0 +1,68 @@
+<div class="page">
+  <app-page-header
+    title="Eventos de auditoria"
+    subtitle="Bitacora central de cambios relevantes."
+  />
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="message message--success">{{ message() }}</div>
+  }
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Registrar evento manual</h2>
+        <p class="panel__subtitle">La mayoria de eventos se generan desde los microservicios.</p>
+      </div>
+    </div>
+    <form class="panel__body form-grid" (ngSubmit)="registrar()">
+      <label class="field">
+        <span>Modulo</span>
+        <input name="modulo" [(ngModel)]="form.modulo" required />
+      </label>
+      <label class="field">
+        <span>Tipo evento</span>
+        <input name="tipoEvento" [(ngModel)]="form.tipoEvento" required />
+      </label>
+      <label class="field">
+        <span>Entidad afectada</span>
+        <input name="entidadAfectada" [(ngModel)]="form.entidadAfectada" required />
+      </label>
+      <label class="field">
+        <span>ID registro</span>
+        <input
+          name="idRegistroAfectado"
+          type="number"
+          [(ngModel)]="form.idRegistroAfectado"
+          required
+        />
+      </label>
+      <label class="field">
+        <span>ID usuario</span>
+        <input name="idUsuario" type="number" [(ngModel)]="form.idUsuario" required />
+      </label>
+      <label class="field evento-description">
+        <span>Descripcion</span>
+        <input name="descripcion" [(ngModel)]="form.descripcion" required />
+      </label>
+      <div class="actions">
+        <button class="button button--primary" type="submit">Registrar</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Eventos registrados</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : eventos().length + ' registros' }}
+        </p>
+      </div>
+    </div>
+    <app-data-table [columns]="columns" [rows]="eventos()" />
+  </section>
+</div>

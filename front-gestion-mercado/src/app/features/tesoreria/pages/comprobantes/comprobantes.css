@@ -1,0 +1,24 @@
+.comprobante-search {
+  display: grid;
+  grid-template-columns: 220px minmax(180px, 1fr) auto;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+.comprobante-card {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.comprobante-card strong {
+  grid-column: 1 / -1;
+  font-size: var(--font-size-xl);
+}
+
+@media (max-width: 760px) {
+  .comprobante-search,
+  .comprobante-card {
+    grid-template-columns: 1fr;
+  }
+}

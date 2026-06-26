@@ -1,0 +1,47 @@
+@if (rows.length > 0) {
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          @for (column of columns; track column.key) {
+            <th>{{ column.label }}</th>
+          }
+          @if (actions.length > 0) {
+            <th class="table-actions">Acciones</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows; track $index) {
+          <tr>
+            @for (column of columns; track column.key) {
+              <td>
+                @if (column.type === 'status') {
+                  <app-status-badge [value]="display(row, column)" />
+                } @else {
+                  {{ display(row, column) }}
+                }
+              </td>
+            }
+            @if (actions.length > 0) {
+              <td class="table-actions">
+                @for (action of actions; track action.id) {
+                  <button
+                    class="table-action"
+                    [class.table-action--danger]="action.tone === 'danger'"
+                    type="button"
+                    (click)="emitAction(action, row)"
+                  >
+                    {{ action.label }}
+                  </button>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <div class="table-empty">{{ emptyMessage }}</div>
+}

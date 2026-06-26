@@ -1,0 +1,87 @@
+<div class="page">
+  <app-page-header title="Pagos" subtitle="Registro manual, comprobante y extorno de pagos." />
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="message message--success">{{ message() }}</div>
+  }
+
+  <section class="grid grid--2">
+    <form class="panel" (ngSubmit)="registrar()">
+      <div class="panel__header">
+        <div>
+          <h2 class="panel__title">Registrar pago</h2>
+          <p class="panel__subtitle">Exige turno abierto y pago total de la cuota.</p>
+        </div>
+      </div>
+      <div class="panel__body form-grid form-grid--compact">
+        <label class="field">
+          <span>ID cuota</span>
+          <input name="idCuotaPago" type="number" [(ngModel)]="pagoRequest.idCuota" required />
+        </label>
+        <label class="field">
+          <span>Metodo</span>
+          <select name="metodoPago" [(ngModel)]="pagoRequest.metodoPago">
+            <option value="EFECTIVO">EFECTIVO</option>
+            <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+            <option value="YAPE_PLIN">YAPE/PLIN</option>
+            <option value="TARJETA">TARJETA</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Nro. operacion</span>
+          <input name="numeroOperacion" [(ngModel)]="pagoRequest.numeroOperacion" />
+        </label>
+        <div class="actions">
+          <button class="button button--primary" type="submit">Registrar pago</button>
+        </div>
+      </div>
+    </form>
+
+    <form class="panel" (ngSubmit)="buscar()">
+      <div class="panel__header">
+        <div>
+          <h2 class="panel__title">Buscar / extornar</h2>
+          <p class="panel__subtitle">Consulta el pago y registra extorno con sustento.</p>
+        </div>
+      </div>
+      <div class="panel__body form-grid form-grid--compact">
+        <label class="field">
+          <span>ID pago</span>
+          <input name="idPagoBusqueda" type="number" [(ngModel)]="idPagoBusqueda" />
+        </label>
+        <label class="field pagos-wide">
+          <span>Motivo extorno</span>
+          <input name="motivoExtorno" [(ngModel)]="motivoExtorno" />
+        </label>
+        <div class="actions">
+          <button class="button button--secondary" type="submit">Buscar</button>
+          <button class="button button--danger" type="button" (click)="extornar()">Extornar</button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <app-detail-panel title="Pago seleccionado">
+    @if (pago(); as pagoActual) {
+      <div class="pago-detail">
+        <span>ID pago: {{ pagoActual.idPago }}</span>
+        <span>Cuota: {{ pagoActual.idCuota }}</span>
+        <span>Monto: {{ pagoActual.montoPagado }}</span>
+        <span>Metodo: {{ pagoActual.metodoPago }}</span>
+        <span>Estado: <app-status-badge [value]="pagoActual.estadoPago" /></span>
+        @if (pagoActual.comprobante) {
+          <span>Comprobante: {{ pagoActual.comprobante.numeroComprobante }}</span>
+          <span
+            >Estado comprobante:
+            <app-status-badge [value]="pagoActual.comprobante.estadoComprobante"
+          /></span>
+        }
+      </div>
+    } @else {
+      <p>Aun no hay pago seleccionado.</p>
+    }
+  </app-detail-panel>
+</div>

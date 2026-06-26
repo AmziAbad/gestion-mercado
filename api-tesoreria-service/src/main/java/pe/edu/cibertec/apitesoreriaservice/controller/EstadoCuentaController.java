@@ -10,7 +10,7 @@ import pe.edu.cibertec.apitesoreriaservice.dto.EstadoCuentaResponse;
 import pe.edu.cibertec.apitesoreriaservice.service.TesoreriaService;
 
 @RestController
-@RequestMapping("/api/v1/estados-cuenta")
+@RequestMapping("/estados-cuenta")
 public class EstadoCuentaController {
 
     private final TesoreriaService tesoreriaService;

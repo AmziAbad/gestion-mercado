@@ -1,0 +1,9 @@
+<label class="filter">
+  <span>{{ label }}</span>
+  <select [(ngModel)]="value" (ngModelChange)="changed.emit(value)">
+    <option value="">Todos</option>
+    @for (option of options; track option.value) {
+      <option [value]="option.value">{{ option.label }}</option>
+    }
+  </select>
+</label>

@@ -18,7 +18,7 @@ import pe.edu.cibertec.apipatrimonioservice.service.PatrimonioService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/transferencias")
+@RequestMapping("/transferencias")
 public class TransferenciaController {
 
     private final PatrimonioService patrimonioService;

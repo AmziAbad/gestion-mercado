@@ -19,7 +19,7 @@ import pe.edu.cibertec.apitesoreriaservice.service.TesoreriaService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/conceptos")
+@RequestMapping("/conceptos")
 public class ConceptoController {
 
     private final TesoreriaService tesoreriaService;

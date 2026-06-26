@@ -1,0 +1,26 @@
+<aside class="sidebar">
+  <div class="sidebar__brand">
+    <span class="sidebar__mark">GM</span>
+    <div>
+      <strong>Gestion Mercado</strong>
+      <span>Saneamiento financiero</span>
+    </div>
+  </div>
+
+  <nav class="sidebar__nav" aria-label="Navegacion principal">
+    @for (group of navigationGroups(); track group.label) {
+      <section class="sidebar__group">
+        <h2>{{ group.label }}</h2>
+        @for (link of group.links; track link.route) {
+          <a
+            [routerLink]="link.route"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: link.route === '/dashboard' }"
+          >
+            {{ link.label }}
+          </a>
+        }
+      </section>
+    }
+  </nav>
+</aside>

@@ -1,0 +1,9 @@
+.evento-description {
+  grid-column: span 2;
+}
+
+@media (max-width: 980px) {
+  .evento-description {
+    grid-column: span 1;
+  }
+}

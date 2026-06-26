@@ -1,0 +1,22 @@
+{
+  "/api-auth-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/api-patrimonio-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/api-tesoreria-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/api-auditoria-reportes-service": {
+    "target": "http://localhost:8089",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

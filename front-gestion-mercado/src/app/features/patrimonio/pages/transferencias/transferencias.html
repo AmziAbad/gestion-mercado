@@ -1,0 +1,74 @@
+<div class="page">
+  <app-page-header
+    title="Transferencias"
+    subtitle="Traspaso de titularidad con validacion de deuda previa."
+  />
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="message message--success">{{ message() }}</div>
+  }
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Registrar transferencia</h2>
+        <p class="panel__subtitle">
+          El backend bloquea el traspaso si el puesto mantiene deuda pendiente.
+        </p>
+      </div>
+    </div>
+    <form class="panel__body form-grid" (ngSubmit)="registrar()">
+      <label class="field">
+        <span>ID puesto</span>
+        <input name="idPuesto" type="number" [(ngModel)]="form.idPuesto" required />
+      </label>
+      <label class="field">
+        <span>ID socio entrante</span>
+        <input name="idSocioEntrante" type="number" [(ngModel)]="form.idSocioEntrante" required />
+      </label>
+      <label class="field">
+        <span>Costo transferencia</span>
+        <input
+          name="costoTransferencia"
+          type="number"
+          min="0"
+          step="0.01"
+          [(ngModel)]="form.costoTransferencia"
+        />
+      </label>
+      <label class="field">
+        <span>Fecha inicio</span>
+        <input name="fechaInicio" type="date" [(ngModel)]="form.fechaInicio" />
+      </label>
+      <label class="field form-wide">
+        <span>Observacion</span>
+        <input name="observacion" [(ngModel)]="form.observacion" />
+      </label>
+      <label class="field">
+        <span>Asume deuda</span>
+        <select name="asumeDeuda" [(ngModel)]="form.asumeDeuda">
+          <option [ngValue]="false">No</option>
+          <option [ngValue]="true">Si</option>
+        </select>
+      </label>
+      <div class="actions">
+        <button class="button button--primary" type="submit">Registrar</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Transferencias registradas</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : transferencias().length + ' registros' }}
+        </p>
+      </div>
+    </div>
+    <app-data-table [columns]="columns" [rows]="transferencias()" />
+  </section>
+</div>

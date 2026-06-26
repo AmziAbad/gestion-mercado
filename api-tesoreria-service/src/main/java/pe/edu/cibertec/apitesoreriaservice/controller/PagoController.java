@@ -18,7 +18,7 @@ import pe.edu.cibertec.apitesoreriaservice.dto.PagoResponse;
 import pe.edu.cibertec.apitesoreriaservice.service.TesoreriaService;
 
 @RestController
-@RequestMapping("/api/v1/pagos")
+@RequestMapping("/pagos")
 public class PagoController {
 
     private final TesoreriaService tesoreriaService;

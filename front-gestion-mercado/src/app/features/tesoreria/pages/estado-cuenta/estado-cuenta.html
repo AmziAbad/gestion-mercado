@@ -1,0 +1,54 @@
+<div class="page">
+  <app-page-header title="Estado de cuenta" subtitle="Consulta de deuda por puesto, socio o DNI." />
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+
+  <section class="panel">
+    <form class="panel__body estado-search" (ngSubmit)="consultar()">
+      <label class="field">
+        <span>Criterio</span>
+        <select name="criterio" [(ngModel)]="criterio">
+          <option value="puesto">ID puesto</option>
+          <option value="socio">ID socio</option>
+          <option value="dni">DNI</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Valor</span>
+        <input name="valor" [(ngModel)]="valor" required />
+      </label>
+      <div class="actions">
+        <button class="button button--primary" type="submit" [disabled]="loading()">
+          Consultar
+        </button>
+      </div>
+    </form>
+  </section>
+
+  @if (estadoCuenta(); as estadoCuentaActual) {
+    <section class="grid grid--3">
+      <app-summary-card label="ID puesto" [value]="estadoCuentaActual.idPuesto ?? '-'" />
+      <app-summary-card
+        label="Cuotas pendientes"
+        [value]="estadoCuentaActual.cantidadCuotasPendientes"
+      />
+      <app-summary-card
+        label="Total pendiente"
+        [value]="estadoCuentaActual.totalPendiente"
+        helper="Soles"
+      />
+    </section>
+
+    <section class="panel">
+      <div class="panel__header">
+        <div>
+          <h2 class="panel__title">Cuotas del estado de cuenta</h2>
+          <p class="panel__subtitle">{{ estadoCuentaActual.cuotas.length }} registros</p>
+        </div>
+      </div>
+      <app-data-table [columns]="cuotaColumns" [rows]="estadoCuentaActual.cuotas" />
+    </section>
+  }
+</div>

@@ -17,7 +17,7 @@ import pe.edu.cibertec.apiauditoriareportesservice.service.AuditoriaReporteServi
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/auditoria")
+@RequestMapping("/auditoria")
 public class AuditoriaController {
 
     private final AuditoriaReporteService auditoriaReporteService;

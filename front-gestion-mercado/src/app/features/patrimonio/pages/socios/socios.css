@@ -1,0 +1,13 @@
+.form-grid__wide {
+  grid-column: span 2;
+}
+
+.form-grid__actions {
+  align-self: end;
+}
+
+@media (max-width: 980px) {
+  .form-grid__wide {
+    grid-column: span 1;
+  }
+}

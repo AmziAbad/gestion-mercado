@@ -22,7 +22,7 @@ import pe.edu.cibertec.apitesoreriaservice.service.TesoreriaService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/cuotas")
+@RequestMapping("/cuotas")
 public class CuotaController {
 
     private final TesoreriaService tesoreriaService;

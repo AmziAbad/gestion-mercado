@@ -1,0 +1,14 @@
+<header class="topbar">
+  <div>
+    <strong>Sistema de Administracion de Cuentas</strong>
+    <span>Asociacion de comerciantes</span>
+  </div>
+
+  <div class="topbar__user">
+    @if (user(); as currentUser) {
+      <span>{{ currentUser.nombreCompleto }}</span>
+      <small>{{ currentUser.rol }}</small>
+    }
+    <button class="button button--secondary" type="button" (click)="logout()">Salir</button>
+  </div>
+</header>

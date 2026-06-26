@@ -12,24 +12,24 @@ import java.util.List;
 @FeignClient(name = "api-patrimonio-service")
 public interface PatrimonioClient {
 
-    @GetMapping("/api/v1/contratos/activos")
+    @GetMapping("/contratos/activos")
     List<ContratoRemoteResponse> listarContratosActivos();
 
-    @GetMapping("/api/v1/contratos/{idContrato}")
+    @GetMapping("/contratos/{idContrato}")
     ContratoRemoteResponse buscarContrato(@PathVariable Integer idContrato);
 
-    @GetMapping("/api/v1/contratos/puesto/{idPuesto}/activo")
+    @GetMapping("/contratos/puesto/{idPuesto}/activo")
     ContratoRemoteResponse buscarContratoActivoPorPuesto(@PathVariable Integer idPuesto);
 
-    @GetMapping("/api/v1/contratos/socio/{idSocio}/activos")
+    @GetMapping("/contratos/socio/{idSocio}/activos")
     List<ContratoRemoteResponse> listarContratosActivosPorSocio(@PathVariable Integer idSocio);
 
-    @GetMapping("/api/v1/socios/{idSocio}")
+    @GetMapping("/socios/{idSocio}")
     SocioRemoteResponse buscarSocio(@PathVariable Integer idSocio);
 
-    @GetMapping("/api/v1/socios/dni/{dni}")
+    @GetMapping("/socios/dni/{dni}")
     SocioRemoteResponse buscarSocioPorDni(@PathVariable String dni);
 
-    @GetMapping("/api/v1/puestos/{idPuesto}")
+    @GetMapping("/puestos/{idPuesto}")
     PuestoRemoteResponse buscarPuesto(@PathVariable Integer idPuesto);
 }

@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/turnos")
+@RequestMapping("/turnos")
 public class TurnoController {
 
     private final TesoreriaService tesoreriaService;

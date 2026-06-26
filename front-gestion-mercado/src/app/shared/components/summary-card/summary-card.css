@@ -1,0 +1,19 @@
+.summary-card {
+  display: grid;
+  gap: var(--space-1);
+  min-height: 108px;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-card span,
+.summary-card small {
+  color: var(--color-text-muted);
+}
+
+.summary-card strong {
+  font-size: var(--font-size-2xl);
+}

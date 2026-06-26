@@ -1,0 +1,41 @@
+<div class="page">
+  <app-page-header title="Comprobantes" subtitle="Consulta del comprobante emitido por pago." />
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+
+  <section class="panel">
+    <form class="panel__body comprobante-search" (ngSubmit)="buscar()">
+      <label class="field">
+        <span>Criterio</span>
+        <select name="criterioComprobante" [(ngModel)]="criterio">
+          <option value="comprobante">ID comprobante</option>
+          <option value="pago">ID pago</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Valor</span>
+        <input name="valorComprobante" type="number" [(ngModel)]="valor" />
+      </label>
+      <div class="actions">
+        <button class="button button--primary" type="submit">Buscar</button>
+      </div>
+    </form>
+  </section>
+
+  <app-detail-panel title="Comprobante">
+    @if (comprobante(); as comprobanteActual) {
+      <div class="comprobante-card">
+        <strong>{{ comprobanteActual.numeroComprobante }}</strong>
+        <span>Pago: {{ comprobanteActual.idPago }}</span>
+        <span>Cuota: {{ comprobanteActual.idCuota }}</span>
+        <span>Monto: {{ comprobanteActual.montoTotal }}</span>
+        <span>Metodo: {{ comprobanteActual.metodoPago }}</span>
+        <span>Estado: <app-status-badge [value]="comprobanteActual.estadoComprobante" /></span>
+      </div>
+    } @else {
+      <p>No hay comprobante seleccionado.</p>
+    }
+  </app-detail-panel>
+</div>

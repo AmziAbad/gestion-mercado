@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/reportes")
+@RequestMapping("/reportes")
 public class ReporteController {
 
     private final AuditoriaReporteService auditoriaReporteService;

@@ -1,0 +1,9 @@
+.form-wide {
+  grid-column: span 2;
+}
+
+@media (max-width: 980px) {
+  .form-wide {
+    grid-column: span 1;
+  }
+}

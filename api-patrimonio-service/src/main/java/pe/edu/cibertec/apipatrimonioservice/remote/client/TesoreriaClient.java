@@ -8,6 +8,6 @@ import pe.edu.cibertec.apipatrimonioservice.remote.dto.DeudaResumenResponse;
 @FeignClient(name = "api-tesoreria-service")
 public interface TesoreriaClient {
 
-    @GetMapping("/api/v1/estados-cuenta/puesto/{idPuesto}/resumen")
+    @GetMapping("/estados-cuenta/puesto/{idPuesto}/resumen")
     DeudaResumenResponse obtenerResumenDeudaPuesto(@PathVariable Integer idPuesto);
 }

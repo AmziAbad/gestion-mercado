@@ -1,0 +1,18 @@
+export const APP_ROUTES = {
+  login: '/login',
+  dashboard: '/dashboard',
+  socios: '/patrimonio/socios',
+  puestos: '/patrimonio/puestos',
+  contratos: '/patrimonio/contratos',
+  transferencias: '/patrimonio/transferencias',
+  conceptos: '/tesoreria/conceptos',
+  cuotas: '/tesoreria/cuotas',
+  estadoCuenta: '/tesoreria/estado-cuenta',
+  caja: '/tesoreria/caja',
+  pagos: '/tesoreria/pagos',
+  comprobantes: '/tesoreria/comprobantes',
+  auditoriaEventos: '/auditoria/eventos',
+  auditoriaAnulaciones: '/auditoria/anulaciones',
+  reportes: '/reportes',
+  usuarios: '/administracion/usuarios',
+} as const;

@@ -1,1 +1,250 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f9fafb;
+  --color-border: #d9dee7;
+  --color-border-strong: #b8c0cc;
+  --color-text: #1f2933;
+  --color-text-muted: #5f6b7a;
+  --color-text-soft: #7b8794;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-success: #15803d;
+  --color-warning: #a16207;
+  --color-danger: #b91c1c;
+  --color-info: #0f766e;
+  --color-success-bg: #dcfce7;
+  --color-warning-bg: #fef3c7;
+  --color-danger-bg: #fee2e2;
+  --color-info-bg: #ccfbf1;
+  --color-muted-bg: #e5e7eb;
+
+  --font-family-base: Arial, Helvetica, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.2;
+  --line-height-base: 1.45;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 10px rgba(15, 23, 42, 0.1);
+
+  --sidebar-width: 260px;
+  --topbar-height: 56px;
+  --content-max-width: 1440px;
+  --page-padding-x: 24px;
+  --page-padding-y: 20px;
+  --input-height: 38px;
+  --table-row-height: 44px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-base);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.panel__title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.panel__subtitle {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+}
+
+.panel__body {
+  padding: var(--space-5);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.form-grid--compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.field label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: var(--input-height);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.field textarea {
+  min-height: 84px;
+  padding-top: var(--space-2);
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--color-primary);
+  outline: 2px solid rgba(37, 99, 235, 0.12);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.button {
+  min-height: var(--input-height);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-4);
+  font-weight: var(--font-weight-semibold);
+}
+
+.button--primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.button--primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.button--secondary {
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.button--danger {
+  background: var(--color-danger);
+  color: white;
+}
+
+.message {
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-size: var(--font-size-sm);
+}
+
+.message--error {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.message--success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+@media (max-width: 980px) {
+  .grid--2,
+  .grid--3,
+  .form-grid,
+  .form-grid--compact {
+    grid-template-columns: 1fr;
+  }
+}
