@@ -18,11 +18,13 @@ export class Conceptos {
   readonly columns: TableColumn[] = [
     { key: 'idConcepto', label: 'ID' },
     { key: 'nombreConcepto', label: 'Concepto' },
+    { key: 'descripcion', label: 'Descripcion' },
     { key: 'tipoCobro', label: 'Tipo', type: 'status' },
     { key: 'periodicidad', label: 'Periodicidad', type: 'status' },
     { key: 'montoFijo', label: 'Monto fijo', type: 'currency' },
     { key: 'costoTotalProrrateo', label: 'Prorrateo', type: 'currency' },
     { key: 'activo', label: 'Activo', type: 'boolean' },
+    { key: 'fechaRegistro', label: 'Fecha registro', type: 'date' },
   ];
 
   readonly actions = [

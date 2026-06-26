@@ -22,6 +22,7 @@ export class Eventos {
     { key: 'entidadAfectada', label: 'Entidad' },
     { key: 'idRegistroAfectado', label: 'Registro' },
     { key: 'idUsuario', label: 'Usuario' },
+    { key: 'descripcion', label: 'Descripcion' },
     { key: 'fechaEvento', label: 'Fecha', type: 'date' },
   ];
 

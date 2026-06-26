@@ -17,10 +17,16 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 export class Contratos {
   readonly columns: TableColumn[] = [
     { key: 'idContrato', label: 'ID' },
+    { key: 'idPuesto', label: 'ID puesto' },
     { key: 'codigoPuesto', label: 'Puesto' },
+    { key: 'idSocio', label: 'ID socio' },
     { key: 'nombreSocio', label: 'Socio' },
     { key: 'fechaInicio', label: 'Inicio', type: 'date' },
+    { key: 'fechaFin', label: 'Fin', type: 'date' },
     { key: 'estadoContrato', label: 'Estado', type: 'status' },
+    { key: 'motivoCierre', label: 'Motivo cierre' },
+    { key: 'idUsuarioRegistro', label: 'Usuario registro' },
+    { key: 'fechaRegistro', label: 'Fecha registro', type: 'date' },
   ];
 
   readonly actions = [{ id: 'finalizar', label: 'Finalizar', tone: 'danger' as const }];

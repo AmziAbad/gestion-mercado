@@ -92,6 +92,8 @@ export class Reportes {
         { key: 'idPuesto', label: 'Puesto' },
         { key: 'idContrato', label: 'Contrato' },
         { key: 'idConcepto', label: 'Concepto' },
+        { key: 'periodoMes', label: 'Mes' },
+        { key: 'periodoAnio', label: 'Anio' },
         { key: 'montoTotal', label: 'Monto', type: 'currency' },
         { key: 'fechaVencimiento', label: 'Vencimiento', type: 'date' },
       ];

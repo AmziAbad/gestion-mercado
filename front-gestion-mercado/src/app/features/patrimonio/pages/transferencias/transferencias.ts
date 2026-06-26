@@ -18,11 +18,17 @@ export class Transferencias {
   readonly columns: TableColumn[] = [
     { key: 'idTransferencia', label: 'ID' },
     { key: 'idPuesto', label: 'Puesto' },
+    { key: 'idContratoSaliente', label: 'Contrato saliente' },
     { key: 'idSocioSaliente', label: 'Socio saliente' },
     { key: 'idSocioEntrante', label: 'Socio entrante' },
+    { key: 'idContratoEntrante', label: 'Contrato entrante' },
+    { key: 'idUsuarioTramite', label: 'Usuario tramite' },
     { key: 'costoTransferencia', label: 'Costo', type: 'currency' },
     { key: 'deudaValidada', label: 'Deuda validada', type: 'boolean' },
+    { key: 'asumeDeuda', label: 'Asume deuda', type: 'boolean' },
+    { key: 'montoDeudaAsumida', label: 'Deuda asumida', type: 'currency' },
     { key: 'estadoTransferencia', label: 'Estado', type: 'status' },
+    { key: 'observacion', label: 'Observacion' },
     { key: 'fechaTramite', label: 'Fecha', type: 'date' },
   ];
 

@@ -19,11 +19,19 @@ export class EstadoCuenta {
   readonly cuotaColumns: TableColumn[] = [
     { key: 'idCuota', label: 'Cuota' },
     { key: 'idPuesto', label: 'Puesto' },
+    { key: 'idContrato', label: 'Contrato' },
     { key: 'idConcepto', label: 'Concepto' },
     { key: 'periodoMes', label: 'Mes' },
     { key: 'periodoAnio', label: 'Anio' },
     { key: 'montoTotal', label: 'Monto', type: 'currency' },
     { key: 'estadoCuota', label: 'Estado', type: 'status' },
+    { key: 'fechaGeneracion', label: 'Generacion', type: 'date' },
+    { key: 'fechaVencimiento', label: 'Vencimiento', type: 'date' },
+    { key: 'idUsuarioGeneracion', label: 'Usuario generacion' },
+    { key: 'motivoExoneracion', label: 'Motivo exoneracion' },
+    { key: 'motivoAnulacion', label: 'Motivo anulacion' },
+    { key: 'idCuotaOrigen', label: 'Cuota origen' },
+    { key: 'idCuotaReemplazo', label: 'Cuota reemplazo' },
   ];
 
   criterio: 'puesto' | 'socio' | 'dni' = 'puesto';

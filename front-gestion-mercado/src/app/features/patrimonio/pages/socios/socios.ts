@@ -18,11 +18,15 @@ export class Socios {
   readonly columns: TableColumn[] = [
     { key: 'idSocio', label: 'ID' },
     { key: 'dni', label: 'DNI' },
+    { key: 'ruc', label: 'RUC' },
     { key: 'nombres', label: 'Nombres' },
     { key: 'apellidos', label: 'Apellidos' },
     { key: 'telefono', label: 'Telefono' },
+    { key: 'correo', label: 'Correo' },
+    { key: 'direccion', label: 'Direccion' },
     { key: 'estado', label: 'Estado', type: 'status' },
     { key: 'esAsociacion', label: 'Asociacion', type: 'boolean' },
+    { key: 'fechaRegistro', label: 'Fecha registro', type: 'date' },
   ];
 
   readonly actions = [{ id: 'edit', label: 'Editar', tone: 'secondary' as const }];

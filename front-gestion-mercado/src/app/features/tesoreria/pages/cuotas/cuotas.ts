@@ -28,6 +28,13 @@ export class Cuotas {
     { key: 'periodoAnio', label: 'Anio' },
     { key: 'montoTotal', label: 'Monto', type: 'currency' },
     { key: 'estadoCuota', label: 'Estado', type: 'status' },
+    { key: 'fechaGeneracion', label: 'Generacion', type: 'date' },
+    { key: 'fechaVencimiento', label: 'Vencimiento', type: 'date' },
+    { key: 'idUsuarioGeneracion', label: 'Usuario generacion' },
+    { key: 'motivoExoneracion', label: 'Motivo exoneracion' },
+    { key: 'motivoAnulacion', label: 'Motivo anulacion' },
+    { key: 'idCuotaOrigen', label: 'Cuota origen' },
+    { key: 'idCuotaReemplazo', label: 'Cuota reemplazo' },
   ];
 
   readonly actions = [
