@@ -52,10 +52,10 @@
           <input name="giro" [(ngModel)]="form.giro" placeholder="Ej: Abarrotes, Ropa..." style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
         </label>
 
-        <div class="actions" style="grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 1rem;">
-          <button style="background: transparent; color: #374151; border: none; font-weight: 700; cursor: pointer; font-size: 0.95rem;" type="button" (click)="reset()">Cancelar</button>
-          <button style="background-color: #0f172a; color: white; border: none; border-radius: 6px; padding: 0.7rem 2rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" type="button" (click)="save()">
-            Guardar cambios
+        <div class="actions" style="grid-column: 1 / -1;">
+          <button class="button button--secondary" type="button" (click)="reset()">Cancelar</button>
+          <button class="button button--primary" type="button" (click)="save()">
+            {{ editingId === null ? 'Registrar' : 'Guardar cambios' }}
           </button>
         </div>
       </form>
@@ -92,9 +92,9 @@
           <p style="color: #6b7280; font-size: 0.95rem; font-weight: 500; max-width: 250px;">Consultando saneamiento...</p>
         }
       </div>
-      <div class="actions" style="padding: 1.25rem 1.5rem; border-top: 1px solid #f3f4f6; display: flex; justify-content: flex-end; align-items: center; background-color: white; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-        <button style="background-color: #0f172a; color: white; border: none; border-radius: 6px; padding: 0.6rem 2rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" type="button" (click)="closeSaneamientoModal()">
-          Cerrar
+      <div class="actions" style="padding: 1.25rem 1.5rem; border-top: 1px solid #f3f4f6; background-color: white; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+        <button class="button button--primary" type="button" (click)="closeSaneamientoModal()">
+          Entendido
         </button>
       </div>
     </section>
@@ -145,9 +145,9 @@
         </label>
       </div>
 
-      <div class="actions" style="padding: 1.5rem; border-top: 1px solid #f3f4f6; display: flex; justify-content: flex-end; align-items: center; gap: 1rem; background-color: #f9fafb; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-        <button style="background: transparent; color: #374151; border: none; font-weight: 700; cursor: pointer; font-size: 0.95rem;" type="button" (click)="reset()">Limpiar</button>
-        <button style="background-color: #0f172a; color: white; border: none; border-radius: 6px; padding: 0.6rem 1.5rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" type="button" (click)="save()">
+      <div class="actions" style="padding: 1.5rem; border-top: 1px solid #f3f4f6; background-color: #f9fafb; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+        <button class="button button--secondary" type="button" (click)="reset()">Limpiar</button>
+        <button class="button button--primary" type="button" (click)="save()">
           Registrar
         </button>
       </div>
@@ -155,32 +155,36 @@
   </section>
 
   <!-- Data Table Panel -->
-  <section class="panel" style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
-    <div class="panel__header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #f3f4f6;">
-      <div>
-        <h2 class="panel__title" style="font-size: 1.1rem; color: #111827; font-weight: 600;">Puestos registrados</h2>
-        <p class="panel__subtitle" style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">
-          {{ loading() ? 'Cargando...' : puestos().length + ' registros' }}
-        </p>
-      </div>
-      
-      <div style="position: relative;">
-        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.9rem;">🔍</span>
-        <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" placeholder="Buscar por Código" style="padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 6px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 0.85rem; width: 260px; color: #6b7280; outline: none;" />
-      </div>
-    </div>
-    
-    <div style="padding: 0;">
-      <app-data-table
-        [columns]="columns"
-        [rows]="filteredPuestos()"
-        [actions]="actions"
-        (actionSelected)="handleAction($event)"
-      />
-    </div>
+  <section style="display: flex; justify-content: center; margin-bottom: 2rem;">
+    <div style="width: 95%; max-width: 1400px;">
+      <section class="panel" style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
+        <div class="panel__header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #f3f4f6;">
+          <div>
+            <h2 class="panel__title" style="font-size: 1.1rem; color: #111827; font-weight: 600;">Puestos registrados</h2>
+            <p class="panel__subtitle" style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">
+              {{ loading() ? 'Cargando...' : puestos().length + ' registros' }}
+            </p>
+          </div>
+          
+          <div style="position: relative;">
+            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.9rem;">🔍</span>
+            <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" placeholder="Buscar por Código" style="padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 6px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 0.85rem; width: 260px; color: #6b7280; outline: none;" />
+          </div>
+        </div>
+        
+        <div style="padding: 0;">
+          <app-data-table
+            [columns]="columns"
+            [rows]="filteredPuestos()"
+            [actions]="actions"
+            (actionSelected)="handleAction($event)"
+          />
+        </div>
 
-    <div style="padding: 1rem 1.5rem; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #6b7280;">
-      <span>Mostrando {{ filteredPuestos().length === 0 ? 0 : 1 }} a {{ filteredPuestos().length }} de {{ filteredPuestos().length }} registros</span>
+        <div style="padding: 1rem 1.5rem; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #6b7280;">
+          <span>Mostrando {{ filteredPuestos().length === 0 ? 0 : 1 }} a {{ filteredPuestos().length }} de {{ filteredPuestos().length }} registros</span>
+        </div>
+      </section>
     </div>
   </section>
 </div>
