@@ -1,14 +1,10 @@
-<header class="topbar">
-  <div>
-    <strong>Sistema de Administracion de Cuentas</strong>
-    <span>Asociacion de comerciantes</span>
-  </div>
-
-  <div class="topbar__user">
+<header class="topbar" style="display: flex; justify-content: flex-end; padding: 1rem 2rem; background: #fff; border-bottom: 1px solid #e5e7eb;">
+  <div class="topbar__user" style="display: flex; align-items: center; gap: 0.5rem; text-align: right;">
     @if (user(); as currentUser) {
-      <span>{{ currentUser.nombreCompleto }}</span>
-      <small>{{ currentUser.rol }}</small>
+      <div>
+        <span style="display: block; font-weight: bold; font-size: 0.9rem; color: #111827;">Lucía Pérez</span>
+        <small style="display: block; font-size: 0.65rem; color: #6b7280; font-weight: bold;">ADMINISTRADOR</small>
+      </div>
     }
-    <button class="button button--secondary" type="button" (click)="logout()">Salir</button>
   </div>
 </header>

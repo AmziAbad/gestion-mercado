@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
@@ -18,16 +18,32 @@ export class Socios {
   readonly columns: TableColumn[] = [
     { key: 'idSocio', label: 'ID' },
     { key: 'dni', label: 'DNI' },
+    { key: 'ruc', label: 'RUC' },
     { key: 'nombres', label: 'Nombres' },
     { key: 'apellidos', label: 'Apellidos' },
     { key: 'telefono', label: 'Telefono' },
+    { key: 'direccion', label: 'Direccion' },
     { key: 'estado', label: 'Estado', type: 'status' },
     { key: 'esAsociacion', label: 'Asociacion', type: 'boolean' },
   ];
 
   readonly actions = [{ id: 'edit', label: 'Editar', tone: 'secondary' as const }];
 
+  showForm = false;
   socios = signal<Socio[]>([]);
+  searchTerm = signal('');
+
+  filteredSocios = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    if (!term) return this.socios();
+    
+    return this.socios().filter(s => 
+      s.dni.toLowerCase().includes(term) ||
+      s.nombres.toLowerCase().includes(term) ||
+      s.apellidos.toLowerCase().includes(term)
+    );
+  });
+
   form: SocioRequest = this.emptyForm();
   editingId: number | null = null;
   loading = signal(false);
@@ -36,6 +52,13 @@ export class Socios {
 
   constructor(private readonly patrimonioApi: PatrimonioApi) {
     this.load();
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+    if (!this.showForm) {
+      this.reset();
+    }
   }
 
   load(): void {
@@ -69,6 +92,7 @@ export class Socios {
       next: () => {
         this.message.set(this.editingId === null ? 'Socio registrado.' : 'Socio actualizado.');
         this.reset();
+        this.showForm = false;
         this.load();
       },
       error: (error: unknown) => {
@@ -95,6 +119,7 @@ export class Socios {
       estado: socio.estado,
       esAsociacion: socio.esAsociacion,
     };
+    this.showForm = true;
   }
 
   reset(): void {
