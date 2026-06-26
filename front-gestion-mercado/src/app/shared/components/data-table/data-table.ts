@@ -41,7 +41,11 @@ export class DataTable {
     }
 
     if (column.type === 'date') {
-      return new Intl.DateTimeFormat('es-PE').format(new Date(String(value)));
+      let dateString = String(value);
+      if (dateString.length === 10) {
+        dateString += 'T12:00:00';
+      }
+      return new Intl.DateTimeFormat('es-PE').format(new Date(dateString));
     }
 
     if (column.type === 'boolean') {

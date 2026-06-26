@@ -5,9 +5,6 @@
     </button>
   </app-page-header>
 
-  @if (error()) {
-    <div class="message message--error">{{ error() }}</div>
-  }
   @if (message()) {
     <div class="message message--success">{{ message() }}</div>
   }
@@ -18,27 +15,45 @@
       <div class="panel__header" style="padding: 1.5rem 2rem; border-bottom: 1px solid #f3f4f6;">
         <h2 class="panel__title" style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0;">{{ editingId === null ? 'Registrar socio' : 'Editar socio' }}</h2>
         <p style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">Datos base para contratos y saneamiento de puestos.</p>
-      </div>
-      <form class="panel__body" style="padding: 1.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" (ngSubmit)="save()">
         
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        @if (error()) {
+          <div style="background-color: #fee2e2; border-left: 4px solid #ef4444; color: #b91c1c; padding: 1rem; margin-top: 1rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600;">
+            ⚠️ {{ formatError(error()) }}
+          </div>
+        }
+      </div>
+      <form novalidate class="panel__body" style="padding: 1.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.25rem;">
           <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">DNI</span>
           <input name="dni" [(ngModel)]="form.dni" maxlength="8" required placeholder="Ingrese DNI" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
+          @if (!form.dni) {
+            <span style="font-size: 0.65rem; color: #ef4444; font-weight: 600;">* Campo obligatorio</span>
+          }
         </label>
         
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.25rem;">
           <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">RUC</span>
           <input name="ruc" [(ngModel)]="form.ruc" maxlength="11" required placeholder="Ingrese RUC" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
+          @if (!form.ruc) {
+            <span style="font-size: 0.65rem; color: #ef4444; font-weight: 600;">* Campo obligatorio</span>
+          }
         </label>
         
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.25rem;">
           <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Nombres</span>
           <input name="nombres" [(ngModel)]="form.nombres" required placeholder="Nombres completos" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
+          @if (!form.nombres) {
+            <span style="font-size: 0.65rem; color: #ef4444; font-weight: 600;">* Campo obligatorio</span>
+          }
         </label>
         
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.25rem;">
           <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Apellidos</span>
           <input name="apellidos" [(ngModel)]="form.apellidos" required placeholder="Apellidos completos" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
+          @if (!form.apellidos) {
+            <span style="font-size: 0.65rem; color: #ef4444; font-weight: 600;">* Campo obligatorio</span>
+          }
         </label>
         
         <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
@@ -80,7 +95,7 @@
         
         <div class="actions" style="grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 1rem;">
           <button style="background: transparent; color: #374151; border: none; font-weight: 700; cursor: pointer; font-size: 0.95rem;" type="button" (click)="toggleForm()">Limpiar</button>
-          <button style="background-color: #0f172a; color: white; border: none; border-radius: 6px; padding: 0.7rem 2rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" type="submit">
+          <button style="background-color: #0f172a; color: white; border: none; border-radius: 6px; padding: 0.7rem 2rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" type="button" (click)="save()">
             {{ editingId === null ? 'Registrar' : 'Guardar cambios' }}
           </button>
         </div>

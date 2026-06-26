@@ -94,6 +94,10 @@ export class Socios {
         this.reset();
         this.showForm = false;
         this.load();
+
+        setTimeout(() => {
+          this.message.set('');
+        }, 3000);
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
@@ -139,5 +143,11 @@ export class Socios {
       estado: 'ACTIVO',
       esAsociacion: false,
     };
+  }
+
+  formatError(err: string): string {
+    if (!err) return '';
+    const parts = err.split(',').map(s => s.trim()).filter(s => s && !s.toLowerCase().match(/^id\b/));
+    return parts.length > 0 ? parts.join(', ') : err;
   }
 }

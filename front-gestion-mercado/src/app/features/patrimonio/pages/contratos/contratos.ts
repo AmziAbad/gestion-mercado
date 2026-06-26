@@ -36,6 +36,9 @@ export class Contratos {
     this.load();
   }
 
+  finalizarModalOpen = signal(false);
+  contratoAFinalizar = signal<Contrato | null>(null);
+
   load(): void {
     this.loading.set(true);
     this.error.set('');
@@ -68,6 +71,7 @@ export class Contratos {
         this.message.set('Contrato aperturado.');
         this.form = { idPuesto: null, idSocio: null, fechaInicio: null };
         this.load();
+        setTimeout(() => this.message.set(''), 3000);
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
@@ -77,6 +81,14 @@ export class Contratos {
 
   handleAction(event: TableActionEvent): void {
     const contrato = event.row as Contrato;
+    this.contratoAFinalizar.set(contrato);
+    this.finalizarModalOpen.set(true);
+    this.motivoCierre = '';
+  }
+
+  confirmarFinalizacion(): void {
+    const contrato = this.contratoAFinalizar();
+    if (!contrato) return;
 
     if (!this.motivoCierre.trim()) {
       this.error.set('Escribe un motivo de cierre antes de finalizar.');
@@ -88,12 +100,19 @@ export class Contratos {
       .subscribe({
         next: () => {
           this.message.set('Contrato finalizado.');
-          this.motivoCierre = '';
+          this.closeFinalizarModal();
           this.load();
+          setTimeout(() => this.message.set(''), 3000);
         },
         error: (error: unknown) => {
           this.error.set(httpErrorMessage(error));
         },
       });
+  }
+
+  closeFinalizarModal(): void {
+    this.finalizarModalOpen.set(false);
+    this.contratoAFinalizar.set(null);
+    this.motivoCierre = '';
   }
 }

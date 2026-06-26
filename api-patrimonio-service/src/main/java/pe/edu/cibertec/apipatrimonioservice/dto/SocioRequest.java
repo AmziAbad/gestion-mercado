@@ -7,8 +7,8 @@ import jakarta.validation.constraints.Size;
 import pe.edu.cibertec.apipatrimonioservice.entity.EstadoSocio;
 
 public record SocioRequest(
-        @NotBlank @Pattern(regexp = "\\d{8}") String dni,
-        @Pattern(regexp = "\\d{11}") String ruc,
+        @NotBlank @Pattern(regexp = "\\d{8}", message = "debe tener exactamente 8 dígitos numéricos") String dni,
+        @Pattern(regexp = "\\d{11}", message = "debe tener exactamente 11 dígitos numéricos") String ruc,
         @NotBlank @Size(max = 100) String nombres,
         @NotBlank @Size(max = 100) String apellidos,
         @Size(max = 20) String telefono,

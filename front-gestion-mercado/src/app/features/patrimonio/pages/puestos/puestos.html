@@ -1,7 +1,7 @@
 <div class="page">
   <app-page-header
     title="Puestos"
-    subtitle="Registro fisico de espacios y validacion de saneamiento."
+    subtitle="Registro físico de espacios y validación de saneamiento."
   />
 
   @if (error()) {
@@ -11,77 +11,176 @@
     <div class="message message--success">{{ message() }}</div>
   }
 
-  <section class="grid grid--2">
-    <form class="panel" (ngSubmit)="save()">
-      <div class="panel__header">
-        <div>
-          <h2 class="panel__title">
-            {{ editingId === null ? 'Registrar puesto' : 'Editar puesto' }}
-          </h2>
-          <p class="panel__subtitle">Codigo, pabellon, giro y estado operativo.</p>
-        </div>
+  <!-- Modal Edit Form -->
+  @if (editingId !== null) {
+  <div style="position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 50; display: flex; justify-content: center; align-items: center; padding: 1rem;">
+    <section class="panel" style="background: white; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 650px; border: none;">
+      <div class="panel__header" style="padding: 1.5rem 2rem; border-bottom: 1px solid #f3f4f6;">
+        <h2 class="panel__title" style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0;">Editar puesto</h2>
+        <p style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">Actualiza los datos del puesto seleccionado.</p>
       </div>
-      <div class="panel__body form-grid form-grid--compact">
-        <label class="field">
-          <span>Codigo</span>
-          <input name="codigoPuesto" [(ngModel)]="form.codigoPuesto" required />
+      <form class="panel__body" style="padding: 1.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" (ngSubmit)="save()">
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Código</span>
+          <input name="codigoPuesto" [(ngModel)]="form.codigoPuesto" required placeholder="Ej: A-001" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
         </label>
-        <label class="field">
-          <span>Pabellon</span>
-          <input name="pabellon" [(ngModel)]="form.pabellon" required />
+        
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Pabellón</span>
+          <input name="pabellon" [(ngModel)]="form.pabellon" required placeholder="Ej: A" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
         </label>
-        <label class="field">
-          <span>Estado</span>
-          <select name="estadoPuesto" [(ngModel)]="form.estadoPuesto">
-            <option value="LIBRE">LIBRE</option>
-            <option value="OCUPADO">OCUPADO</option>
-            <option value="MANTENIMIENTO">MANTENIMIENTO</option>
-          </select>
+        
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Estado</span>
+          <div style="position: relative;">
+            <select name="estadoPuesto" [(ngModel)]="form.estadoPuesto" style="appearance: none; padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none; font-weight: 600;">
+              <option value="LIBRE">LIBRE</option>
+              <option value="OCUPADO">OCUPADO</option>
+              <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+            </select>
+            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #6b7280;">▼</span>
+          </div>
         </label>
-        <label class="field">
-          <span>Medidas</span>
-          <input name="medidas" [(ngModel)]="form.medidas" />
+        
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Medidas</span>
+          <input name="medidas" [(ngModel)]="form.medidas" placeholder="Ej: 2x2m" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
         </label>
-        <label class="field">
-          <span>Giro</span>
-          <input name="giro" [(ngModel)]="form.giro" />
+        
+        <label class="field" style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Giro</span>
+          <input name="giro" [(ngModel)]="form.giro" placeholder="Ej: Abarrotes, Ropa..." style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
         </label>
-        <div class="actions">
-          <button class="button button--primary" type="submit">
-            {{ editingId === null ? 'Registrar' : 'Guardar' }}
+
+        <div class="actions" style="grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 1rem;">
+          <button style="background: transparent; color: #374151; border: none; font-weight: 700; cursor: pointer; font-size: 0.95rem;" type="button" (click)="reset()">Cancelar</button>
+          <button style="background-color: #0f172a; color: white; border: none; border-radius: 6px; padding: 0.7rem 2rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" type="button" (click)="save()">
+            Guardar cambios
           </button>
-          <button class="button button--secondary" type="button" (click)="reset()">Limpiar</button>
         </div>
+      </form>
+    </section>
+  </div>
+  }
+
+  <!-- Modal Saneamiento -->
+  @if (saneamientoModalOpen()) {
+  <div style="position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 50; display: flex; justify-content: center; align-items: center; padding: 1rem;">
+    <section class="panel" style="background: white; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 500px; border: none; display: flex; flex-direction: column;">
+      <div style="padding: 1.5rem; border-bottom: 1px solid #f3f4f6;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0;">Resultado de saneamiento</h2>
+        <p style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">Revisa las deudas y estado del puesto.</p>
+      </div>
+      <div style="padding: 2rem 1.5rem; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 0.8rem; background-color: #f9fafb;">
+        @if (saneamiento(); as saneamientoActual) {
+          <h3 style="font-size: 1.5rem; font-weight: 800; color: #111827; margin: 0;">Puesto {{ saneamientoActual.idPuesto }}</h3>
+          <app-status-badge [value]="saneamientoActual.tieneDeuda ? 'PENDIENTE' : 'ACTIVO'" />
+          
+          <div style="display: flex; gap: 2rem; margin-top: 1rem; width: 100%; justify-content: center;">
+            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase;">Cuotas pendientes</span>
+              <span style="font-size: 1.25rem; font-weight: 800; color: #b91c1c;">{{ saneamientoActual.cantidadCuotasPendientes }}</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+              <span style="font-size: 0.75rem; font-weight: 700; color: #6b7280; text-transform: uppercase;">Total pendiente</span>
+              <span style="font-size: 1.25rem; font-weight: 800; color: #111827;">{{ money(saneamientoActual.totalPendiente) }}</span>
+            </div>
+          </div>
+          <p style="color: #4b5563; font-size: 0.9rem; font-weight: 500; margin-top: 1rem; background: #e5e7eb; padding: 0.5rem 1rem; border-radius: 6px;">{{ saneamientoActual.mensaje }}</p>
+        } @else {
+          <div style="color: #9ca3af; font-size: 3rem; margin-bottom: 0.5rem;">⏳</div>
+          <p style="color: #6b7280; font-size: 0.95rem; font-weight: 500; max-width: 250px;">Consultando saneamiento...</p>
+        }
+      </div>
+      <div class="actions" style="padding: 1.25rem 1.5rem; border-top: 1px solid #f3f4f6; display: flex; justify-content: flex-end; align-items: center; background-color: white; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+        <button style="background-color: #0f172a; color: white; border: none; border-radius: 6px; padding: 0.6rem 2rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" type="button" (click)="closeSaneamientoModal()">
+          Cerrar
+        </button>
+      </div>
+    </section>
+  </div>
+  }
+
+  <section style="display: flex; justify-content: center; margin-bottom: 2rem;">
+    <!-- Inline Registration Form -->
+    <form class="panel" style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; display: flex; flex-direction: column; width: 100%; max-width: 900px;" (ngSubmit)="save()">
+      <div class="panel__header" style="padding: 1.5rem; border-bottom: 1px solid #f3f4f6;">
+        <h2 class="panel__title" style="font-size: 1.15rem; font-weight: 700; color: #111827; margin: 0;">
+          Registrar puesto
+        </h2>
+        <p style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">Código, pabellón, giro y estado operativo.</p>
+      </div>
+      
+      <div class="panel__body" style="padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; flex: 1;">
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Código</span>
+          <input name="codigoPuestoInline" [(ngModel)]="form.codigoPuesto" required placeholder="Ej: A-001" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
+        </label>
+        
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Pabellón</span>
+          <input name="pabellonInline" [(ngModel)]="form.pabellon" required placeholder="Ej: A" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
+        </label>
+        
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Estado</span>
+          <div style="position: relative;">
+            <select name="estadoPuestoInline" [(ngModel)]="form.estadoPuesto" style="appearance: none; padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none; font-weight: 600;">
+              <option value="LIBRE">LIBRE</option>
+              <option value="OCUPADO">OCUPADO</option>
+              <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+            </select>
+            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #6b7280;">▼</span>
+          </div>
+        </label>
+        
+        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Medidas</span>
+          <input name="medidasInline" [(ngModel)]="form.medidas" placeholder="Ej: 2x2m" style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
+        </label>
+        
+        <label class="field" style="grid-column: 2 / -1; display: flex; flex-direction: column; gap: 0.4rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Giro</span>
+          <input name="giroInline" [(ngModel)]="form.giro" placeholder="Ej: Abarrotes, Ropa..." style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
+        </label>
+      </div>
+
+      <div class="actions" style="padding: 1.5rem; border-top: 1px solid #f3f4f6; display: flex; justify-content: flex-end; align-items: center; gap: 1rem; background-color: #f9fafb; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+        <button style="background: transparent; color: #374151; border: none; font-weight: 700; cursor: pointer; font-size: 0.95rem;" type="button" (click)="reset()">Limpiar</button>
+        <button style="background-color: #0f172a; color: white; border: none; border-radius: 6px; padding: 0.6rem 1.5rem; font-weight: 700; cursor: pointer; font-size: 0.95rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" type="button" (click)="save()">
+          Registrar
+        </button>
       </div>
     </form>
-
-    <app-detail-panel title="Resultado de saneamiento">
-      @if (saneamiento(); as saneamientoActual) {
-        <p>Puesto {{ saneamientoActual.idPuesto }}</p>
-        <p><app-status-badge [value]="saneamientoActual.tieneDeuda ? 'PENDIENTE' : 'ACTIVO'" /></p>
-        <p>Cuotas pendientes: {{ saneamientoActual.cantidadCuotasPendientes }}</p>
-        <p>Total pendiente: {{ money(saneamientoActual.totalPendiente) }}</p>
-        <p>{{ saneamientoActual.mensaje }}</p>
-      } @else {
-        <p>Selecciona la accion Saneamiento en un puesto para validar su deuda.</p>
-      }
-    </app-detail-panel>
   </section>
 
-  <section class="panel">
-    <div class="panel__header">
+  <!-- Data Table Panel -->
+  <section class="panel" style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
+    <div class="panel__header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #f3f4f6;">
       <div>
-        <h2 class="panel__title">Puestos registrados</h2>
-        <p class="panel__subtitle">
+        <h2 class="panel__title" style="font-size: 1.1rem; color: #111827; font-weight: 600;">Puestos registrados</h2>
+        <p class="panel__subtitle" style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">
           {{ loading() ? 'Cargando...' : puestos().length + ' registros' }}
         </p>
       </div>
+      
+      <div style="position: relative;">
+        <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.9rem;">🔍</span>
+        <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)" placeholder="Buscar por Código" style="padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 6px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 0.85rem; width: 260px; color: #6b7280; outline: none;" />
+      </div>
     </div>
-    <app-data-table
-      [columns]="columns"
-      [rows]="puestos()"
-      [actions]="actions"
-      (actionSelected)="handleAction($event)"
-    />
+    
+    <div style="padding: 0;">
+      <app-data-table
+        [columns]="columns"
+        [rows]="filteredPuestos()"
+        [actions]="actions"
+        (actionSelected)="handleAction($event)"
+      />
+    </div>
+
+    <div style="padding: 1rem 1.5rem; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #6b7280;">
+      <span>Mostrando {{ filteredPuestos().length === 0 ? 0 : 1 }} a {{ filteredPuestos().length }} de {{ filteredPuestos().length }} registros</span>
+    </div>
   </section>
 </div>
