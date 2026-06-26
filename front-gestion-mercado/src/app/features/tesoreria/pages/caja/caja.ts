@@ -67,6 +67,7 @@ export class Caja {
     this.tesoreriaApi.aperturarTurno(this.apertura).subscribe({
       next: () => {
         this.message.set('Turno aperturado.');
+        setTimeout(() => this.message.set(''), 3000);
         this.apertura = { montoInicial: 0, observacionApertura: null };
         this.load();
       },
@@ -90,6 +91,7 @@ export class Caja {
       .subscribe({
         next: () => {
           this.message.set('Turno cerrado.');
+          setTimeout(() => this.message.set(''), 3000);
           this.cierre = { idTurno: null, observacionCierre: null };
           this.load();
         },

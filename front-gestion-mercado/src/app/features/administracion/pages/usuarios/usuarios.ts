@@ -78,6 +78,7 @@ export class Usuarios {
     operation.subscribe({
       next: () => {
         this.message.set(this.editingId === null ? 'Usuario registrado.' : 'Usuario actualizado.');
+        setTimeout(() => this.message.set(''), 3000);
         this.reset();
         this.load();
       },
@@ -109,6 +110,7 @@ export class Usuarios {
     this.authApi.cambiarEstadoUsuario(usuario.idUsuario, { activo: !usuario.activo }).subscribe({
       next: () => {
         this.message.set('Estado de usuario actualizado.');
+        setTimeout(() => this.message.set(''), 3000);
         this.load();
       },
       error: (error: unknown) => {
@@ -131,6 +133,7 @@ export class Usuarios {
       .subscribe({
         next: () => {
           this.message.set('Contrasena actualizada.');
+          setTimeout(() => this.message.set(''), 3000);
           this.passwordReset = { idUsuario: null, password: '' };
         },
         error: (error: unknown) => {

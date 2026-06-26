@@ -82,6 +82,7 @@ export class Cuotas {
     this.tesoreriaApi.generarCuotasMasivas(this.masiva).subscribe({
       next: (cuotas) => {
         this.message.set(`${cuotas.length} cuotas generadas.`);
+        setTimeout(() => this.message.set(''), 3000);
         this.masiva = this.emptyMasiva();
         this.load();
       },
@@ -107,6 +108,7 @@ export class Cuotas {
     this.tesoreriaApi.generarCuotaEspecifica(this.especifica).subscribe({
       next: () => {
         this.message.set('Cuota especifica generada.');
+        setTimeout(() => this.message.set(''), 3000);
         this.especifica = this.emptyEspecifica();
         this.load();
       },
@@ -138,6 +140,7 @@ export class Cuotas {
     operation.subscribe({
       next: () => {
         this.message.set(event.action.id === 'anular' ? 'Cuota anulada.' : 'Cuota exonerada.');
+        setTimeout(() => this.message.set(''), 3000);
         this.motivoOperacion = '';
         this.generarReemplazo = false;
         this.montoReemplazo = null;

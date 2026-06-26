@@ -71,6 +71,7 @@ export class Eventos {
     this.auditoriaApi.registrarEvento(this.form).subscribe({
       next: () => {
         this.message.set('Evento registrado.');
+        setTimeout(() => this.message.set(''), 3000);
         this.form = {
           modulo: '',
           tipoEvento: '',

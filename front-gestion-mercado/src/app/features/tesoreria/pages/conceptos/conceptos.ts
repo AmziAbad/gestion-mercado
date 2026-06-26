@@ -71,6 +71,7 @@ export class Conceptos {
         this.message.set(
           this.editingId === null ? 'Concepto registrado.' : 'Concepto actualizado.',
         );
+        setTimeout(() => this.message.set(''), 3000);
         this.reset();
         this.load();
       },
@@ -100,6 +101,7 @@ export class Conceptos {
     this.tesoreriaApi.cambiarEstadoConcepto(concepto.idConcepto, !concepto.activo).subscribe({
       next: () => {
         this.message.set('Estado del concepto actualizado.');
+        setTimeout(() => this.message.set(''), 3000);
         this.load();
       },
       error: (error: unknown) => {

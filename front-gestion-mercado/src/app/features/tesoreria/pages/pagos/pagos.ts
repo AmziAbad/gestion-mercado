@@ -41,6 +41,7 @@ export class Pagos {
       next: (pago) => {
         this.pago.set(pago);
         this.message.set('Pago registrado.');
+        setTimeout(() => this.message.set(''), 3000);
         this.pagoRequest = { idCuota: null, metodoPago: 'EFECTIVO', numeroOperacion: null };
       },
       error: (error: unknown) => {
@@ -84,6 +85,7 @@ export class Pagos {
           this.pago.set(pago);
           this.motivoExtorno = '';
           this.message.set('Pago extornado.');
+          setTimeout(() => this.message.set(''), 3000);
         },
         error: (error: unknown) => {
           this.error.set(httpErrorMessage(error));
