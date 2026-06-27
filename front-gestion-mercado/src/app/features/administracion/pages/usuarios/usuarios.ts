@@ -25,8 +25,11 @@ export class Usuarios {
     { key: 'username', label: 'Usuario' },
     { key: 'nombreCompleto', label: 'Nombre' },
     { key: 'dni', label: 'DNI' },
+    { key: 'correo', label: 'Correo' },
+    { key: 'telefono', label: 'Telefono' },
     { key: 'rol', label: 'Rol', type: 'status' },
     { key: 'activo', label: 'Activo', type: 'boolean' },
+    { key: 'fechaRegistro', label: 'Fecha registro', type: 'date' },
   ];
 
   readonly actions: TableAction[] = [

@@ -22,8 +22,11 @@ export class Caja {
     { key: 'fechaCierre', label: 'Cierre', type: 'date' },
     { key: 'montoInicial', label: 'Inicial', type: 'currency' },
     { key: 'montoRecaudado', label: 'Recaudado', type: 'currency' },
+    { key: 'montoEsperado', label: 'Esperado', type: 'currency' },
     { key: 'diferencia', label: 'Diferencia', type: 'currency' },
     { key: 'estadoTurno', label: 'Estado', type: 'status' },
+    { key: 'observacionApertura', label: 'Obs. apertura' },
+    { key: 'observacionCierre', label: 'Obs. cierre' },
   ];
 
   turnos = signal<Turno[]>([]);

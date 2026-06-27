@@ -20,9 +20,16 @@ export class StatusBadge {
     return String(this.value ?? '-');
   }
 
-  cssClass(): string {
+  toneValue(): StatusTone {
+    if (typeof this.value === 'boolean') {
+      return this.value ? 'success' : 'muted';
+    }
+
     const key = String(this.value ?? '').toUpperCase();
-    const tone = this.tone ?? STATUS_TONES[key] ?? 'neutral';
-    return `badge badge--${tone}`;
+    return this.tone ?? STATUS_TONES[key] ?? 'neutral';
+  }
+
+  cssClass(): string {
+    return `badge badge--${this.toneValue()}`;
   }
 }

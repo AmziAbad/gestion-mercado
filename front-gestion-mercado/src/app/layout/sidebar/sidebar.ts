@@ -3,10 +3,11 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { NAVIGATION_GROUPS } from '../../core/constants/navigation';
 import { Session } from '../../core/services/session';
+import { AppIcon } from '../../shared/components/app-icon/app-icon';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, AppIcon],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })

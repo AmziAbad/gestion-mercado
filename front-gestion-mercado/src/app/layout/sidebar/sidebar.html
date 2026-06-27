@@ -1,7 +1,9 @@
 <aside class="sidebar">
   <div class="sidebar__brand">
-    <span class="sidebar__mark">GM</span>
-    <div>
+    <div class="sidebar__mark">
+      <app-icon name="brand" [size]="20" />
+    </div>
+    <div class="sidebar__brand-text">
       <strong>Gestion Mercado</strong>
       <span>Saneamiento financiero</span>
     </div>
@@ -16,8 +18,12 @@
             [routerLink]="link.route"
             routerLinkActive="is-active"
             [routerLinkActiveOptions]="{ exact: link.route === '/dashboard' }"
+            class="sidebar__link"
           >
-            {{ link.label }}
+            <span class="sidebar__link-icon">
+              <app-icon [name]="link.icon" />
+            </span>
+            <span class="sidebar__link-text">{{ link.label }}</span>
           </a>
         }
       </section>

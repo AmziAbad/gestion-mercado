@@ -24,6 +24,7 @@ export class Puestos {
     { key: 'medidas', label: 'Medidas' },
     { key: 'giro', label: 'Giro' },
     { key: 'estadoPuesto', label: 'Estado', type: 'status' },
+    { key: 'fechaRegistro', label: 'Fecha registro', type: 'date' },
   ];
 
   readonly actions = [
