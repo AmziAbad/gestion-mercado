@@ -1,8 +1,5 @@
 <div class="page">
-  <app-page-header
-    title="Panel general"
-    subtitle="Vista operativa del saneamiento financiero y la gobernanza patrimonial."
-  >
+  <app-page-header title="Panel general" subtitle="Indicadores principales de operacion.">
     <button class="button button--secondary" type="button" (click)="load()">Actualizar</button>
   </app-page-header>
 
@@ -10,27 +7,197 @@
     <div class="message message--error">{{ error() }}</div>
   }
 
-  <section class="dashboard-hero">
-    <div>
-      <h2>Bienvenido a Gestion Mercado</h2>
-      <p>
-        Monitorea las operaciones disponibles para tu rol dentro del saneamiento financiero y la
-        gobernanza patrimonial.
-      </p>
-    </div>
-    <div class="dashboard-hero__icon">
-      <app-icon name="dashboard" [size]="48" />
-    </div>
-  </section>
-
   <section class="dashboard-grid">
     @for (metric of visibleMetrics(); track metric.key) {
       <app-summary-card
         [label]="metric.label"
-        [value]="summary()[metric.key]"
+        [value]="metricValue(metric)"
         [helper]="metric.helper"
         [icon]="metric.icon"
       />
+    }
+  </section>
+
+  <section class="dashboard-panels">
+    @if (canViewPatrimonio()) {
+      <article class="panel dashboard-panel">
+        <div class="panel__header">
+          <div>
+            <h2 class="panel__title">Ocupacion del mercado</h2>
+            <p class="panel__subtitle">{{ occupancy().total }} puestos registrados</p>
+          </div>
+        </div>
+        <div class="panel__body dashboard-occupancy">
+          <div class="donut" [style.background]="occupationBackground()">
+            <span>{{ percent(occupancy().porcentajeOcupacion) }}</span>
+          </div>
+          <div class="dashboard-list">
+            <div>
+              <span class="dot dot--blue"></span>
+              <strong>{{ occupancy().ocupados }}</strong>
+              <small>Ocupados</small>
+            </div>
+            <div>
+              <span class="dot dot--green"></span>
+              <strong>{{ occupancy().libres }}</strong>
+              <small>Libres</small>
+            </div>
+            <div>
+              <span class="dot dot--amber"></span>
+              <strong>{{ occupancy().mantenimiento }}</strong>
+              <small>Mantenimiento</small>
+            </div>
+          </div>
+        </div>
+      </article>
+    }
+
+    @if (canViewTesoreria()) {
+      <article class="panel dashboard-panel">
+        <div class="panel__header">
+          <div>
+            <h2 class="panel__title">Caja del dia</h2>
+            <p class="panel__subtitle">
+              @if (activeTurn(); as turno) {
+                Turno abierto #{{ turno.idTurno }}
+              } @else {
+                Sin turno abierto
+              }
+            </p>
+          </div>
+        </div>
+        <div class="panel__body dashboard-cash">
+          <div>
+            <span>Recaudado</span>
+            <strong>{{ money(summary().recaudadoHoy) }}</strong>
+          </div>
+          <div>
+            <span>Pagos</span>
+            <strong>{{ summary().pagosHoy }}</strong>
+          </div>
+          <div>
+            <span>Turnos abiertos</span>
+            <strong>{{ summary().turnosAbiertos }}</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel dashboard-panel">
+        <div class="panel__header">
+          <div>
+            <h2 class="panel__title">Metodos de pago</h2>
+            <p class="panel__subtitle">Distribucion de ingresos del dia</p>
+          </div>
+        </div>
+        <div class="panel__body">
+          @if (paymentMethods().length > 0) {
+            <div class="bar-list">
+              @for (item of paymentMethods(); track item.label) {
+                <div class="bar-row">
+                  <div class="bar-row__label">
+                    <span>{{ item.label }}</span>
+                    <strong>{{ item.formatted }}</strong>
+                  </div>
+                  <div class="bar">
+                    <span [style.width.%]="item.percent"></span>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="empty-state">No hay pagos registrados hoy.</p>
+          }
+        </div>
+      </article>
+
+      <article class="panel dashboard-panel">
+        <div class="panel__header">
+          <div>
+            <h2 class="panel__title">Estado de cuotas</h2>
+            <p class="panel__subtitle">{{ summary().cuotasPendientes }} pendientes</p>
+          </div>
+        </div>
+        <div class="panel__body">
+          <div class="bar-list">
+            @for (item of quotaStatus(); track item.label) {
+              <div class="bar-row">
+                <div class="bar-row__label">
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.formatted }}</strong>
+                </div>
+                <div class="bar bar--muted">
+                  <span [style.width.%]="item.percent"></span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </article>
+
+      <article class="panel dashboard-panel dashboard-panel--wide">
+        <div class="panel__header">
+          <div>
+            <h2 class="panel__title">Deudas principales</h2>
+            <p class="panel__subtitle">Cuotas pendientes con mayor monto</p>
+          </div>
+        </div>
+        <div class="panel__body">
+          @if (topDebts().length > 0) {
+            <div class="compact-table">
+              <div class="compact-table__head">
+                <span>Puesto</span>
+                <span>Cuota</span>
+                <span>Periodo</span>
+                <span>Monto</span>
+              </div>
+              @for (debt of topDebts(); track debt.idCuota) {
+                <div class="compact-table__row">
+                  <span>{{ debt.idPuesto }}</span>
+                  <span>{{ debt.idCuota }}</span>
+                  <span>{{ debt.periodo }}</span>
+                  <strong>{{ money(debt.monto) }}</strong>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="empty-state">No hay deudas pendientes para mostrar.</p>
+          }
+        </div>
+      </article>
+    }
+
+    @if (recentActivity().length > 0) {
+      <article class="panel dashboard-panel dashboard-panel--wide">
+        <div class="panel__header">
+          <div>
+            <h2 class="panel__title">Actividad reciente</h2>
+            <p class="panel__subtitle">Ultimos movimientos visibles para el rol</p>
+          </div>
+        </div>
+        <div class="panel__body activity-list">
+          @for (
+            activity of recentActivity();
+            track activity.type + activity.label + activity.date
+          ) {
+            <div class="activity-item">
+              <div class="activity-item__icon">
+                @if (activity.type === 'transferencia') {
+                  <app-icon name="transferencias" [size]="18" />
+                } @else if (activity.type === 'anulacion') {
+                  <app-icon name="anulaciones" [size]="18" />
+                } @else {
+                  <app-icon name="eventos" [size]="18" />
+                }
+              </div>
+              <div>
+                <strong>{{ activity.label }}</strong>
+                <span>{{ activity.detail }}</span>
+              </div>
+              <small>{{ activity.date }}</small>
+            </div>
+          }
+        </div>
+      </article>
     }
   </section>
 </div>

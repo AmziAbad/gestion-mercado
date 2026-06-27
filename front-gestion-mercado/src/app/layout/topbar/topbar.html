@@ -14,12 +14,12 @@
   >
     @if (user(); as currentUser) {
       <div>
-        <span style="display: block; font-weight: bold; font-size: 0.9rem; color: #111827"
-          >Lucía Pérez</span
-        >
-        <small style="display: block; font-size: 0.65rem; color: #6b7280; font-weight: bold"
-          >ADMINISTRADOR</small
-        >
+        <span style="display: block; font-weight: bold; font-size: 0.9rem; color: #111827">{{
+          currentUser.nombreCompleto || currentUser.username
+        }}</span>
+        <small style="display: block; font-size: 0.65rem; color: #6b7280; font-weight: bold">{{
+          currentUser.rol
+        }}</small>
       </div>
       <div style="width: 1px; height: 32px; background-color: #e5e7eb; margin: 0 0.5rem"></div>
       <button
