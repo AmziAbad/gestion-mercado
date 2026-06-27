@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
-import { TableActionEvent, TableColumn } from '../../../../core/models/table.models';
+import { TableAction, TableActionEvent, TableColumn } from '../../../../core/models/table.models';
 import {
   RolUsuario,
   Usuario,
@@ -32,9 +32,13 @@ export class Usuarios {
     { key: 'fechaRegistro', label: 'Fecha registro', type: 'date' },
   ];
 
-  readonly actions = [
-    { id: 'edit', label: 'Editar', tone: 'secondary' as const },
-    { id: 'toggle', label: 'Activar/Desactivar', tone: 'secondary' as const },
+  readonly actions: TableAction[] = [
+    { id: 'edit', label: 'Editar', tone: 'secondary' },
+    {
+      id: 'toggle',
+      label: (row: any) => (row.activo ? 'Desactivar' : 'Activar'),
+      tone: (row: any) => (row.activo ? 'danger' : 'success'),
+    },
   ];
 
   usuarios = signal<Usuario[]>([]);
@@ -81,6 +85,7 @@ export class Usuarios {
     operation.subscribe({
       next: () => {
         this.message.set(this.editingId === null ? 'Usuario registrado.' : 'Usuario actualizado.');
+        setTimeout(() => this.message.set(''), 3000);
         this.reset();
         this.load();
       },
@@ -112,6 +117,7 @@ export class Usuarios {
     this.authApi.cambiarEstadoUsuario(usuario.idUsuario, { activo: !usuario.activo }).subscribe({
       next: () => {
         this.message.set('Estado de usuario actualizado.');
+        setTimeout(() => this.message.set(''), 3000);
         this.load();
       },
       error: (error: unknown) => {
@@ -134,6 +140,7 @@ export class Usuarios {
       .subscribe({
         next: () => {
           this.message.set('Contrasena actualizada.');
+          setTimeout(() => this.message.set(''), 3000);
           this.passwordReset = { idUsuario: null, password: '' };
         },
         error: (error: unknown) => {

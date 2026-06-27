@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
@@ -12,7 +12,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-puestos',
-  imports: [FormsModule, PageHeader, DataTable, DetailPanel, StatusBadge],
+  imports: [FormsModule, PageHeader, DataTable, StatusBadge],
   templateUrl: './puestos.html',
   styleUrl: './puestos.css',
 })
@@ -33,6 +33,18 @@ export class Puestos {
   ];
 
   puestos = signal<Puesto[]>([]);
+  searchTerm = signal('');
+
+  filteredPuestos = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    if (!term) return this.puestos();
+    
+    return this.puestos().filter(p => 
+      p.codigoPuesto.toLowerCase().includes(term) ||
+      (p.pabellon && p.pabellon.toLowerCase().includes(term)) ||
+      (p.giro && p.giro.toLowerCase().includes(term))
+    );
+  });
   saneamiento = signal<Saneamiento | null>(null);
   form: PuestoRequest = this.emptyForm();
   editingId: number | null = null;
@@ -75,12 +87,18 @@ export class Puestos {
         this.message.set(this.editingId === null ? 'Puesto registrado.' : 'Puesto actualizado.');
         this.reset();
         this.load();
+
+        setTimeout(() => {
+          this.message.set('');
+        }, 3000);
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
       },
     });
   }
+
+  saneamientoModalOpen = signal(false);
 
   handleAction(event: TableActionEvent): void {
     const puesto = event.row as Puesto;
@@ -104,6 +122,8 @@ export class Puestos {
 
   consultarSaneamiento(idPuesto: number): void {
     this.error.set('');
+    this.saneamiento.set(null); // Clear previous state
+    this.saneamientoModalOpen.set(true); // Open modal to show loading or just open it
     this.patrimonioApi.consultarSaneamiento(idPuesto).subscribe({
       next: (saneamiento) => {
         this.saneamiento.set(saneamiento);
@@ -112,6 +132,10 @@ export class Puestos {
         this.error.set(httpErrorMessage(error));
       },
     });
+  }
+
+  closeSaneamientoModal(): void {
+    this.saneamientoModalOpen.set(false);
   }
 
   money(value: number): string {

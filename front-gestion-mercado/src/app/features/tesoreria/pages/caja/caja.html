@@ -68,12 +68,12 @@
           {{ loading() ? 'Cargando...' : turnos().length + ' registros' }}
         </p>
       </div>
-      <form class="actions" (ngSubmit)="load()">
-        <label class="field">
-          <span>Fecha</span>
-          <input name="fechaTurnos" type="date" [(ngModel)]="fecha" />
+      <form class="actions" (ngSubmit)="load()" style="display: flex; align-items: flex-end; gap: 1rem; margin-top: 0.5rem;">
+        <label class="field" style="margin: 0; padding: 0;">
+          <span style="font-size: 0.85rem; margin-bottom: 0.25rem;">Fecha</span>
+          <input name="fechaTurnos" type="date" [(ngModel)]="fecha" style="height: 40px; margin: 0; box-sizing: border-box;" />
         </label>
-        <button class="button button--secondary" type="submit">Filtrar</button>
+        <button class="button button--primary" type="submit" style="height: 40px; margin: 0; box-sizing: border-box; display: flex; align-items: center; justify-content: center;">Filtrar</button>
       </form>
     </div>
     <app-data-table [columns]="columns" [rows]="turnos()" />

@@ -72,6 +72,7 @@ export class Anulaciones {
     this.auditoriaApi.registrarAnulacion(this.form).subscribe({
       next: () => {
         this.message.set('Anulacion auditada.');
+        setTimeout(() => this.message.set(''), 3000);
         this.form = {
           tipoAnulacion: 'CUOTA',
           idRegistroAfectado: null,

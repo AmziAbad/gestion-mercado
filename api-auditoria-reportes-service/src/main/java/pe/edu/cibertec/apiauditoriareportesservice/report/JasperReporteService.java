@@ -68,17 +68,17 @@ public class JasperReporteService {
         design.setTitle(titleBand);
 
         JRDesignBand header = new JRDesignBand();
-        header.setHeight(24);
+        header.setHeight(22);
         header.addElement(staticText("Referencia", 0, 0, 170, true));
-        header.addElement(staticText("Detalle", 175, 0, 220, true));
-        header.addElement(staticText("Monto/Estado", 400, 0, 115, true));
+        header.addElement(staticText("Detalle", 170, 0, 225, true));
+        header.addElement(staticText("Monto/Estado", 395, 0, 120, true));
         design.setColumnHeader(header);
 
         JRDesignBand detail = new JRDesignBand();
         detail.setHeight(22);
         detail.addElement(textField("$F{columna1}", 0, 0, 170));
-        detail.addElement(textField("$F{columna2}", 175, 0, 220));
-        detail.addElement(textField("$F{columna3}", 400, 0, 115));
+        detail.addElement(textField("$F{columna2}", 170, 0, 225));
+        detail.addElement(textField("$F{columna3}", 395, 0, 120));
         ((JRDesignSection) design.getDetailSection()).addBand(detail);
 
         return design;
@@ -96,9 +96,14 @@ public class JasperReporteService {
         staticText.setX(x);
         staticText.setY(y);
         staticText.setWidth(width);
-        staticText.setHeight(20);
+        staticText.setHeight(22);
         staticText.setBold(bold);
         staticText.setText(text);
+        staticText.getLineBox().getPen().setLineWidth(0.5f);
+        staticText.getLineBox().setPadding(4);
+        staticText.setMode(net.sf.jasperreports.engine.type.ModeEnum.OPAQUE);
+        staticText.setBackcolor(new java.awt.Color(240, 245, 255));
+        staticText.setVerticalTextAlign(net.sf.jasperreports.engine.type.VerticalTextAlignEnum.MIDDLE);
         return staticText;
     }
 
@@ -107,8 +112,11 @@ public class JasperReporteService {
         textField.setX(x);
         textField.setY(y);
         textField.setWidth(width);
-        textField.setHeight(20);
+        textField.setHeight(22);
         textField.setExpression(new JRDesignExpression(expression));
+        textField.getLineBox().getPen().setLineWidth(0.5f);
+        textField.getLineBox().setPadding(4);
+        textField.setVerticalTextAlign(net.sf.jasperreports.engine.type.VerticalTextAlignEnum.MIDDLE);
         return textField;
     }
 }

@@ -41,7 +41,9 @@ export class TesoreriaApi {
   }
 
   cambiarEstadoConcepto(idConcepto: number, activo: boolean) {
-    return this.http.patch<Concepto>(`${API_ENDPOINTS.conceptos}/${idConcepto}/estado`, { activo });
+    return this.http.patch<Concepto>(`${API_ENDPOINTS.conceptos}/${idConcepto}/estado`, null, {
+      params: { activo: activo.toString() }
+    });
   }
 
   activarConcepto(idConcepto: number) {

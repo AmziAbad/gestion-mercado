@@ -79,6 +79,7 @@ export class Transferencias {
     this.patrimonioApi.registrarTransferencia(this.form).subscribe({
       next: () => {
         this.message.set('Transferencia registrada.');
+        setTimeout(() => this.message.set(''), 3000);
         this.form = {
           idPuesto: null,
           idSocioEntrante: null,

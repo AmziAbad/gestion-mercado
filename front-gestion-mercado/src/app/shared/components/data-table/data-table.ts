@@ -41,7 +41,11 @@ export class DataTable {
     }
 
     if (column.type === 'date') {
-      return new Intl.DateTimeFormat('es-PE').format(new Date(String(value)));
+      let dateString = String(value);
+      if (dateString.length === 10) {
+        dateString += 'T12:00:00';
+      }
+      return new Intl.DateTimeFormat('es-PE').format(new Date(dateString));
     }
 
     if (column.type === 'boolean') {
@@ -53,5 +57,14 @@ export class DataTable {
 
   emitAction(action: TableAction, row: unknown): void {
     this.actionSelected.emit({ action, row });
+  }
+
+  getActionLabel(action: TableAction, row: unknown): string {
+    return typeof action.label === 'function' ? action.label(row) : action.label;
+  }
+
+  getActionTone(action: TableAction, row: unknown): string {
+    const tone = typeof action.tone === 'function' ? action.tone(row) : action.tone;
+    return tone ? `table-action--${tone}` : '';
   }
 }

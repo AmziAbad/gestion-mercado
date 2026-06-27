@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
@@ -31,7 +31,21 @@ export class Socios {
 
   readonly actions = [{ id: 'edit', label: 'Editar', tone: 'secondary' as const }];
 
+  showForm = false;
   socios = signal<Socio[]>([]);
+  searchTerm = signal('');
+
+  filteredSocios = computed(() => {
+    const term = this.searchTerm().toLowerCase();
+    if (!term) return this.socios();
+    
+    return this.socios().filter(s => 
+      s.dni.toLowerCase().includes(term) ||
+      s.nombres.toLowerCase().includes(term) ||
+      s.apellidos.toLowerCase().includes(term)
+    );
+  });
+
   form: SocioRequest = this.emptyForm();
   editingId: number | null = null;
   loading = signal(false);
@@ -40,6 +54,13 @@ export class Socios {
 
   constructor(private readonly patrimonioApi: PatrimonioApi) {
     this.load();
+  }
+
+  toggleForm() {
+    this.showForm = !this.showForm;
+    if (!this.showForm) {
+      this.reset();
+    }
   }
 
   load(): void {
@@ -73,7 +94,12 @@ export class Socios {
       next: () => {
         this.message.set(this.editingId === null ? 'Socio registrado.' : 'Socio actualizado.');
         this.reset();
+        this.showForm = false;
         this.load();
+
+        setTimeout(() => {
+          this.message.set('');
+        }, 3000);
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
@@ -99,6 +125,7 @@ export class Socios {
       estado: socio.estado,
       esAsociacion: socio.esAsociacion,
     };
+    this.showForm = true;
   }
 
   reset(): void {
@@ -118,5 +145,11 @@ export class Socios {
       estado: 'ACTIVO',
       esAsociacion: false,
     };
+  }
+
+  formatError(err: string): string {
+    if (!err) return '';
+    const parts = err.split(',').map(s => s.trim()).filter(s => s && !s.toLowerCase().match(/^id\b/));
+    return parts.length > 0 ? parts.join(', ') : err;
   }
 }

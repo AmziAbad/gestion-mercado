@@ -48,6 +48,8 @@ export class Cuotas {
   motivoOperacion = '';
   generarReemplazo = false;
   montoReemplazo: number | null = null;
+  selectedCuota: Cuota | null = null;
+  currentAction: 'anular' | 'exonerar' | null = null;
   loading = signal(false);
   message = signal('');
   error = signal('');
@@ -89,6 +91,7 @@ export class Cuotas {
     this.tesoreriaApi.generarCuotasMasivas(this.masiva).subscribe({
       next: (cuotas) => {
         this.message.set(`${cuotas.length} cuotas generadas.`);
+        setTimeout(() => this.message.set(''), 3000);
         this.masiva = this.emptyMasiva();
         this.load();
       },
@@ -114,6 +117,7 @@ export class Cuotas {
     this.tesoreriaApi.generarCuotaEspecifica(this.especifica).subscribe({
       next: () => {
         this.message.set('Cuota especifica generada.');
+        setTimeout(() => this.message.set(''), 3000);
         this.especifica = this.emptyEspecifica();
         this.load();
       },
@@ -125,33 +129,53 @@ export class Cuotas {
 
   handleAction(event: TableActionEvent): void {
     const cuota = event.row as Cuota;
+    this.selectedCuota = cuota;
+    this.currentAction = event.action.id as 'anular' | 'exonerar';
+    this.motivoOperacion = '';
+    this.generarReemplazo = false;
+    this.montoReemplazo = null;
+  }
+
+  closeModal(): void {
+    this.selectedCuota = null;
+    this.currentAction = null;
+    this.motivoOperacion = '';
+    this.generarReemplazo = false;
+    this.montoReemplazo = null;
+  }
+
+  confirmarOperacion(): void {
+    if (!this.selectedCuota || !this.currentAction) return;
 
     if (!this.motivoOperacion.trim()) {
-      this.error.set('Escribe un motivo antes de anular o exonerar.');
+      this.error.set('Escribe un motivo antes de continuar.');
+      this.closeModal();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
     const operation =
-      event.action.id === 'anular'
-        ? this.tesoreriaApi.anularCuota(cuota.idCuota, {
+      this.currentAction === 'anular'
+        ? this.tesoreriaApi.anularCuota(this.selectedCuota.idCuota, {
             motivoAnulacion: this.motivoOperacion,
             generarReemplazo: this.generarReemplazo,
             montoReemplazo: this.montoReemplazo,
           })
-        : this.tesoreriaApi.exonerarCuota(cuota.idCuota, {
+        : this.tesoreriaApi.exonerarCuota(this.selectedCuota.idCuota, {
             motivoExoneracion: this.motivoOperacion,
           });
 
     operation.subscribe({
       next: () => {
-        this.message.set(event.action.id === 'anular' ? 'Cuota anulada.' : 'Cuota exonerada.');
-        this.motivoOperacion = '';
-        this.generarReemplazo = false;
-        this.montoReemplazo = null;
+        this.message.set(this.currentAction === 'anular' ? 'Cuota anulada.' : 'Cuota exonerada.');
+        setTimeout(() => this.message.set(''), 3000);
+        this.closeModal();
         this.load();
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
+        this.closeModal();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       },
     });
   }

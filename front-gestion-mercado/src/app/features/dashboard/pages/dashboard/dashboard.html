@@ -3,7 +3,7 @@
     title="Panel general"
     subtitle="Vista operativa del saneamiento financiero y la gobernanza patrimonial."
   >
-    <button class="button button--secondary" type="button" (click)="load()" [disabled]="loading()">
+    <button class="button button--secondary" type="button" (click)="load()">
       Actualizar
     </button>
   </app-page-header>
@@ -12,36 +12,57 @@
     <div class="message message--error">{{ error() }}</div>
   }
 
+  <!-- Hero Banner -->
+  <div style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); border-radius: 20px; padding: 2.5rem 3rem; color: white; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);">
+    <div>
+      <h2 style="font-size: 2.25rem; font-weight: 800; margin: 0 0 0.5rem 0; letter-spacing: -0.025em;">
+        Bienvenido a Gestión Mercado
+      </h2>
+      <p style="font-size: 1.1rem; opacity: 0.9; margin: 0; max-width: 500px; line-height: 1.5;">
+        Monitorea el saneamiento financiero, patrimonio y las operaciones diarias del mercado en tiempo real.
+      </p>
+    </div>
+    <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.9;"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+    </div>
+  </div>
+
   <section class="dashboard-grid">
     <app-summary-card
       label="Socios registrados"
       [value]="summary().socios"
       helper="Padron administrativo"
+      icon='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
     />
     <app-summary-card
       label="Puestos registrados"
       [value]="summary().puestos"
       helper="Unidades fisicas"
+      icon='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M19 21v-4"/><path d="M19 17a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2"/><path d="M5 21v-4"/><path d="M8 21v-4"/><path d="M11 21v-4"/><path d="M14 21v-4"/><path d="M17 21v-4"/><path d="M9 11V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v8"/></svg>'
     />
     <app-summary-card
       label="Contratos activos"
       [value]="summary().contratosActivos"
       helper="Ocupacion vigente"
+      icon='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>'
     />
     <app-summary-card
       label="Cuotas pendientes"
       [value]="summary().cuotasPendientes"
       helper="Deuda por cobrar"
+      icon='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>'
     />
     <app-summary-card
       label="Transferencias"
       [value]="summary().transferencias"
       helper="Traspasos registrados"
+      icon='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>'
     />
     <app-summary-card
       label="Eventos de auditoria"
       [value]="summary().eventosAuditoria"
       helper="Trazabilidad"
+      icon='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><circle cx="11.5" cy="14.5" r="2.5"/><path d="m13.25 16.25 3.5 3.5"/></svg>'
     />
   </section>
 
@@ -52,18 +73,33 @@
         <p class="panel__subtitle">Accesos principales alineados a los casos de uso del backend.</p>
       </div>
     </div>
-    <div class="panel__body dashboard-flow">
-      <article>
-        <strong>Patrimonio</strong>
-        <span>Socios, puestos, contratos, saneamiento y transferencias.</span>
+    <div class="panel__body dashboard-flow" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; padding: 2rem;">
+      <article style="background: #f8fafc; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid #3b82f6; transition: transform 0.2s;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+          <div style="background: #eff6ff; padding: 0.5rem; border-radius: 8px; color: #3b82f6;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          </div>
+          <strong style="font-size: 1.1rem; color: #0f172a;">Patrimonio</strong>
+        </div>
+        <span style="color: #64748b; font-size: 0.95rem; line-height: 1.5; display: block;">Socios, puestos, contratos, saneamiento y transferencias.</span>
       </article>
-      <article>
-        <strong>Tesoreria</strong>
-        <span>Conceptos, cuotas, caja, pagos, comprobantes, anulaciones y extornos.</span>
+      <article style="background: #f8fafc; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid #10b981; transition: transform 0.2s;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+          <div style="background: #ecfdf5; padding: 0.5rem; border-radius: 8px; color: #10b981;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <strong style="font-size: 1.1rem; color: #0f172a;">Tesoreria</strong>
+        </div>
+        <span style="color: #64748b; font-size: 0.95rem; line-height: 1.5; display: block;">Conceptos, cuotas, caja, pagos, comprobantes, anulaciones y extornos.</span>
       </article>
-      <article>
-        <strong>Auditoria y reportes</strong>
-        <span>Eventos, anulaciones, padron de habiles, morosidad y flujo de caja.</span>
+      <article style="background: #f8fafc; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; border-left: 4px solid #8b5cf6; transition: transform 0.2s;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+          <div style="background: #f5f3ff; padding: 0.5rem; border-radius: 8px; color: #8b5cf6;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <strong style="font-size: 1.1rem; color: #0f172a;">Auditoria y reportes</strong>
+        </div>
+        <span style="color: #64748b; font-size: 0.95rem; line-height: 1.5; display: block;">Eventos, anulaciones, padron de habiles, morosidad y flujo de caja.</span>
       </article>
     </div>
   </section>
