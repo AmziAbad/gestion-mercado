@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
+import { Modal } from '../../../../shared/components/modal/modal';
 import {
   Cuota,
   CuotaEspecificaRequest,
@@ -14,7 +15,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-cuotas',
-  imports: [FormsModule, PageHeader, DataTable],
+  imports: [FormsModule, PageHeader, DataTable, Modal],
   templateUrl: './cuotas.html',
   styleUrl: './cuotas.css',
 })
@@ -45,6 +46,8 @@ export class Cuotas {
   cuotas = signal<Cuota[]>([]);
   masiva: CuotaMasivaRequest = this.emptyMasiva();
   especifica: CuotaEspecificaRequest = this.emptyEspecifica();
+  showMasivaForm = false;
+  showEspecificaForm = false;
   motivoOperacion = '';
   generarReemplazo = false;
   montoReemplazo: number | null = null;
@@ -92,7 +95,7 @@ export class Cuotas {
       next: (cuotas) => {
         this.message.set(`${cuotas.length} cuotas generadas.`);
         setTimeout(() => this.message.set(''), 3000);
-        this.masiva = this.emptyMasiva();
+        this.closeMasivaForm();
         this.load();
       },
       error: (error: unknown) => {
@@ -118,13 +121,33 @@ export class Cuotas {
       next: () => {
         this.message.set('Cuota especifica generada.');
         setTimeout(() => this.message.set(''), 3000);
-        this.especifica = this.emptyEspecifica();
+        this.closeEspecificaForm();
         this.load();
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
       },
     });
+  }
+
+  openMasivaForm(): void {
+    this.masiva = this.emptyMasiva();
+    this.showMasivaForm = true;
+  }
+
+  closeMasivaForm(): void {
+    this.showMasivaForm = false;
+    this.masiva = this.emptyMasiva();
+  }
+
+  openEspecificaForm(): void {
+    this.especifica = this.emptyEspecifica();
+    this.showEspecificaForm = true;
+  }
+
+  closeEspecificaForm(): void {
+    this.showEspecificaForm = false;
+    this.especifica = this.emptyEspecifica();
   }
 
   handleAction(event: TableActionEvent): void {

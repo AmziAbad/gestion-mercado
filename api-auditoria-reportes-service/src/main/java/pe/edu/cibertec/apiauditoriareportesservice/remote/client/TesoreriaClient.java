@@ -23,6 +23,7 @@ public interface TesoreriaClient {
 
     @GetMapping("/reportes/flujo-caja-diario/datos")
     List<FlujoCajaRemoteResponse> flujoCaja(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) Integer idTurno
     );
 }

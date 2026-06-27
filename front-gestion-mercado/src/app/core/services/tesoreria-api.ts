@@ -42,7 +42,7 @@ export class TesoreriaApi {
 
   cambiarEstadoConcepto(idConcepto: number, activo: boolean) {
     return this.http.patch<Concepto>(`${API_ENDPOINTS.conceptos}/${idConcepto}/estado`, null, {
-      params: { activo: activo.toString() }
+      params: { activo: activo.toString() },
     });
   }
 
@@ -82,6 +82,12 @@ export class TesoreriaApi {
     return this.http.get<EstadoCuenta>(`${API_ENDPOINTS.estadosCuenta}/puesto/${idPuesto}`);
   }
 
+  estadoCuentaPorCodigoPuesto(codigoPuesto: string) {
+    return this.http.get<EstadoCuenta>(
+      `${API_ENDPOINTS.estadosCuenta}/puesto/codigo/${encodeURIComponent(codigoPuesto)}`,
+    );
+  }
+
   resumenDeudaPorPuesto(idPuesto: number) {
     return this.http.get<EstadoCuenta>(`${API_ENDPOINTS.estadosCuenta}/puesto/${idPuesto}/resumen`);
   }
@@ -119,6 +125,10 @@ export class TesoreriaApi {
     return this.http.patch<Pago>(`${API_ENDPOINTS.pagos}/${idPago}/extornar`, request);
   }
 
+  listarComprobantes() {
+    return this.http.get<Comprobante[]>(API_ENDPOINTS.comprobantes);
+  }
+
   obtenerComprobante(idComprobante: number) {
     return this.http.get<Comprobante>(`${API_ENDPOINTS.comprobantes}/${idComprobante}`);
   }
@@ -127,14 +137,30 @@ export class TesoreriaApi {
     return this.http.get<Comprobante>(`${API_ENDPOINTS.comprobantes}/pago/${idPago}`);
   }
 
+  obtenerComprobantePorCuota(idCuota: number) {
+    return this.http.get<Comprobante>(`${API_ENDPOINTS.comprobantes}/cuota/${idCuota}`);
+  }
+
+  obtenerComprobantePorNumero(numeroComprobante: string) {
+    return this.http.get<Comprobante>(
+      `${API_ENDPOINTS.comprobantes}/numero/${encodeURIComponent(numeroComprobante)}`,
+    );
+  }
+
   datosMorosidad() {
     return this.http.get<DeudaPendienteReporte[]>(`${API_ENDPOINTS.reportes}/morosidad/datos`);
   }
 
-  datosFlujoCaja(fecha?: string) {
-    const params = fecha ? new HttpParams().set('fecha', fecha) : undefined;
+  datosFlujoCaja(fecha?: string, idTurno?: number | null) {
+    let params = new HttpParams();
+    if (fecha) {
+      params = params.set('fecha', fecha);
+    }
+    if (idTurno !== undefined && idTurno !== null) {
+      params = params.set('idTurno', idTurno);
+    }
     return this.http.get<FlujoCajaReporte[]>(`${API_ENDPOINTS.reportes}/flujo-caja-diario/datos`, {
-      params,
+      params: params.keys().length ? params : undefined,
     });
   }
 }

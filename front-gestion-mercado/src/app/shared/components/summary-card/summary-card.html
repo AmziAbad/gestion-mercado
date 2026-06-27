@@ -1,6 +1,6 @@
 <article class="summary-card">
-  <div style="display: flex; justify-content: space-between; align-items: flex-start; z-index: 1;">
-    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+  <div class="summary-card__content">
+    <div class="summary-card__text">
       <span>{{ label }}</span>
       <strong>{{ value }}</strong>
       @if (helper) {
@@ -8,7 +8,8 @@
       }
     </div>
     @if (icon) {
-      <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: center; color: #3b82f6; font-size: 1.5rem;" [innerHTML]="icon">
+      <div class="summary-card__icon">
+        <app-icon [name]="icon" [size]="24" />
       </div>
     }
   </div>

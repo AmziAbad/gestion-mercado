@@ -10,6 +10,7 @@ import pe.edu.cibertec.apiauditoriareportesservice.dto.PadronHabilResponse;
 import pe.edu.cibertec.apiauditoriareportesservice.dto.ReporteFila;
 import pe.edu.cibertec.apiauditoriareportesservice.entity.AuditoriaAnulacion;
 import pe.edu.cibertec.apiauditoriareportesservice.entity.AuditoriaEvento;
+import pe.edu.cibertec.apiauditoriareportesservice.entity.TipoAnulacion;
 import pe.edu.cibertec.apiauditoriareportesservice.mapper.AuditoriaMapper;
 import pe.edu.cibertec.apiauditoriareportesservice.remote.client.PatrimonioClient;
 import pe.edu.cibertec.apiauditoriareportesservice.remote.client.TesoreriaClient;
@@ -88,6 +89,27 @@ public class AuditoriaReporteServiceImpl implements AuditoriaReporteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<AuditoriaEventoResponse> listarEventosPorRegistro(String entidadAfectada, Integer idRegistroAfectado) {
+        return eventoRepository.findByEntidadAfectadaAndIdRegistroAfectado(entidadAfectada, idRegistroAfectado)
+                .stream()
+                .map(AuditoriaMapper::toEventoResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AuditoriaAnulacionResponse> listarAnulacionesPorRegistro(String tipoAnulacion, Integer idRegistroAfectado) {
+        return anulacionRepository.findByTipoAnulacionAndIdRegistroAfectado(
+                        TipoAnulacion.valueOf(tipoAnulacion.toUpperCase()),
+                        idRegistroAfectado
+                )
+                .stream()
+                .map(AuditoriaMapper::toAnulacionResponse)
+                .toList();
+    }
+
+    @Override
     public List<PadronHabilResponse> padronHabiles() {
         return patrimonioClient.listarSociosActivosConContrato().stream()
                 .filter(socio -> deudaSocio(socio.idSocio()).compareTo(BigDecimal.ZERO) == 0)
@@ -108,8 +130,8 @@ public class AuditoriaReporteServiceImpl implements AuditoriaReporteService {
     }
 
     @Override
-    public List<FlujoCajaRemoteResponse> flujoCajaDiario(LocalDate fecha) {
-        return tesoreriaClient.flujoCaja(fecha);
+    public List<FlujoCajaRemoteResponse> flujoCajaDiario(LocalDate fecha, Integer idTurno) {
+        return tesoreriaClient.flujoCaja(fecha, idTurno);
     }
 
     @Override
@@ -137,8 +159,8 @@ public class AuditoriaReporteServiceImpl implements AuditoriaReporteService {
     }
 
     @Override
-    public byte[] flujoCajaDiarioPdf(LocalDate fecha) {
-        List<ReporteFila> filas = flujoCajaDiario(fecha).stream()
+    public byte[] flujoCajaDiarioPdf(LocalDate fecha, Integer idTurno) {
+        List<ReporteFila> filas = flujoCajaDiario(fecha, idTurno).stream()
                 .map(pago -> new ReporteFila(
                         "Pago " + pago.idPago(),
                         "Turno " + pago.idTurno() + " - " + pago.metodoPago(),

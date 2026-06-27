@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
-import { DetailPanel } from '../../../../shared/components/detail-panel/detail-panel';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { StatusBadge } from '../../../../shared/components/status-badge/status-badge';
 import { Puesto, PuestoRequest, Saneamiento } from '../../../../core/models/patrimonio.models';
 import { TableActionEvent, TableColumn } from '../../../../core/models/table.models';
@@ -12,7 +12,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-puestos',
-  imports: [FormsModule, PageHeader, DataTable, StatusBadge],
+  imports: [FormsModule, PageHeader, DataTable, Modal, StatusBadge],
   templateUrl: './puestos.html',
   styleUrl: './puestos.css',
 })
@@ -38,15 +38,17 @@ export class Puestos {
   filteredPuestos = computed(() => {
     const term = this.searchTerm().toLowerCase();
     if (!term) return this.puestos();
-    
-    return this.puestos().filter(p => 
-      p.codigoPuesto.toLowerCase().includes(term) ||
-      (p.pabellon && p.pabellon.toLowerCase().includes(term)) ||
-      (p.giro && p.giro.toLowerCase().includes(term))
+
+    return this.puestos().filter(
+      (p) =>
+        p.codigoPuesto.toLowerCase().includes(term) ||
+        (p.pabellon && p.pabellon.toLowerCase().includes(term)) ||
+        (p.giro && p.giro.toLowerCase().includes(term)),
     );
   });
   saneamiento = signal<Saneamiento | null>(null);
   form: PuestoRequest = this.emptyForm();
+  showForm = false;
   editingId: number | null = null;
   loading = signal(false);
   message = signal('');
@@ -86,6 +88,7 @@ export class Puestos {
       next: () => {
         this.message.set(this.editingId === null ? 'Puesto registrado.' : 'Puesto actualizado.');
         this.reset();
+        this.showForm = false;
         this.load();
 
         setTimeout(() => {
@@ -96,6 +99,16 @@ export class Puestos {
         this.error.set(httpErrorMessage(error));
       },
     });
+  }
+
+  openCreateForm(): void {
+    this.reset();
+    this.showForm = true;
+  }
+
+  closeForm(): void {
+    this.showForm = false;
+    this.reset();
   }
 
   saneamientoModalOpen = signal(false);
@@ -112,6 +125,7 @@ export class Puestos {
         giro: puesto.giro,
         estadoPuesto: puesto.estadoPuesto,
       };
+      this.showForm = true;
       return;
     }
 

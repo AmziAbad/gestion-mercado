@@ -27,10 +27,17 @@
           [disabled]="tipo !== 'flujo-caja-diario'"
         />
       </label>
+      <label class="field">
+        <span>ID turno</span>
+        <input
+          name="idTurnoReporte"
+          type="number"
+          [(ngModel)]="idTurno"
+          [disabled]="tipo !== 'flujo-caja-diario'"
+        />
+      </label>
       <div class="actions">
-        <button class="button button--primary" type="submit">
-          Consultar
-        </button>
+        <button class="button button--primary" type="submit">Consultar</button>
         <button class="button button--secondary" type="button" (click)="abrirPdf()">
           Abrir PDF
         </button>

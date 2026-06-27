@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { TableColumn } from '../../../../core/models/table.models';
 import { Transferencia, TransferenciaRequest } from '../../../../core/models/patrimonio.models';
 import { PatrimonioApi } from '../../../../core/services/patrimonio-api';
@@ -10,7 +11,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-transferencias',
-  imports: [FormsModule, PageHeader, DataTable],
+  imports: [FormsModule, PageHeader, DataTable, Modal],
   templateUrl: './transferencias.html',
   styleUrl: './transferencias.css',
 })
@@ -41,6 +42,7 @@ export class Transferencias {
     observacion: null,
     fechaInicio: null,
   };
+  showForm = false;
   loading = signal(false);
   message = signal('');
   error = signal('');
@@ -80,19 +82,33 @@ export class Transferencias {
       next: () => {
         this.message.set('Transferencia registrada.');
         setTimeout(() => this.message.set(''), 3000);
-        this.form = {
-          idPuesto: null,
-          idSocioEntrante: null,
-          costoTransferencia: 0,
-          asumeDeuda: false,
-          observacion: null,
-          fechaInicio: null,
-        };
+        this.closeForm();
         this.load();
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
       },
     });
+  }
+
+  openCreateForm(): void {
+    this.form = this.emptyForm();
+    this.showForm = true;
+  }
+
+  closeForm(): void {
+    this.showForm = false;
+    this.form = this.emptyForm();
+  }
+
+  private emptyForm(): TransferenciaRequest {
+    return {
+      idPuesto: null,
+      idSocioEntrante: null,
+      costoTransferencia: 0,
+      asumeDeuda: false,
+      observacion: null,
+      fechaInicio: null,
+    };
   }
 }

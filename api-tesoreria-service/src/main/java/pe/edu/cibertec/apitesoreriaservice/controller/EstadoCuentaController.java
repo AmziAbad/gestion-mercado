@@ -29,6 +29,11 @@ public class EstadoCuentaController {
         return ResponseEntity.ok(tesoreriaService.resumenDeudaPorPuesto(idPuesto));
     }
 
+    @GetMapping("/puesto/codigo/{codigoPuesto}")
+    public ResponseEntity<EstadoCuentaResponse> porCodigoPuesto(@PathVariable String codigoPuesto) {
+        return ResponseEntity.ok(tesoreriaService.estadoCuentaPorCodigoPuesto(codigoPuesto));
+    }
+
     @GetMapping("/socio/{idSocio}")
     public ResponseEntity<EstadoCuentaResponse> porSocio(@PathVariable Integer idSocio) {
         return ResponseEntity.ok(tesoreriaService.estadoCuentaPorSocio(idSocio));

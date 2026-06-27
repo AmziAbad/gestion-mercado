@@ -54,6 +54,8 @@ public interface TesoreriaService {
 
     EstadoCuentaResponse estadoCuentaPorPuesto(Integer idPuesto);
 
+    EstadoCuentaResponse estadoCuentaPorCodigoPuesto(String codigoPuesto);
+
     EstadoCuentaResponse estadoCuentaPorSocio(Integer idSocio);
 
     EstadoCuentaResponse estadoCuentaPorDni(String dni);
@@ -68,9 +70,15 @@ public interface TesoreriaService {
 
     ComprobanteResponse buscarComprobante(Integer idComprobante);
 
+    List<ComprobanteResponse> listarComprobantes();
+
     ComprobanteResponse buscarComprobantePorPago(Integer idPago);
 
-    List<DeudaPendienteReporteResponse> deudasPendientes();
+    ComprobanteResponse buscarComprobantePorCuota(Integer idCuota);
 
-    List<FlujoCajaReporteResponse> flujoCajaDiario(LocalDate fecha);
+    ComprobanteResponse buscarComprobantePorNumero(String numeroComprobante);
+
+    List<DeudaPendienteReporteResponse> deudasVencidas();
+
+    List<FlujoCajaReporteResponse> flujoCajaDiario(LocalDate fecha, Integer idTurno);
 }

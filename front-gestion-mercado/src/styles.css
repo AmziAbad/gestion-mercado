@@ -96,10 +96,13 @@ a {
 
 .page {
   display: grid;
+  width: 100%;
+  min-width: 0;
   gap: var(--space-5);
 }
 
 .panel {
+  min-width: 0;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -128,6 +131,60 @@ a {
 
 .panel__body {
   padding: var(--space-5);
+}
+
+.list-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.panel__header .list-toolbar {
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.search-field {
+  position: relative;
+  width: min(320px, 100%);
+}
+
+.search-field__icon {
+  position: absolute;
+  top: 50%;
+  left: var(--space-3);
+  color: var(--color-text-soft);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-field input {
+  width: 100%;
+  min-height: var(--input-height);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-3) 0 34px;
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.modal-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.modal-form__wide {
+  grid-column: 1 / -1;
+}
+
+.modal-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
 }
 
 .grid {
@@ -214,13 +271,13 @@ a {
   padding: 0.5rem 1.25rem;
   font-weight: 600;
   font-size: 0.9rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
 }
 
 .button--primary:hover {
   background-color: #1e293b;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
 }
 
@@ -255,7 +312,25 @@ a {
   .grid--2,
   .grid--3,
   .form-grid,
-  .form-grid--compact {
+  .form-grid--compact,
+  .modal-form {
     grid-template-columns: 1fr;
+  }
+
+  .modal-form__wide {
+    grid-column: auto;
+  }
+
+  .panel__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .list-toolbar {
+    width: 100%;
+  }
+
+  .search-field {
+    width: 100%;
   }
 }

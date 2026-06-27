@@ -17,6 +17,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 export class Reportes {
   tipo: 'padron-habiles' | 'morosidad' | 'flujo-caja-diario' = 'padron-habiles';
   fecha = '';
+  idTurno: number | null = null;
   rows = signal<unknown[]>([]);
   columns = signal<TableColumn[]>([]);
   loading = signal(false);
@@ -39,7 +40,7 @@ export class Reportes {
     } else if (this.tipo === 'morosidad') {
       operation = this.auditoriaApi.morosidad();
     } else {
-      operation = this.auditoriaApi.flujoCajaDiario(this.fecha || undefined);
+      operation = this.auditoriaApi.flujoCajaDiario(this.fecha || undefined, this.idTurno);
     }
 
     operation.subscribe({
@@ -61,6 +62,7 @@ export class Reportes {
       .reportePdf(
         this.tipo,
         this.tipo === 'flujo-caja-diario' ? this.fecha || undefined : undefined,
+        this.tipo === 'flujo-caja-diario' ? this.idTurno : undefined,
       )
       .subscribe({
         next: (blob) => {

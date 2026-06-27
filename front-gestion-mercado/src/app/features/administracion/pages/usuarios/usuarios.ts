@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { TableAction, TableActionEvent, TableColumn } from '../../../../core/models/table.models';
 import {
   RolUsuario,
@@ -15,7 +16,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-usuarios',
-  imports: [FormsModule, PageHeader, DataTable],
+  imports: [FormsModule, PageHeader, DataTable, Modal],
   templateUrl: './usuarios.html',
   styleUrl: './usuarios.css',
 })
@@ -43,6 +44,8 @@ export class Usuarios {
 
   usuarios = signal<Usuario[]>([]);
   form = this.emptyForm();
+  showForm = false;
+  showPasswordForm = false;
   editingId: number | null = null;
   passwordReset = {
     idUsuario: null as number | null,
@@ -87,12 +90,36 @@ export class Usuarios {
         this.message.set(this.editingId === null ? 'Usuario registrado.' : 'Usuario actualizado.');
         setTimeout(() => this.message.set(''), 3000);
         this.reset();
+        this.showForm = false;
         this.load();
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
       },
     });
+  }
+
+  openCreateForm(): void {
+    this.reset();
+    this.showForm = true;
+  }
+
+  closeForm(): void {
+    this.showForm = false;
+    this.reset();
+  }
+
+  openPasswordForm(idUsuario?: number): void {
+    this.passwordReset = {
+      idUsuario: idUsuario ?? null,
+      password: '',
+    };
+    this.showPasswordForm = true;
+  }
+
+  closePasswordForm(): void {
+    this.showPasswordForm = false;
+    this.passwordReset = { idUsuario: null, password: '' };
   }
 
   handleAction(event: TableActionEvent): void {
@@ -111,6 +138,7 @@ export class Usuarios {
         activo: usuario.activo,
       };
       this.passwordReset.idUsuario = usuario.idUsuario;
+      this.showForm = true;
       return;
     }
 
@@ -141,7 +169,7 @@ export class Usuarios {
         next: () => {
           this.message.set('Contrasena actualizada.');
           setTimeout(() => this.message.set(''), 3000);
-          this.passwordReset = { idUsuario: null, password: '' };
+          this.closePasswordForm();
         },
         error: (error: unknown) => {
           this.error.set(httpErrorMessage(error));

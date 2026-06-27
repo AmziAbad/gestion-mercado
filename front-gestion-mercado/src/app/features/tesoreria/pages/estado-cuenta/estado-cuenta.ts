@@ -34,7 +34,7 @@ export class EstadoCuenta {
     { key: 'idCuotaReemplazo', label: 'Cuota reemplazo' },
   ];
 
-  criterio: 'puesto' | 'socio' | 'dni' = 'puesto';
+  criterio: 'puesto' | 'codigoPuesto' | 'socio' | 'dni' = 'puesto';
   valor = '';
   estadoCuenta = signal<EstadoCuentaModel | null>(null);
   loading = signal(false);
@@ -58,9 +58,11 @@ export class EstadoCuenta {
     const operation =
       this.criterio === 'puesto'
         ? this.tesoreriaApi.estadoCuentaPorPuesto(Number(value))
-        : this.criterio === 'socio'
-          ? this.tesoreriaApi.estadoCuentaPorSocio(Number(value))
-          : this.tesoreriaApi.estadoCuentaPorDni(value);
+        : this.criterio === 'codigoPuesto'
+          ? this.tesoreriaApi.estadoCuentaPorCodigoPuesto(value)
+          : this.criterio === 'socio'
+            ? this.tesoreriaApi.estadoCuentaPorSocio(Number(value))
+            : this.tesoreriaApi.estadoCuentaPorDni(value);
 
     operation.subscribe({
       next: (estadoCuenta) => {

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
+import { Modal } from '../../../../shared/components/modal/modal';
 import {
   AuditoriaAnulacion,
   AuditoriaAnulacionRequest,
@@ -13,7 +14,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-anulaciones',
-  imports: [FormsModule, PageHeader, DataTable],
+  imports: [FormsModule, PageHeader, DataTable, Modal],
   templateUrl: './anulaciones.html',
   styleUrl: './anulaciones.css',
 })
@@ -28,12 +29,17 @@ export class Anulaciones {
   ];
 
   anulaciones = signal<AuditoriaAnulacion[]>([]);
+  filtro = {
+    tipoAnulacion: 'CUOTA',
+    idRegistroAfectado: null as number | null,
+  };
   form: AuditoriaAnulacionRequest = {
     tipoAnulacion: 'CUOTA',
     idRegistroAfectado: null,
     idUsuario: null,
     motivoSustento: '',
   };
+  showForm = false;
   loading = signal(false);
   message = signal('');
   error = signal('');
@@ -45,6 +51,7 @@ export class Anulaciones {
   load(): void {
     this.loading.set(true);
     this.error.set('');
+    this.filtro = { tipoAnulacion: 'CUOTA', idRegistroAfectado: null };
 
     this.auditoriaApi.listarAnulaciones().subscribe({
       next: (anulaciones) => {
@@ -60,6 +67,32 @@ export class Anulaciones {
     });
   }
 
+  filtrarPorRegistro(): void {
+    this.loading.set(true);
+    this.error.set('');
+
+    if (this.filtro.idRegistroAfectado === null) {
+      this.error.set('Indica el ID del registro afectado.');
+      this.loading.set(false);
+      return;
+    }
+
+    this.auditoriaApi
+      .listarAnulacionesPorRegistro(this.filtro.tipoAnulacion, this.filtro.idRegistroAfectado)
+      .subscribe({
+        next: (anulaciones) => {
+          this.anulaciones.set(anulaciones);
+        },
+        error: (error: unknown) => {
+          this.error.set(httpErrorMessage(error));
+          this.loading.set(false);
+        },
+        complete: () => {
+          this.loading.set(false);
+        },
+      });
+  }
+
   registrar(): void {
     this.message.set('');
     this.error.set('');
@@ -73,17 +106,31 @@ export class Anulaciones {
       next: () => {
         this.message.set('Anulacion auditada.');
         setTimeout(() => this.message.set(''), 3000);
-        this.form = {
-          tipoAnulacion: 'CUOTA',
-          idRegistroAfectado: null,
-          idUsuario: null,
-          motivoSustento: '',
-        };
+        this.closeForm();
         this.load();
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
       },
     });
+  }
+
+  openCreateForm(): void {
+    this.form = this.emptyForm();
+    this.showForm = true;
+  }
+
+  closeForm(): void {
+    this.showForm = false;
+    this.form = this.emptyForm();
+  }
+
+  private emptyForm(): AuditoriaAnulacionRequest {
+    return {
+      tipoAnulacion: 'CUOTA',
+      idRegistroAfectado: null,
+      idUsuario: null,
+      motivoSustento: '',
+    };
   }
 }

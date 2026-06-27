@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { Contrato, ContratoRequest } from '../../../../core/models/patrimonio.models';
 import { TableActionEvent, TableColumn } from '../../../../core/models/table.models';
 import { PatrimonioApi } from '../../../../core/services/patrimonio-api';
@@ -10,7 +11,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-contratos',
-  imports: [FormsModule, PageHeader, DataTable],
+  imports: [FormsModule, PageHeader, DataTable, Modal],
   templateUrl: './contratos.html',
   styleUrl: './contratos.css',
 })
@@ -33,6 +34,7 @@ export class Contratos {
 
   contratos = signal<Contrato[]>([]);
   form: ContratoRequest = { idPuesto: null, idSocio: null, fechaInicio: null };
+  showAperturaForm = false;
   motivoCierre = '';
   loading = signal(false);
   message = signal('');
@@ -76,6 +78,7 @@ export class Contratos {
       next: () => {
         this.message.set('Contrato aperturado.');
         this.form = { idPuesto: null, idSocio: null, fechaInicio: null };
+        this.showAperturaForm = false;
         this.load();
         setTimeout(() => this.message.set(''), 3000);
       },
@@ -83,6 +86,16 @@ export class Contratos {
         this.error.set(httpErrorMessage(error));
       },
     });
+  }
+
+  openAperturaForm(): void {
+    this.form = { idPuesto: null, idSocio: null, fechaInicio: null };
+    this.showAperturaForm = true;
+  }
+
+  closeAperturaForm(): void {
+    this.showAperturaForm = false;
+    this.form = { idPuesto: null, idSocio: null, fechaInicio: null };
   }
 
   handleAction(event: TableActionEvent): void {

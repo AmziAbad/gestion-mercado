@@ -1,151 +1,111 @@
 <div class="page">
-  <app-page-header title="Socios" subtitle="Padrón de titulares, comerciantes y asociación.">
-    <button class="button button--primary"
-      (click)="toggleForm()">
-      + Registrar Socio
+  <app-page-header title="Socios" subtitle="Padron de titulares, comerciantes y asociacion.">
+    <button class="button button--primary" type="button" (click)="openCreateForm()">
+      + Registrar socio
     </button>
   </app-page-header>
 
+  @if (error()) {
+    <div class="message message--error">{{ formatError(error()) }}</div>
+  }
   @if (message()) {
-  <div class="message message--success">{{ message() }}</div>
+    <div class="message message--success">{{ message() }}</div>
   }
 
-  @if (showForm) {
-  <div
-    style="position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 50; display: flex; justify-content: center; align-items: center; padding: 1rem;">
-    <section class="panel"
-      style="background: white; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 650px; border: none;">
-      <div class="panel__header" style="padding: 1.5rem 2rem; border-bottom: 1px solid #f3f4f6;">
-        <h2 class="panel__title" style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0;">{{ editingId
-          === null ? 'Registrar socio' : 'Editar socio' }}</h2>
-        <p style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">Datos base para contratos
-          y saneamiento de puestos.</p>
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Socios registrados</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : filteredSocios().length + ' registros' }}
+        </p>
       </div>
-      <form novalidate class="panel__body"
-        style="padding: 1.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" (ngSubmit)="save()">
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.25rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">DNI</span>
-          <input name="dni" [(ngModel)]="form.dni" maxlength="8" required placeholder="Ingrese DNI"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-          @if (!form.dni) {
-          <span style="font-size: 0.65rem; color: #ef4444; font-weight: 600;">* Campo obligatorio</span>
-          }
+      <div class="list-toolbar">
+        <label class="search-field">
+          <span class="search-field__icon">🔍</span>
+          <input
+            type="text"
+            [ngModel]="searchTerm()"
+            (ngModelChange)="searchTerm.set($event)"
+            placeholder="Buscar por DNI o nombre..."
+          />
         </label>
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.25rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">RUC</span>
-          <input name="ruc" [(ngModel)]="form.ruc" maxlength="11" required placeholder="Ingrese RUC"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-          @if (!form.ruc) {
-          <span style="font-size: 0.65rem; color: #ef4444; font-weight: 600;">* Campo obligatorio</span>
-          }
-        </label>
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.25rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Nombres</span>
-          <input name="nombres" [(ngModel)]="form.nombres" required placeholder="Nombres completos"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-          @if (!form.nombres) {
-          <span style="font-size: 0.65rem; color: #ef4444; font-weight: 600;">* Campo obligatorio</span>
-          }
-        </label>
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.25rem;">
-          <span
-            style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Apellidos</span>
-          <input name="apellidos" [(ngModel)]="form.apellidos" required placeholder="Apellidos completos"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-          @if (!form.apellidos) {
-          <span style="font-size: 0.65rem; color: #ef4444; font-weight: 600;">* Campo obligatorio</span>
-          }
-        </label>
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Teléfono</span>
-          <input name="telefono" [(ngModel)]="form.telefono" required placeholder="999 999 999"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-        </label>
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Correo</span>
-          <input name="correo" type="email" [(ngModel)]="form.correo" placeholder="ejemplo@correo.com"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-        </label>
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Estado</span>
-          <div style="position: relative;">
-            <select name="estado" [(ngModel)]="form.estado"
-              style="appearance: none; padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none; font-weight: 600;">
-              <option value="ACTIVO">ACTIVO</option>
-              <option value="INACTIVO">INACTIVO</option>
-            </select>
-            <span
-              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #6b7280;">▼</span>
-          </div>
-        </label>
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <span
-            style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Asociación</span>
-          <div style="position: relative;">
-            <select name="esAsociacion" [(ngModel)]="form.esAsociacion"
-              style="appearance: none; padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none; font-weight: 600;">
-              <option [ngValue]="false">No</option>
-              <option [ngValue]="true">Si</option>
-            </select>
-            <span
-              style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #6b7280;">▼</span>
-          </div>
-        </label>
-
-        <label class="field" style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 0.5rem;">
-          <span
-            style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Dirección</span>
-          <input name="direccion" [(ngModel)]="form.direccion" required placeholder="Dirección de domicilio"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-        </label>
-
-        <div class="actions">
-          <button class="button button--secondary" type="button" (click)="toggleForm()">Limpiar</button>
-          <button class="button button--primary" type="submit">
-            {{ editingId === null ? 'Registrar' : 'Guardar cambios' }}
-          </button>
-        </div>
-      </form>
-    </section>
-  </div>
-  }
-
-  <section style="display: flex; justify-content: center; margin-bottom: 2rem;">
-    <div style="width: 95%; max-width: 1400px;">
-      <section class="panel"
-        style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
-    <div class="panel__header"
-      style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #f3f4f6;">
-      <h2 class="panel__title" style="font-size: 1.1rem; color: #111827; font-weight: 600;">Socios registrados</h2>
-
-      <div style="position: relative;">
-        <span
-          style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.9rem;">🔍</span>
-        <input type="text" [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)"
-          placeholder="Buscar por DNI o Nombre..."
-          style="padding: 0.5rem 1rem 0.5rem 2.2rem; border-radius: 6px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 0.85rem; width: 260px; color: #6b7280; outline: none;" />
       </div>
     </div>
 
-    <div style="padding: 0;">
-      <app-data-table [columns]="columns" [rows]="filteredSocios()" [actions]="actions"
-        (actionSelected)="handleAction($event)" />
-    </div>
-
-    <div
-      style="padding: 1rem 1.5rem; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #6b7280;">
-      <span>Mostrando {{ filteredSocios().length === 0 ? 0 : 1 }} a {{ filteredSocios().length }} de {{
-        filteredSocios().length }} registros</span>
-    </div>
-      </section>
-    </div>
+    <app-data-table
+      [columns]="columns"
+      [rows]="filteredSocios()"
+      [actions]="actions"
+      (actionSelected)="handleAction($event)"
+    />
   </section>
+
+  <app-modal
+    [open]="showForm"
+    [title]="editingId === null ? 'Registrar socio' : 'Editar socio'"
+    (closed)="closeForm()"
+  >
+    <form novalidate class="modal-form" (ngSubmit)="save()">
+      <label class="field">
+        <span>DNI</span>
+        <input name="dni" [(ngModel)]="form.dni" maxlength="8" required />
+      </label>
+
+      <label class="field">
+        <span>RUC</span>
+        <input name="ruc" [(ngModel)]="form.ruc" maxlength="11" />
+      </label>
+
+      <label class="field">
+        <span>Nombres</span>
+        <input name="nombres" [(ngModel)]="form.nombres" required />
+      </label>
+
+      <label class="field">
+        <span>Apellidos</span>
+        <input name="apellidos" [(ngModel)]="form.apellidos" required />
+      </label>
+
+      <label class="field">
+        <span>Telefono</span>
+        <input name="telefono" [(ngModel)]="form.telefono" />
+      </label>
+
+      <label class="field">
+        <span>Correo</span>
+        <input name="correo" type="email" [(ngModel)]="form.correo" />
+      </label>
+
+      <label class="field">
+        <span>Estado</span>
+        <select name="estado" [(ngModel)]="form.estado">
+          <option value="ACTIVO">ACTIVO</option>
+          <option value="INACTIVO">INACTIVO</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Asociacion</span>
+        <select name="esAsociacion" [(ngModel)]="form.esAsociacion">
+          <option [ngValue]="false">No</option>
+          <option [ngValue]="true">Si</option>
+        </select>
+      </label>
+
+      <label class="field modal-form__wide">
+        <span>Direccion</span>
+        <input name="direccion" [(ngModel)]="form.direccion" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">
+          {{ editingId === null ? 'Registrar' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
 </div>

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DetailPanel } from '../../../../shared/components/detail-panel/detail-panel';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { StatusBadge } from '../../../../shared/components/status-badge/status-badge';
 import { Pago, PagoRequest } from '../../../../core/models/tesoreria.models';
 import { TesoreriaApi } from '../../../../core/services/tesoreria-api';
@@ -10,7 +11,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-pagos',
-  imports: [FormsModule, PageHeader, DetailPanel, StatusBadge],
+  imports: [FormsModule, PageHeader, DetailPanel, Modal, StatusBadge],
   templateUrl: './pagos.html',
   styleUrl: './pagos.css',
 })
@@ -22,6 +23,8 @@ export class Pagos {
   };
   idPagoBusqueda: number | null = null;
   motivoExtorno = '';
+  showPagoForm = false;
+  showExtornoForm = false;
   pago = signal<Pago | null>(null);
   message = signal('');
   error = signal('');
@@ -42,7 +45,7 @@ export class Pagos {
         this.pago.set(pago);
         this.message.set('Pago registrado.');
         setTimeout(() => this.message.set(''), 3000);
-        this.pagoRequest = { idCuota: null, metodoPago: 'EFECTIVO', numeroOperacion: null };
+        this.closePagoForm();
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
@@ -84,6 +87,7 @@ export class Pagos {
         next: (pago) => {
           this.pago.set(pago);
           this.motivoExtorno = '';
+          this.showExtornoForm = false;
           this.message.set('Pago extornado.');
           setTimeout(() => this.message.set(''), 3000);
         },
@@ -91,5 +95,27 @@ export class Pagos {
           this.error.set(httpErrorMessage(error));
         },
       });
+  }
+
+  openPagoForm(): void {
+    this.pagoRequest = { idCuota: null, metodoPago: 'EFECTIVO', numeroOperacion: null };
+    this.showPagoForm = true;
+  }
+
+  closePagoForm(): void {
+    this.showPagoForm = false;
+    this.pagoRequest = { idCuota: null, metodoPago: 'EFECTIVO', numeroOperacion: null };
+  }
+
+  openExtornoForm(): void {
+    this.idPagoBusqueda = this.pago()?.idPago ?? null;
+    this.motivoExtorno = '';
+    this.showExtornoForm = true;
+  }
+
+  closeExtornoForm(): void {
+    this.showExtornoForm = false;
+    this.idPagoBusqueda = null;
+    this.motivoExtorno = '';
   }
 }

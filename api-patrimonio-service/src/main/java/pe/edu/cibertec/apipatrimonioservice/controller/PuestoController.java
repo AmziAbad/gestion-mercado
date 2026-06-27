@@ -37,6 +37,11 @@ public class PuestoController {
         return ResponseEntity.ok(patrimonioService.buscarPuesto(idPuesto));
     }
 
+    @GetMapping("/codigo/{codigoPuesto}")
+    public ResponseEntity<PuestoResponse> buscarPorCodigo(@PathVariable String codigoPuesto) {
+        return ResponseEntity.ok(patrimonioService.buscarPuestoPorCodigo(codigoPuesto));
+    }
+
     @PostMapping
     public ResponseEntity<PuestoResponse> registrar(@Valid @RequestBody PuestoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(patrimonioService.registrarPuesto(request));

@@ -31,6 +31,8 @@ public interface PatrimonioService {
 
     PuestoResponse buscarPuesto(Integer idPuesto);
 
+    PuestoResponse buscarPuestoPorCodigo(String codigoPuesto);
+
     PuestoResponse registrarPuesto(PuestoRequest request);
 
     PuestoResponse actualizarPuesto(Integer idPuesto, PuestoRequest request);

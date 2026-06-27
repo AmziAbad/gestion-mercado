@@ -145,6 +145,13 @@ public class PatrimonioServiceImpl implements PatrimonioService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public PuestoResponse buscarPuestoPorCodigo(String codigoPuesto) {
+        return PatrimonioMapper.toPuestoResponse(puestoRepository.findByCodigoPuesto(codigoPuesto)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Puesto no encontrado.")));
+    }
+
+    @Override
     @Transactional
     public PuestoResponse registrarPuesto(PuestoRequest request) {
         if (puestoRepository.existsByCodigoPuesto(request.codigoPuesto())) {

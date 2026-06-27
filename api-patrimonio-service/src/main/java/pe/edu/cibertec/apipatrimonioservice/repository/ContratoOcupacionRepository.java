@@ -11,8 +11,6 @@ public interface ContratoOcupacionRepository extends JpaRepository<ContratoOcupa
 
     Optional<ContratoOcupacion> findFirstByIdPuestoAndEstadoContrato(Integer idPuesto, EstadoContrato estadoContrato);
 
-    List<ContratoOcupacion> findByIdPuestoOrderByFechaRegistroDesc(Integer idPuesto);
-
     List<ContratoOcupacion> findByIdSocioAndEstadoContrato(Integer idSocio, EstadoContrato estadoContrato);
 
     List<ContratoOcupacion> findByEstadoContrato(EstadoContrato estadoContrato);

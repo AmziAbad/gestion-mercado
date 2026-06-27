@@ -3,14 +3,19 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { TableColumn } from '../../../../core/models/table.models';
-import { Turno, TurnoAperturaRequest } from '../../../../core/models/tesoreria.models';
+import {
+  Turno,
+  TurnoAperturaRequest,
+  TurnoCierreRequest,
+} from '../../../../core/models/tesoreria.models';
 import { TesoreriaApi } from '../../../../core/services/tesoreria-api';
 import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-caja',
-  imports: [FormsModule, PageHeader, DataTable],
+  imports: [FormsModule, PageHeader, DataTable, Modal],
   templateUrl: './caja.html',
   styleUrl: './caja.css',
 })
@@ -37,8 +42,11 @@ export class Caja {
   };
   cierre = {
     idTurno: null as number | null,
+    montoRecaudado: null as number | null,
     observacionCierre: null as string | null,
   };
+  showAperturaForm = false;
+  showCierreForm = false;
   loading = signal(false);
   message = signal('');
   error = signal('');
@@ -71,7 +79,7 @@ export class Caja {
       next: () => {
         this.message.set('Turno aperturado.');
         setTimeout(() => this.message.set(''), 3000);
-        this.apertura = { montoInicial: 0, observacionApertura: null };
+        this.closeAperturaForm();
         this.load();
       },
       error: (error: unknown) => {
@@ -89,18 +97,46 @@ export class Caja {
       return;
     }
 
-    this.tesoreriaApi
-      .cerrarTurno(this.cierre.idTurno, { observacionCierre: this.cierre.observacionCierre })
-      .subscribe({
-        next: () => {
-          this.message.set('Turno cerrado.');
-          setTimeout(() => this.message.set(''), 3000);
-          this.cierre = { idTurno: null, observacionCierre: null };
-          this.load();
-        },
-        error: (error: unknown) => {
-          this.error.set(httpErrorMessage(error));
-        },
-      });
+    if (this.cierre.montoRecaudado === null) {
+      this.error.set('Indica el monto contado en caja.');
+      return;
+    }
+
+    const request: TurnoCierreRequest = {
+      montoRecaudado: this.cierre.montoRecaudado,
+      observacionCierre: this.cierre.observacionCierre,
+    };
+
+    this.tesoreriaApi.cerrarTurno(this.cierre.idTurno, request).subscribe({
+      next: () => {
+        this.message.set('Turno cerrado.');
+        setTimeout(() => this.message.set(''), 3000);
+        this.closeCierreForm();
+        this.load();
+      },
+      error: (error: unknown) => {
+        this.error.set(httpErrorMessage(error));
+      },
+    });
+  }
+
+  openAperturaForm(): void {
+    this.apertura = { montoInicial: 0, observacionApertura: null };
+    this.showAperturaForm = true;
+  }
+
+  closeAperturaForm(): void {
+    this.showAperturaForm = false;
+    this.apertura = { montoInicial: 0, observacionApertura: null };
+  }
+
+  openCierreForm(): void {
+    this.cierre = { idTurno: null, montoRecaudado: null, observacionCierre: null };
+    this.showCierreForm = true;
+  }
+
+  closeCierreForm(): void {
+    this.showCierreForm = false;
+    this.cierre = { idTurno: null, montoRecaudado: null, observacionCierre: null };
   }
 }

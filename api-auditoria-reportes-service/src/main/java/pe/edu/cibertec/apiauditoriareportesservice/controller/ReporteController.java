@@ -39,8 +39,9 @@ public class ReporteController {
 
     @GetMapping("/flujo-caja-diario")
     public ResponseEntity<List<FlujoCajaRemoteResponse>> flujoCajaDiario(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-        return ResponseEntity.ok(auditoriaReporteService.flujoCajaDiario(fecha));
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) Integer idTurno) {
+        return ResponseEntity.ok(auditoriaReporteService.flujoCajaDiario(fecha, idTurno));
     }
 
     @GetMapping("/padron-habiles/pdf")
@@ -55,8 +56,9 @@ public class ReporteController {
 
     @GetMapping("/flujo-caja-diario/pdf")
     public ResponseEntity<byte[]> flujoCajaDiarioPdf(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-        return pdf("flujo-caja-diario.pdf", auditoriaReporteService.flujoCajaDiarioPdf(fecha));
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) Integer idTurno) {
+        return pdf("flujo-caja-diario.pdf", auditoriaReporteService.flujoCajaDiarioPdf(fecha, idTurno));
     }
 
     private ResponseEntity<byte[]> pdf(String filename, byte[] content) {

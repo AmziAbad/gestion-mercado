@@ -25,12 +25,13 @@ public class ReporteDatosController {
 
     @GetMapping("/morosidad/datos")
     public ResponseEntity<List<DeudaPendienteReporteResponse>> morosidad() {
-        return ResponseEntity.ok(tesoreriaService.deudasPendientes());
+        return ResponseEntity.ok(tesoreriaService.deudasVencidas());
     }
 
     @GetMapping("/flujo-caja-diario/datos")
     public ResponseEntity<List<FlujoCajaReporteResponse>> flujoCaja(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-        return ResponseEntity.ok(tesoreriaService.flujoCajaDiario(fecha));
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam(required = false) Integer idTurno) {
+        return ResponseEntity.ok(tesoreriaService.flujoCajaDiario(fecha, idTurno));
     }
 }

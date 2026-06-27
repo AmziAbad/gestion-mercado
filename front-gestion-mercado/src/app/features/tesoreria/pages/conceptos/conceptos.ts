@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { Concepto, ConceptoRequest } from '../../../../core/models/tesoreria.models';
 import { TableAction, TableActionEvent, TableColumn } from '../../../../core/models/table.models';
 import { TesoreriaApi } from '../../../../core/services/tesoreria-api';
@@ -10,7 +11,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-conceptos',
-  imports: [FormsModule, PageHeader, DataTable],
+  imports: [FormsModule, PageHeader, DataTable, Modal],
   templateUrl: './conceptos.html',
   styleUrl: './conceptos.css',
 })
@@ -38,6 +39,7 @@ export class Conceptos {
 
   conceptos = signal<Concepto[]>([]);
   form: ConceptoRequest = this.emptyForm();
+  showForm = false;
   editingId: number | null = null;
   loading = signal(false);
   message = signal('');
@@ -79,12 +81,23 @@ export class Conceptos {
         );
         setTimeout(() => this.message.set(''), 3000);
         this.reset();
+        this.showForm = false;
         this.load();
       },
       error: (error: unknown) => {
         this.error.set(httpErrorMessage(error));
       },
     });
+  }
+
+  openCreateForm(): void {
+    this.reset();
+    this.showForm = true;
+  }
+
+  closeForm(): void {
+    this.showForm = false;
+    this.reset();
   }
 
   handleAction(event: TableActionEvent): void {
@@ -101,6 +114,7 @@ export class Conceptos {
         costoTotalProrrateo: concepto.costoTotalProrrateo,
         activo: concepto.activo,
       };
+      this.showForm = true;
       return;
     }
 

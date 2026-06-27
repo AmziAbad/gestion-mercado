@@ -1,107 +1,81 @@
 <div class="page">
-  <app-page-header title="Contratos" subtitle="Ocupación activa de puestos por socio." />
+  <app-page-header title="Contratos" subtitle="Ocupacion activa de puestos por socio.">
+    <button class="button button--primary" type="button" (click)="openAperturaForm()">
+      + Aperturar contrato
+    </button>
+  </app-page-header>
 
   @if (error()) {
-  <div class="message message--error">{{ error() }}</div>
+    <div class="message message--error">{{ error() }}</div>
   }
   @if (message()) {
-  <div class="message message--success">{{ message() }}</div>
+    <div class="message message--success">{{ message() }}</div>
   }
 
-  <!-- Modal Finalizar Contrato -->
-  @if (finalizarModalOpen()) {
-  <div
-    style="position: fixed; inset: 0; background: rgba(17, 24, 39, 0.6); z-index: 50; display: flex; justify-content: center; align-items: center; padding: 1rem;">
-    <section class="panel"
-      style="background: white; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 100%; max-width: 500px; border: none; display: flex; flex-direction: column;">
-      <div class="panel__header" style="padding: 1.5rem 2rem; border-bottom: 1px solid #f3f4f6;">
-        <h2 class="panel__title" style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0;">Finalizar
-          contrato</h2>
-        <p style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">Por favor, ingresa el
-          motivo para finalizar el contrato del puesto seleccionado.</p>
-      </div>
-      <div class="panel__body" style="padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 1.5rem;">
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.5rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Motivo para
-            finalizar</span>
-          <textarea name="motivoCierre" [(ngModel)]="motivoCierre"
-            placeholder="Ej. retiro del titular, incumplimiento de normas..."
-            style="padding: 0.8rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.95rem; color: #111827; outline: none; resize: vertical; min-height: 100px;"></textarea>
-        </label>
-
-        <div class="actions" style="margin-top: 0.5rem;">
-          <button class="button button--secondary" type="button" (click)="closeFinalizarModal()">Cancelar</button>
-          <button class="button button--danger" type="button" (click)="confirmarFinalizacion()">
-            Finalizar contrato
-          </button>
-        </div>
-      </div>
-    </section>
-  </div>
-  }
-
-  <section style="display: flex; justify-content: center; margin-bottom: 2rem;">
-    <!-- Formulario de apertura (inline) -->
-    <form class="panel"
-      style="background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; display: flex; flex-direction: column; width: 100%; max-width: 900px;">
-      <div class="panel__header" style="padding: 1.5rem; border-bottom: 1px solid #f3f4f6;">
-        <h2 class="panel__title" style="font-size: 1.15rem; font-weight: 700; color: #111827; margin: 0;">Aperturar
-          contrato</h2>
-        <p style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">Se validará que el puesto
-          esté libre y el socio esté activo automáticamente.</p>
-      </div>
-
-      <div class="panel__body"
-        style="padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; flex: 1;">
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">ID
-            Puesto</span>
-          <input name="idPuesto" type="number" [(ngModel)]="form.idPuesto" required placeholder="Ej: 5"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-        </label>
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">ID Socio</span>
-          <input name="idSocio" type="number" [(ngModel)]="form.idSocio" required placeholder="Ej: 12"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-        </label>
-
-        <label class="field" style="display: flex; flex-direction: column; gap: 0.4rem;">
-          <span style="font-size: 0.75rem; font-weight: 800; color: #374151; text-transform: uppercase;">Fecha
-            Inicio</span>
-          <input name="fechaInicio" type="date" [(ngModel)]="form.fechaInicio"
-            style="padding: 0.6rem 1rem; border: none; background-color: #f3f4f6; border-radius: 6px; width: 100%; font-size: 0.9rem; color: #111827; outline: none;" />
-        </label>
-      </div>
-
-      <div class="actions"
-        style="padding: 1.5rem; border-top: 1px solid #f3f4f6; background-color: #f9fafb; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
-        <button class="button button--primary" type="button" (click)="aperturar()">
-          Aperturar contrato
-        </button>
-      </div>
-    </form>
-  </section>
-
-  <!-- Tabla de Contratos -->
-  <section style="display: flex; justify-content: center; margin-bottom: 2rem;">
-    <div style="width: 95%; max-width: 1400px;">
-      <section class="panel" style="background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
-    <div class="panel__header"
-      style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #f3f4f6;">
+  <section class="panel">
+    <div class="panel__header">
       <div>
-        <h2 class="panel__title" style="font-size: 1.1rem; color: #111827; font-weight: 600;">Contratos activos</h2>
-        <p class="panel__subtitle" style="color: #6b7280; font-size: 0.85rem; font-weight: 600; margin-top: 0.25rem;">
+        <h2 class="panel__title">Contratos activos</h2>
+        <p class="panel__subtitle">
           {{ loading() ? 'Cargando...' : contratos().length + ' registros' }}
         </p>
       </div>
     </div>
-    <div style="padding: 0;">
-      <app-data-table [columns]="columns" [rows]="contratos()" [actions]="actions"
-        (actionSelected)="handleAction($event)" />
-    </div>
-      </section>
-    </div>
+    <app-data-table
+      [columns]="columns"
+      [rows]="contratos()"
+      [actions]="actions"
+      (actionSelected)="handleAction($event)"
+    />
   </section>
+
+  <app-modal [open]="showAperturaForm" title="Aperturar contrato" (closed)="closeAperturaForm()">
+    <form class="modal-form" (ngSubmit)="aperturar()">
+      <label class="field">
+        <span>ID puesto</span>
+        <input name="idPuesto" type="number" [(ngModel)]="form.idPuesto" required />
+      </label>
+
+      <label class="field">
+        <span>ID socio</span>
+        <input name="idSocio" type="number" [(ngModel)]="form.idSocio" required />
+      </label>
+
+      <label class="field">
+        <span>Fecha inicio</span>
+        <input name="fechaInicio" type="date" [(ngModel)]="form.fechaInicio" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeAperturaForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">Aperturar</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <app-modal
+    [open]="finalizarModalOpen()"
+    title="Finalizar contrato"
+    (closed)="closeFinalizarModal()"
+  >
+    <form class="modal-form" (ngSubmit)="confirmarFinalizacion()">
+      <label class="field modal-form__wide">
+        <span>Motivo para finalizar</span>
+        <textarea
+          name="motivoCierre"
+          [(ngModel)]="motivoCierre"
+          placeholder="Ej. retiro del titular, incumplimiento de normas..."
+        ></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeFinalizarModal()">
+          Cancelar
+        </button>
+        <button class="button button--danger" type="submit">Finalizar contrato</button>
+      </div>
+    </form>
+  </app-modal>
 </div>

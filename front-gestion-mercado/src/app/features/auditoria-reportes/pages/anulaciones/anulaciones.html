@@ -2,7 +2,11 @@
   <app-page-header
     title="Anulaciones auditadas"
     subtitle="Sustento de cuotas, pagos, comprobantes o transferencias anuladas."
-  />
+  >
+    <button class="button button--primary" type="button" (click)="openCreateForm()">
+      + Registrar anulacion
+    </button>
+  </app-page-header>
 
   @if (error()) {
     <div class="message message--error">{{ error() }}</div>
@@ -14,11 +18,41 @@
   <section class="panel">
     <div class="panel__header">
       <div>
-        <h2 class="panel__title">Registrar anulacion manual</h2>
-        <p class="panel__subtitle">La operacion financiera debe ejecutarse desde Tesoreria.</p>
+        <h2 class="panel__title">Historial de anulaciones</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : anulaciones().length + ' registros' }}
+        </p>
       </div>
+
+      <form class="list-toolbar" (ngSubmit)="filtrarPorRegistro()">
+        <label class="field">
+          <span>Tipo</span>
+          <select name="filtroTipoAnulacion" [(ngModel)]="filtro.tipoAnulacion">
+            <option value="CUOTA">CUOTA</option>
+            <option value="PAGO">PAGO</option>
+            <option value="COMPROBANTE">COMPROBANTE</option>
+            <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>ID registro</span>
+          <input
+            name="filtroIdRegistroAnulacion"
+            type="number"
+            [(ngModel)]="filtro.idRegistroAfectado"
+          />
+        </label>
+
+        <button class="button button--primary" type="submit">Filtrar</button>
+        <button class="button button--secondary" type="button" (click)="load()">Ver todos</button>
+      </form>
     </div>
-    <form class="panel__body form-grid" (ngSubmit)="registrar()">
+    <app-data-table [columns]="columns" [rows]="anulaciones()" />
+  </section>
+
+  <app-modal [open]="showForm" title="Registrar anulacion manual" (closed)="closeForm()">
+    <form class="modal-form" (ngSubmit)="registrar()">
       <label class="field">
         <span>Tipo</span>
         <select name="tipoAnulacion" [(ngModel)]="form.tipoAnulacion">
@@ -28,6 +62,7 @@
           <option value="TRANSFERENCIA">TRANSFERENCIA</option>
         </select>
       </label>
+
       <label class="field">
         <span>ID registro</span>
         <input
@@ -37,29 +72,23 @@
           required
         />
       </label>
+
       <label class="field">
         <span>ID usuario</span>
         <input name="idUsuarioAnulacion" type="number" [(ngModel)]="form.idUsuario" required />
       </label>
-      <label class="field anulacion-motivo">
+
+      <label class="field modal-form__wide">
         <span>Motivo</span>
         <input name="motivoSustento" [(ngModel)]="form.motivoSustento" required />
       </label>
-      <div class="actions">
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeForm()">
+          Cancelar
+        </button>
         <button class="button button--primary" type="submit">Registrar</button>
       </div>
     </form>
-  </section>
-
-  <section class="panel">
-    <div class="panel__header">
-      <div>
-        <h2 class="panel__title">Historial de anulaciones</h2>
-        <p class="panel__subtitle">
-          {{ loading() ? 'Cargando...' : anulaciones().length + ' registros' }}
-        </p>
-      </div>
-    </div>
-    <app-data-table [columns]="columns" [rows]="anulaciones()" />
-  </section>
+  </app-modal>
 </div>

@@ -21,15 +21,19 @@ public interface AuditoriaReporteService {
 
     List<AuditoriaAnulacionResponse> listarAnulaciones();
 
+    List<AuditoriaEventoResponse> listarEventosPorRegistro(String entidadAfectada, Integer idRegistroAfectado);
+
+    List<AuditoriaAnulacionResponse> listarAnulacionesPorRegistro(String tipoAnulacion, Integer idRegistroAfectado);
+
     List<PadronHabilResponse> padronHabiles();
 
     List<DeudaPendienteRemoteResponse> morosidad();
 
-    List<FlujoCajaRemoteResponse> flujoCajaDiario(LocalDate fecha);
+    List<FlujoCajaRemoteResponse> flujoCajaDiario(LocalDate fecha, Integer idTurno);
 
     byte[] padronHabilesPdf();
 
     byte[] morosidadPdf();
 
-    byte[] flujoCajaDiarioPdf(LocalDate fecha);
+    byte[] flujoCajaDiarioPdf(LocalDate fecha, Integer idTurno);
 }

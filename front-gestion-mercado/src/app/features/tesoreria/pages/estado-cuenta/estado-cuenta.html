@@ -1,5 +1,8 @@
 <div class="page">
-  <app-page-header title="Estado de cuenta" subtitle="Consulta de deuda por puesto, socio o DNI." />
+  <app-page-header
+    title="Estado de cuenta"
+    subtitle="Consulta de deuda por puesto, codigo, socio o DNI."
+  />
 
   @if (error()) {
     <div class="message message--error">{{ error() }}</div>
@@ -11,6 +14,7 @@
         <span>Criterio</span>
         <select name="criterio" [(ngModel)]="criterio">
           <option value="puesto">ID puesto</option>
+          <option value="codigoPuesto">Codigo puesto</option>
           <option value="socio">ID socio</option>
           <option value="dni">DNI</option>
         </select>
@@ -20,9 +24,7 @@
         <input name="valor" [(ngModel)]="valor" required />
       </label>
       <div class="actions">
-        <button class="button button--primary" type="submit">
-          Consultar
-        </button>
+        <button class="button button--primary" type="submit">Consultar</button>
       </div>
     </form>
   </section>

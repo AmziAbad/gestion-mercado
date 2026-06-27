@@ -157,8 +157,8 @@ public class TesoreriaServiceImpl implements TesoreriaService {
                 .idUsuario(idUsuario)
                 .fechaApertura(LocalDateTime.now())
                 .montoInicial(montoInicial)
-                .montoRecaudado(BigDecimal.ZERO)
-                .montoEsperado(BigDecimal.ZERO)
+                .montoRecaudado(montoInicial)
+                .montoEsperado(montoInicial)
                 .diferencia(BigDecimal.ZERO)
                 .estadoTurno(EstadoTurno.ABIERTO)
                 .observacionApertura(request.observacionApertura())
@@ -173,9 +173,9 @@ public class TesoreriaServiceImpl implements TesoreriaService {
         if (!EstadoTurno.ABIERTO.equals(turno.getEstadoTurno())) {
             throw new ReglaNegocioException("Solo se puede cerrar un turno abierto.");
         }
-        BigDecimal total = sumarPagosRegistrados(idTurno);
-        turno.setMontoRecaudado(total);
-        turno.setMontoEsperado(total);
+        BigDecimal totalEsperado = turno.getMontoInicial().add(sumarPagosRegistrados(idTurno));
+        turno.setMontoRecaudado(request.montoRecaudado());
+        turno.setMontoEsperado(totalEsperado);
         turno.setDiferencia(turno.getMontoRecaudado().subtract(turno.getMontoEsperado()));
         turno.setEstadoTurno(EstadoTurno.CERRADO);
         turno.setFechaCierre(LocalDateTime.now());
@@ -340,6 +340,12 @@ public class TesoreriaServiceImpl implements TesoreriaService {
 
     @Override
     @Transactional(readOnly = true)
+    public EstadoCuentaResponse estadoCuentaPorCodigoPuesto(String codigoPuesto) {
+        return estadoCuentaPorPuesto(patrimonioClient.buscarPuestoPorCodigo(codigoPuesto).idPuesto());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public EstadoCuentaResponse estadoCuentaPorSocio(Integer idSocio) {
         List<ContratoRemoteResponse> contratos = patrimonioClient.listarContratosActivosPorSocio(idSocio);
         List<CuotaResponse> cuotas = contratos.stream()
@@ -448,8 +454,10 @@ public class TesoreriaServiceImpl implements TesoreriaService {
         comprobante.setEstadoComprobante(EstadoComprobante.ANULADO);
         comprobante = comprobanteRepository.save(comprobante);
 
-        turno.setMontoRecaudado(turno.getMontoRecaudado().subtract(pago.getMontoPagado()));
         turno.setMontoEsperado(turno.getMontoEsperado().subtract(pago.getMontoPagado()));
+        if (EstadoTurno.ABIERTO.equals(turno.getEstadoTurno())) {
+            turno.setMontoRecaudado(turno.getMontoRecaudado().subtract(pago.getMontoPagado()));
+        }
         turno.setDiferencia(turno.getMontoRecaudado().subtract(turno.getMontoEsperado()));
         turnoRepository.save(turno);
 
@@ -470,6 +478,14 @@ public class TesoreriaServiceImpl implements TesoreriaService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<ComprobanteResponse> listarComprobantes() {
+        return comprobanteRepository.findAll().stream()
+                .map(TesoreriaMapper::toComprobanteResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public ComprobanteResponse buscarComprobantePorPago(Integer idPago) {
         return TesoreriaMapper.toComprobanteResponse(comprobanteRepository.findByIdPago(idPago)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Comprobante no encontrado para el pago.")));
@@ -477,15 +493,36 @@ public class TesoreriaServiceImpl implements TesoreriaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DeudaPendienteReporteResponse> deudasPendientes() {
-        return cuotaRepository.findByEstadoCuota(EstadoCuota.PENDIENTE).stream()
+    public ComprobanteResponse buscarComprobantePorCuota(Integer idCuota) {
+        return TesoreriaMapper.toComprobanteResponse(comprobanteRepository.findByIdCuota(idCuota)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Comprobante no encontrado para la cuota.")));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ComprobanteResponse buscarComprobantePorNumero(String numeroComprobante) {
+        return TesoreriaMapper.toComprobanteResponse(comprobanteRepository.findByNumeroComprobante(numeroComprobante)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Comprobante no encontrado.")));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DeudaPendienteReporteResponse> deudasVencidas() {
+        return cuotaRepository.findByEstadoCuotaAndFechaVencimientoBefore(EstadoCuota.PENDIENTE, LocalDate.now()).stream()
                 .map(TesoreriaMapper::toDeudaPendiente)
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<FlujoCajaReporteResponse> flujoCajaDiario(LocalDate fecha) {
+    public List<FlujoCajaReporteResponse> flujoCajaDiario(LocalDate fecha, Integer idTurno) {
+        if (idTurno != null) {
+            obtenerTurno(idTurno);
+            return pagoRepository.findByIdTurnoAndEstadoPago(idTurno, EstadoPago.REGISTRADO).stream()
+                    .filter(pago -> fecha == null || pago.getFechaPago().toLocalDate().equals(fecha))
+                    .map(TesoreriaMapper::toFlujoCaja)
+                    .toList();
+        }
         LocalDate consulta = fecha != null ? fecha : LocalDate.now();
         return pagoRepository.findByFechaPagoBetween(consulta.atStartOfDay(), consulta.plusDays(1).atStartOfDay())
                 .stream()

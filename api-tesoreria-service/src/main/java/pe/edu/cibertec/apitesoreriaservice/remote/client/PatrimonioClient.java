@@ -32,4 +32,7 @@ public interface PatrimonioClient {
 
     @GetMapping("/puestos/{idPuesto}")
     PuestoRemoteResponse buscarPuesto(@PathVariable Integer idPuesto);
+
+    @GetMapping("/puestos/codigo/{codigoPuesto}")
+    PuestoRemoteResponse buscarPuestoPorCodigo(@PathVariable String codigoPuesto);
 }

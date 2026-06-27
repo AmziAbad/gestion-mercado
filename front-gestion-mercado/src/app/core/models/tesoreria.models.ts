@@ -134,6 +134,7 @@ export interface TurnoAperturaRequest {
 }
 
 export interface TurnoCierreRequest {
+  montoRecaudado: number;
   observacionCierre: string | null;
 }
 

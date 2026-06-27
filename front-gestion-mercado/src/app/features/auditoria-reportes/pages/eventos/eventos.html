@@ -1,8 +1,9 @@
 <div class="page">
-  <app-page-header
-    title="Eventos de auditoria"
-    subtitle="Bitacora central de cambios relevantes."
-  />
+  <app-page-header title="Eventos de auditoria" subtitle="Bitacora central de cambios relevantes.">
+    <button class="button button--primary" type="button" (click)="openCreateForm()">
+      + Registrar evento
+    </button>
+  </app-page-header>
 
   @if (error()) {
     <div class="message message--error">{{ error() }}</div>
@@ -14,23 +15,51 @@
   <section class="panel">
     <div class="panel__header">
       <div>
-        <h2 class="panel__title">Registrar evento manual</h2>
-        <p class="panel__subtitle">La mayoria de eventos se generan desde los microservicios.</p>
+        <h2 class="panel__title">Eventos registrados</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : eventos().length + ' registros' }}
+        </p>
       </div>
+
+      <form class="list-toolbar" (ngSubmit)="filtrarPorRegistro()">
+        <label class="field">
+          <span>Entidad afectada</span>
+          <input name="filtroEntidadAfectada" [(ngModel)]="filtro.entidadAfectada" />
+        </label>
+
+        <label class="field">
+          <span>ID registro</span>
+          <input
+            name="filtroIdRegistroAfectado"
+            type="number"
+            [(ngModel)]="filtro.idRegistroAfectado"
+          />
+        </label>
+
+        <button class="button button--primary" type="submit">Filtrar</button>
+        <button class="button button--secondary" type="button" (click)="load()">Ver todos</button>
+      </form>
     </div>
-    <form class="panel__body form-grid" (ngSubmit)="registrar()">
+    <app-data-table [columns]="columns" [rows]="eventos()" />
+  </section>
+
+  <app-modal [open]="showForm" title="Registrar evento manual" (closed)="closeForm()">
+    <form class="modal-form" (ngSubmit)="registrar()">
       <label class="field">
         <span>Modulo</span>
         <input name="modulo" [(ngModel)]="form.modulo" required />
       </label>
+
       <label class="field">
         <span>Tipo evento</span>
         <input name="tipoEvento" [(ngModel)]="form.tipoEvento" required />
       </label>
+
       <label class="field">
         <span>Entidad afectada</span>
         <input name="entidadAfectada" [(ngModel)]="form.entidadAfectada" required />
       </label>
+
       <label class="field">
         <span>ID registro</span>
         <input
@@ -40,29 +69,23 @@
           required
         />
       </label>
+
       <label class="field">
         <span>ID usuario</span>
         <input name="idUsuario" type="number" [(ngModel)]="form.idUsuario" required />
       </label>
-      <label class="field evento-description">
+
+      <label class="field modal-form__wide">
         <span>Descripcion</span>
         <input name="descripcion" [(ngModel)]="form.descripcion" required />
       </label>
-      <div class="actions">
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeForm()">
+          Cancelar
+        </button>
         <button class="button button--primary" type="submit">Registrar</button>
       </div>
     </form>
-  </section>
-
-  <section class="panel">
-    <div class="panel__header">
-      <div>
-        <h2 class="panel__title">Eventos registrados</h2>
-        <p class="panel__subtitle">
-          {{ loading() ? 'Cargando...' : eventos().length + ' registros' }}
-        </p>
-      </div>
-    </div>
-    <app-data-table [columns]="columns" [rows]="eventos()" />
-  </section>
+  </app-modal>
 </div>

@@ -12,11 +12,13 @@
         <select name="criterioComprobante" [(ngModel)]="criterio">
           <option value="comprobante">ID comprobante</option>
           <option value="pago">ID pago</option>
+          <option value="cuota">ID cuota</option>
+          <option value="numero">Numero comprobante</option>
         </select>
       </label>
       <label class="field">
         <span>Valor</span>
-        <input name="valorComprobante" type="number" [(ngModel)]="valor" />
+        <input name="valorComprobante" [(ngModel)]="valor" />
       </label>
       <div class="actions">
         <button class="button button--primary" type="submit">Buscar</button>
@@ -32,10 +34,26 @@
         <span>Cuota: {{ comprobanteActual.idCuota }}</span>
         <span>Monto: {{ comprobanteActual.montoTotal }}</span>
         <span>Metodo: {{ comprobanteActual.metodoPago }}</span>
+        <span>Emision: {{ comprobanteActual.fechaEmision }}</span>
         <span>Estado: <app-status-badge [value]="comprobanteActual.estadoComprobante" /></span>
       </div>
     } @else {
       <p>No hay comprobante seleccionado.</p>
     }
   </app-detail-panel>
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Comprobantes emitidos</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : comprobantes().length + ' registros' }}
+        </p>
+      </div>
+      <div class="actions">
+        <button class="button button--secondary" type="button" (click)="load()">Actualizar</button>
+      </div>
+    </div>
+    <app-data-table [columns]="columns" [rows]="comprobantes()" />
+  </section>
 </div>

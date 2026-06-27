@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,13 @@ public class AuditoriaController {
         return ResponseEntity.ok(auditoriaReporteService.listarEventos());
     }
 
+    @GetMapping("/eventos/{entidadAfectada}/{idRegistroAfectado}")
+    public ResponseEntity<List<AuditoriaEventoResponse>> listarEventosPorRegistro(
+            @PathVariable String entidadAfectada,
+            @PathVariable Integer idRegistroAfectado) {
+        return ResponseEntity.ok(auditoriaReporteService.listarEventosPorRegistro(entidadAfectada, idRegistroAfectado));
+    }
+
     @PostMapping("/eventos")
     public ResponseEntity<AuditoriaEventoResponse> registrarEvento(@Valid @RequestBody AuditoriaEventoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(auditoriaReporteService.registrarEvento(request));
@@ -39,6 +47,13 @@ public class AuditoriaController {
     @GetMapping("/anulaciones")
     public ResponseEntity<List<AuditoriaAnulacionResponse>> listarAnulaciones() {
         return ResponseEntity.ok(auditoriaReporteService.listarAnulaciones());
+    }
+
+    @GetMapping("/anulaciones/{tipoAnulacion}/{idRegistroAfectado}")
+    public ResponseEntity<List<AuditoriaAnulacionResponse>> listarAnulacionesPorRegistro(
+            @PathVariable String tipoAnulacion,
+            @PathVariable Integer idRegistroAfectado) {
+        return ResponseEntity.ok(auditoriaReporteService.listarAnulacionesPorRegistro(tipoAnulacion, idRegistroAfectado));
     }
 
     @PostMapping("/anulaciones")

@@ -1,5 +1,14 @@
 <div class="page">
-  <app-page-header title="Usuarios" subtitle="Administracion de accesos para el sistema." />
+  <app-page-header title="Usuarios" subtitle="Administracion de accesos para el sistema.">
+    <div class="list-toolbar">
+      <button class="button button--secondary" type="button" (click)="openPasswordForm()">
+        Restablecer contrasena
+      </button>
+      <button class="button button--primary" type="button" (click)="openCreateForm()">
+        + Registrar usuario
+      </button>
+    </div>
+  </app-page-header>
 
   @if (error()) {
     <div class="message message--error">{{ error() }}</div>
@@ -7,86 +16,6 @@
   @if (message()) {
     <div class="message message--success">{{ message() }}</div>
   }
-
-  <section class="grid grid--2">
-    @if (editingId === null) {
-      <form class="panel" (ngSubmit)="save()">
-        <div class="panel__header">
-          <div>
-            <h2 class="panel__title">Registrar usuario</h2>
-            <p class="panel__subtitle">Credenciales y rol administrativo.</p>
-          </div>
-        </div>
-        <div class="panel__body form-grid form-grid--compact">
-          <label class="field">
-            <span>Usuario</span>
-            <input name="username" [(ngModel)]="form.username" required />
-          </label>
-          <label class="field">
-            <span>Contrasena</span>
-            <input name="password" type="password" [(ngModel)]="form.password" required />
-          </label>
-          <label class="field">
-            <span>Nombre completo</span>
-            <input name="nombreCompleto" [(ngModel)]="form.nombreCompleto" required />
-          </label>
-          <label class="field">
-            <span>DNI</span>
-            <input name="dni" maxlength="8" [(ngModel)]="form.dni" required />
-          </label>
-          <label class="field">
-            <span>Correo</span>
-            <input name="correo" type="email" [(ngModel)]="form.correo" />
-          </label>
-          <label class="field">
-            <span>Telefono</span>
-            <input name="telefono" [(ngModel)]="form.telefono" />
-          </label>
-          <label class="field">
-            <span>Rol</span>
-            <select name="rol" [(ngModel)]="form.rol">
-              <option value="ADMIN">ADMIN</option>
-              <option value="TESORERO">TESORERO</option>
-              <option value="RECEPCIONISTA">RECEPCIONISTA</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>Activo</span>
-            <select name="activo" [(ngModel)]="form.activo">
-              <option [ngValue]="true">Si</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </label>
-          <div class="actions" style="grid-column: 1 / -1; margin-top: 1rem;">
-            <button class="button button--secondary" type="button" (click)="reset()">Limpiar</button>
-            <button class="button button--primary" type="submit">Registrar</button>
-          </div>
-        </div>
-      </form>
-    }
-
-    <form class="panel" (ngSubmit)="cambiarPassword()">
-      <div class="panel__header">
-        <div>
-          <h2 class="panel__title">Restablecer contrasena</h2>
-          <p class="panel__subtitle">El backend almacena el hash BCrypt.</p>
-        </div>
-      </div>
-      <div class="panel__body form-grid form-grid--compact">
-        <label class="field">
-          <span>ID usuario</span>
-          <input name="idUsuarioPassword" type="number" [(ngModel)]="passwordReset.idUsuario" />
-        </label>
-        <label class="field">
-          <span>Nueva contrasena</span>
-          <input name="nuevaPassword" type="password" [(ngModel)]="passwordReset.password" />
-        </label>
-        <div class="actions" style="grid-column: 1 / -1; margin-top: 1rem;">
-          <button class="button button--primary" type="submit">Actualizar</button>
-        </div>
-      </div>
-    </form>
-  </section>
 
   <section class="panel">
     <div class="panel__header">
@@ -105,58 +34,99 @@
     />
   </section>
 
-  @if (editingId !== null) {
-    <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 50; padding: 1rem;">
-      <div style="background: white; border-radius: 12px; width: 100%; max-width: 700px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); overflow: hidden;">
-        <div style="padding: 1.5rem; border-bottom: 1px solid #f3f4f6;">
-          <h2 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0;">
-            Editar usuario
-          </h2>
-        </div>
-        
-        <form class="panel__body form-grid" (ngSubmit)="save()" style="padding: 1.5rem;">
-          <label class="field">
-            <span>Usuario</span>
-            <input name="editUsername" [(ngModel)]="form.username" disabled />
-          </label>
-          <label class="field">
-            <span>Nombre completo</span>
-            <input name="editNombreCompleto" [(ngModel)]="form.nombreCompleto" required />
-          </label>
-          <label class="field">
-            <span>DNI</span>
-            <input name="editDni" maxlength="8" [(ngModel)]="form.dni" required />
-          </label>
-          <label class="field">
-            <span>Correo</span>
-            <input name="editCorreo" type="email" [(ngModel)]="form.correo" />
-          </label>
-          <label class="field">
-            <span>Telefono</span>
-            <input name="editTelefono" [(ngModel)]="form.telefono" />
-          </label>
-          <label class="field">
-            <span>Rol</span>
-            <select name="editRol" [(ngModel)]="form.rol">
-              <option value="ADMIN">ADMIN</option>
-              <option value="TESORERO">TESORERO</option>
-              <option value="RECEPCIONISTA">RECEPCIONISTA</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>Activo</span>
-            <select name="editActivo" [(ngModel)]="form.activo">
-              <option [ngValue]="true">Si</option>
-              <option [ngValue]="false">No</option>
-            </select>
-          </label>
-          
-          <div class="actions" style="grid-column: 1 / -1; margin-top: 1rem; display: flex; justify-content: flex-end; gap: 1rem;">
-            <button class="button button--secondary" type="button" (click)="reset()">Cancelar</button>
-            <button class="button button--primary" type="submit">Guardar</button>
-          </div>
-        </form>
+  <app-modal
+    [open]="showForm"
+    [title]="editingId === null ? 'Registrar usuario' : 'Editar usuario'"
+    (closed)="closeForm()"
+  >
+    <form class="modal-form" (ngSubmit)="save()">
+      <label class="field">
+        <span>Usuario</span>
+        <input
+          name="username"
+          [(ngModel)]="form.username"
+          [disabled]="editingId !== null"
+          required
+        />
+      </label>
+
+      @if (editingId === null) {
+        <label class="field">
+          <span>Contrasena</span>
+          <input name="password" type="password" [(ngModel)]="form.password" required />
+        </label>
+      }
+
+      <label class="field">
+        <span>Nombre completo</span>
+        <input name="nombreCompleto" [(ngModel)]="form.nombreCompleto" required />
+      </label>
+
+      <label class="field">
+        <span>DNI</span>
+        <input name="dni" maxlength="8" [(ngModel)]="form.dni" required />
+      </label>
+
+      <label class="field">
+        <span>Correo</span>
+        <input name="correo" type="email" [(ngModel)]="form.correo" />
+      </label>
+
+      <label class="field">
+        <span>Telefono</span>
+        <input name="telefono" [(ngModel)]="form.telefono" />
+      </label>
+
+      <label class="field">
+        <span>Rol</span>
+        <select name="rol" [(ngModel)]="form.rol">
+          <option value="ADMIN">ADMIN</option>
+          <option value="TESORERO">TESORERO</option>
+          <option value="RECEPCIONISTA">RECEPCIONISTA</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Activo</span>
+        <select name="activo" [(ngModel)]="form.activo">
+          <option [ngValue]="true">Si</option>
+          <option [ngValue]="false">No</option>
+        </select>
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">
+          {{ editingId === null ? 'Registrar' : 'Guardar cambios' }}
+        </button>
       </div>
-    </div>
-  }
+    </form>
+  </app-modal>
+
+  <app-modal
+    [open]="showPasswordForm"
+    title="Restablecer contrasena"
+    (closed)="closePasswordForm()"
+  >
+    <form class="modal-form" (ngSubmit)="cambiarPassword()">
+      <label class="field">
+        <span>ID usuario</span>
+        <input name="idUsuarioPassword" type="number" [(ngModel)]="passwordReset.idUsuario" />
+      </label>
+
+      <label class="field">
+        <span>Nueva contrasena</span>
+        <input name="nuevaPassword" type="password" [(ngModel)]="passwordReset.password" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closePasswordForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">Actualizar</button>
+      </div>
+    </form>
+  </app-modal>
 </div>

@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
+import { Modal } from '../../../../shared/components/modal/modal';
 import { TableActionEvent, TableColumn } from '../../../../core/models/table.models';
 import { Socio, SocioRequest } from '../../../../core/models/patrimonio.models';
 import { PatrimonioApi } from '../../../../core/services/patrimonio-api';
@@ -10,7 +11,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-socios',
-  imports: [FormsModule, PageHeader, DataTable],
+  imports: [FormsModule, PageHeader, DataTable, Modal],
   templateUrl: './socios.html',
   styleUrl: './socios.css',
 })
@@ -38,11 +39,12 @@ export class Socios {
   filteredSocios = computed(() => {
     const term = this.searchTerm().toLowerCase();
     if (!term) return this.socios();
-    
-    return this.socios().filter(s => 
-      s.dni.toLowerCase().includes(term) ||
-      s.nombres.toLowerCase().includes(term) ||
-      s.apellidos.toLowerCase().includes(term)
+
+    return this.socios().filter(
+      (s) =>
+        s.dni.toLowerCase().includes(term) ||
+        s.nombres.toLowerCase().includes(term) ||
+        s.apellidos.toLowerCase().includes(term),
     );
   });
 
@@ -56,11 +58,14 @@ export class Socios {
     this.load();
   }
 
-  toggleForm() {
-    this.showForm = !this.showForm;
-    if (!this.showForm) {
-      this.reset();
-    }
+  openCreateForm(): void {
+    this.reset();
+    this.showForm = true;
+  }
+
+  closeForm(): void {
+    this.showForm = false;
+    this.reset();
   }
 
   load(): void {
@@ -149,7 +154,10 @@ export class Socios {
 
   formatError(err: string): string {
     if (!err) return '';
-    const parts = err.split(',').map(s => s.trim()).filter(s => s && !s.toLowerCase().match(/^id\b/));
+    const parts = err
+      .split(',')
+      .map((s) => s.trim())
+      .filter((s) => s && !s.toLowerCase().match(/^id\b/));
     return parts.length > 0 ? parts.join(', ') : err;
   }
 }
