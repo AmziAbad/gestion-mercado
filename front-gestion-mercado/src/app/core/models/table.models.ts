@@ -6,8 +6,8 @@ export interface TableColumn {
 
 export interface TableAction {
   id: string;
-  label: string;
-  tone?: 'primary' | 'secondary' | 'danger';
+  label: string | ((row: any) => string);
+  tone?: 'primary' | 'secondary' | 'danger' | 'success' | ((row: any) => 'primary' | 'secondary' | 'danger' | 'success');
 }
 
 export interface TableActionEvent {

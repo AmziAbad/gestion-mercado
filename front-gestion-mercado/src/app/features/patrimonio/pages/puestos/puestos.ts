@@ -12,7 +12,7 @@ import { httpErrorMessage } from '../../../../core/utils/http-error';
 
 @Component({
   selector: 'app-puestos',
-  imports: [FormsModule, PageHeader, DataTable, DetailPanel, StatusBadge],
+  imports: [FormsModule, PageHeader, DataTable, StatusBadge],
   templateUrl: './puestos.html',
   styleUrl: './puestos.css',
 })

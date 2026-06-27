@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
 import { Concepto, ConceptoRequest } from '../../../../core/models/tesoreria.models';
-import { TableActionEvent, TableColumn } from '../../../../core/models/table.models';
+import { TableAction, TableActionEvent, TableColumn } from '../../../../core/models/table.models';
 import { TesoreriaApi } from '../../../../core/services/tesoreria-api';
 import { httpErrorMessage } from '../../../../core/utils/http-error';
 
@@ -25,9 +25,13 @@ export class Conceptos {
     { key: 'activo', label: 'Activo', type: 'boolean' },
   ];
 
-  readonly actions = [
-    { id: 'edit', label: 'Editar', tone: 'secondary' as const },
-    { id: 'toggle', label: 'Activar/Desactivar', tone: 'secondary' as const },
+  readonly actions: TableAction[] = [
+    { id: 'edit', label: 'Editar', tone: 'secondary' },
+    {
+      id: 'toggle',
+      label: (row: any) => (row.activo ? 'Desactivar' : 'Activar'),
+      tone: (row: any) => (row.activo ? 'danger' : 'success'),
+    },
   ];
 
   conceptos = signal<Concepto[]>([]);

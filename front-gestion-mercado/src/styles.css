@@ -211,16 +211,16 @@ a {
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 0.7rem 2rem;
-  font-weight: 700;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   transition: all 0.2s ease;
 }
 
 .button--primary:hover {
   background-color: #1e293b;
-  box-shadow: 0 6px 8px -1px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   transform: translateY(-1px);
 }
 

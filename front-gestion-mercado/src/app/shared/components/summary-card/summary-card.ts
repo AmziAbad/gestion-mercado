@@ -10,4 +10,5 @@ export class SummaryCard {
   @Input() label = '';
   @Input() value: string | number = '-';
   @Input() helper = '';
+  @Input() icon = '';
 }

@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PageHeader } from '../../../../layout/page-header/page-header';
 import { DataTable } from '../../../../shared/components/data-table/data-table';
-import { TableActionEvent, TableColumn } from '../../../../core/models/table.models';
+import { TableAction, TableActionEvent, TableColumn } from '../../../../core/models/table.models';
 import {
   RolUsuario,
   Usuario,
@@ -29,9 +29,13 @@ export class Usuarios {
     { key: 'activo', label: 'Activo', type: 'boolean' },
   ];
 
-  readonly actions = [
-    { id: 'edit', label: 'Editar', tone: 'secondary' as const },
-    { id: 'toggle', label: 'Activar/Desactivar', tone: 'secondary' as const },
+  readonly actions: TableAction[] = [
+    { id: 'edit', label: 'Editar', tone: 'secondary' },
+    {
+      id: 'toggle',
+      label: (row: any) => (row.activo ? 'Desactivar' : 'Activar'),
+      tone: (row: any) => (row.activo ? 'danger' : 'success'),
+    },
   ];
 
   usuarios = signal<Usuario[]>([]);

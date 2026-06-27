@@ -58,4 +58,13 @@ export class DataTable {
   emitAction(action: TableAction, row: unknown): void {
     this.actionSelected.emit({ action, row });
   }
+
+  getActionLabel(action: TableAction, row: unknown): string {
+    return typeof action.label === 'function' ? action.label(row) : action.label;
+  }
+
+  getActionTone(action: TableAction, row: unknown): string {
+    const tone = typeof action.tone === 'function' ? action.tone(row) : action.tone;
+    return tone ? `table-action--${tone}` : '';
+  }
 }
