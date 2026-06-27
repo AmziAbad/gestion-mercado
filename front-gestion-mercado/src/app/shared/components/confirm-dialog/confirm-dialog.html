@@ -1,0 +1,11 @@
+<app-modal [open]="open" [title]="title" (closed)="cancelled.emit()">
+  <p>{{ message }}</p>
+  <div class="actions confirm-actions">
+    <button class="button button--secondary" type="button" (click)="cancelled.emit()">
+      Cancelar
+    </button>
+    <button class="button button--danger" type="button" (click)="confirmed.emit()">
+      Confirmar
+    </button>
+  </div>
+</app-modal>

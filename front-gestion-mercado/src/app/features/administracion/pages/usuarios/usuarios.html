@@ -1,0 +1,132 @@
+<div class="page">
+  <app-page-header title="Usuarios" subtitle="Administracion de accesos para el sistema.">
+    <div class="list-toolbar">
+      <button class="button button--secondary" type="button" (click)="openPasswordForm()">
+        Restablecer contrasena
+      </button>
+      <button class="button button--primary" type="button" (click)="openCreateForm()">
+        + Registrar usuario
+      </button>
+    </div>
+  </app-page-header>
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="message message--success">{{ message() }}</div>
+  }
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Usuarios registrados</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : usuarios().length + ' registros' }}
+        </p>
+      </div>
+    </div>
+    <app-data-table
+      [columns]="columns"
+      [rows]="usuarios()"
+      [actions]="actions"
+      (actionSelected)="handleAction($event)"
+    />
+  </section>
+
+  <app-modal
+    [open]="showForm"
+    [title]="editingId === null ? 'Registrar usuario' : 'Editar usuario'"
+    (closed)="closeForm()"
+  >
+    <form class="modal-form" (ngSubmit)="save()">
+      <label class="field">
+        <span>Usuario</span>
+        <input
+          name="username"
+          [(ngModel)]="form.username"
+          [disabled]="editingId !== null"
+          required
+        />
+      </label>
+
+      @if (editingId === null) {
+        <label class="field">
+          <span>Contrasena</span>
+          <input name="password" type="password" [(ngModel)]="form.password" required />
+        </label>
+      }
+
+      <label class="field">
+        <span>Nombre completo</span>
+        <input name="nombreCompleto" [(ngModel)]="form.nombreCompleto" required />
+      </label>
+
+      <label class="field">
+        <span>DNI</span>
+        <input name="dni" maxlength="8" [(ngModel)]="form.dni" required />
+      </label>
+
+      <label class="field">
+        <span>Correo</span>
+        <input name="correo" type="email" [(ngModel)]="form.correo" />
+      </label>
+
+      <label class="field">
+        <span>Telefono</span>
+        <input name="telefono" [(ngModel)]="form.telefono" />
+      </label>
+
+      <label class="field">
+        <span>Rol</span>
+        <select name="rol" [(ngModel)]="form.rol">
+          <option value="ADMIN">ADMIN</option>
+          <option value="TESORERO">TESORERO</option>
+          <option value="RECEPCIONISTA">RECEPCIONISTA</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Activo</span>
+        <select name="activo" [(ngModel)]="form.activo">
+          <option [ngValue]="true">Si</option>
+          <option [ngValue]="false">No</option>
+        </select>
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">
+          {{ editingId === null ? 'Registrar' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <app-modal
+    [open]="showPasswordForm"
+    title="Restablecer contrasena"
+    (closed)="closePasswordForm()"
+  >
+    <form class="modal-form" (ngSubmit)="cambiarPassword()">
+      <label class="field">
+        <span>ID usuario</span>
+        <input name="idUsuarioPassword" type="number" [(ngModel)]="passwordReset.idUsuario" />
+      </label>
+
+      <label class="field">
+        <span>Nueva contrasena</span>
+        <input name="nuevaPassword" type="password" [(ngModel)]="passwordReset.password" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closePasswordForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">Actualizar</button>
+      </div>
+    </form>
+  </app-modal>
+</div>

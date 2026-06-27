@@ -1,0 +1,42 @@
+<main class="login-page">
+  <section class="login-panel">
+    <div class="login-copy">
+      <span class="login-mark">GM</span>
+      <h1>Sistema de Administracion de Cuentas</h1>
+      <p>Acceso administrativo para patrimonio, tesoreria, auditoria y reportes.</p>
+    </div>
+
+    <form class="login-form" (ngSubmit)="login()">
+      <h2>Iniciar sesion</h2>
+
+      @if (error()) {
+        <div class="message message--error">{{ error() }}</div>
+      }
+
+      <label class="field">
+        <span>Usuario</span>
+        <input
+          name="username"
+          [(ngModel)]="credentials.username"
+          required
+          autocomplete="username"
+        />
+      </label>
+
+      <label class="field">
+        <span>Contrasena</span>
+        <input
+          name="password"
+          type="password"
+          [(ngModel)]="credentials.password"
+          required
+          autocomplete="current-password"
+        />
+      </label>
+
+      <button class="button button--primary" type="submit">
+        {{ loading() ? 'Validando...' : 'Ingresar' }}
+      </button>
+    </form>
+  </section>
+</main>

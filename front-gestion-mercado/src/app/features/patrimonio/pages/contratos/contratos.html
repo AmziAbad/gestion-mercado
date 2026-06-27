@@ -1,0 +1,81 @@
+<div class="page">
+  <app-page-header title="Contratos" subtitle="Ocupacion activa de puestos por socio.">
+    <button class="button button--primary" type="button" (click)="openAperturaForm()">
+      + Aperturar contrato
+    </button>
+  </app-page-header>
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="message message--success">{{ message() }}</div>
+  }
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Contratos activos</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : contratos().length + ' registros' }}
+        </p>
+      </div>
+    </div>
+    <app-data-table
+      [columns]="columns"
+      [rows]="contratos()"
+      [actions]="actions"
+      (actionSelected)="handleAction($event)"
+    />
+  </section>
+
+  <app-modal [open]="showAperturaForm" title="Aperturar contrato" (closed)="closeAperturaForm()">
+    <form class="modal-form" (ngSubmit)="aperturar()">
+      <label class="field">
+        <span>ID puesto</span>
+        <input name="idPuesto" type="number" [(ngModel)]="form.idPuesto" required />
+      </label>
+
+      <label class="field">
+        <span>ID socio</span>
+        <input name="idSocio" type="number" [(ngModel)]="form.idSocio" required />
+      </label>
+
+      <label class="field">
+        <span>Fecha inicio</span>
+        <input name="fechaInicio" type="date" [(ngModel)]="form.fechaInicio" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeAperturaForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">Aperturar</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <app-modal
+    [open]="finalizarModalOpen()"
+    title="Finalizar contrato"
+    (closed)="closeFinalizarModal()"
+  >
+    <form class="modal-form" (ngSubmit)="confirmarFinalizacion()">
+      <label class="field modal-form__wide">
+        <span>Motivo para finalizar</span>
+        <textarea
+          name="motivoCierre"
+          [(ngModel)]="motivoCierre"
+          placeholder="Ej. retiro del titular, incumplimiento de normas..."
+        ></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeFinalizarModal()">
+          Cancelar
+        </button>
+        <button class="button button--danger" type="submit">Finalizar contrato</button>
+      </div>
+    </form>
+  </app-modal>
+</div>

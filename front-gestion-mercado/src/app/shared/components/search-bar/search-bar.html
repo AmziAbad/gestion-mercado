@@ -1,0 +1,4 @@
+<form class="search" (ngSubmit)="searched.emit(term)">
+  <input name="term" [(ngModel)]="term" [placeholder]="placeholder" />
+  <button class="button button--secondary" type="submit">Buscar</button>
+</form>

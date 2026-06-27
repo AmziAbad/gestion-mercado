@@ -1,0 +1,117 @@
+<div class="page">
+  <app-page-header
+    title="Puestos"
+    subtitle="Registro fisico de espacios y validacion de saneamiento."
+  >
+    <button class="button button--primary" type="button" (click)="openCreateForm()">
+      + Registrar puesto
+    </button>
+  </app-page-header>
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="message message--success">{{ message() }}</div>
+  }
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Puestos registrados</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : filteredPuestos().length + ' registros' }}
+        </p>
+      </div>
+      <div class="list-toolbar">
+        <label class="search-field">
+          <span class="search-field__icon">🔍</span>
+          <input
+            type="text"
+            [ngModel]="searchTerm()"
+            (ngModelChange)="searchTerm.set($event)"
+            placeholder="Buscar por codigo, pabellon o giro..."
+          />
+        </label>
+      </div>
+    </div>
+
+    <app-data-table
+      [columns]="columns"
+      [rows]="filteredPuestos()"
+      [actions]="actions"
+      (actionSelected)="handleAction($event)"
+    />
+  </section>
+
+  <app-modal
+    [open]="showForm"
+    [title]="editingId === null ? 'Registrar puesto' : 'Editar puesto'"
+    (closed)="closeForm()"
+  >
+    <form class="modal-form" (ngSubmit)="save()">
+      <label class="field">
+        <span>Codigo</span>
+        <input name="codigoPuesto" [(ngModel)]="form.codigoPuesto" required />
+      </label>
+
+      <label class="field">
+        <span>Pabellon</span>
+        <input name="pabellon" [(ngModel)]="form.pabellon" required />
+      </label>
+
+      <label class="field">
+        <span>Estado</span>
+        <select name="estadoPuesto" [(ngModel)]="form.estadoPuesto">
+          <option value="LIBRE">LIBRE</option>
+          <option value="OCUPADO">OCUPADO</option>
+          <option value="MANTENIMIENTO">MANTENIMIENTO</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Medidas</span>
+        <input name="medidas" [(ngModel)]="form.medidas" />
+      </label>
+
+      <label class="field modal-form__wide">
+        <span>Giro</span>
+        <input name="giro" [(ngModel)]="form.giro" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">
+          {{ editingId === null ? 'Registrar' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+  <app-modal
+    [open]="saneamientoModalOpen()"
+    title="Resultado de saneamiento"
+    (closed)="closeSaneamientoModal()"
+  >
+    @if (saneamiento(); as saneamientoActual) {
+      <div class="saneamiento-summary">
+        <h3>Puesto {{ saneamientoActual.idPuesto }}</h3>
+        <app-status-badge [value]="saneamientoActual.tieneDeuda ? 'PENDIENTE' : 'ACTIVO'" />
+        <div class="saneamiento-summary__metrics">
+          <span>Cuotas pendientes: {{ saneamientoActual.cantidadCuotasPendientes }}</span>
+          <span>Total pendiente: {{ money(saneamientoActual.totalPendiente) }}</span>
+        </div>
+        <p>{{ saneamientoActual.mensaje }}</p>
+      </div>
+    } @else {
+      <p>Consultando saneamiento...</p>
+    }
+    <div class="modal-actions">
+      <button class="button button--primary" type="button" (click)="closeSaneamientoModal()">
+        Entendido
+      </button>
+    </div>
+  </app-modal>
+</div>

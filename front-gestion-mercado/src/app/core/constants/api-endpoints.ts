@@ -1,0 +1,16 @@
+export const API_ENDPOINTS = {
+  auth: '/api-auth-service/auth',
+  usuarios: '/api-auth-service/usuarios',
+  socios: '/api-patrimonio-service/socios',
+  puestos: '/api-patrimonio-service/puestos',
+  contratos: '/api-patrimonio-service/contratos',
+  transferencias: '/api-patrimonio-service/transferencias',
+  conceptos: '/api-tesoreria-service/conceptos',
+  cuotas: '/api-tesoreria-service/cuotas',
+  estadosCuenta: '/api-tesoreria-service/estados-cuenta',
+  turnos: '/api-tesoreria-service/turnos',
+  pagos: '/api-tesoreria-service/pagos',
+  comprobantes: '/api-tesoreria-service/comprobantes',
+  auditoria: '/api-auditoria-reportes-service/auditoria',
+  reportes: '/api-auditoria-reportes-service/reportes',
+} as const;

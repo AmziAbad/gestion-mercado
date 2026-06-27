@@ -1,0 +1,11 @@
+.empty-state {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-8);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.empty-state strong {
+  color: var(--color-text);
+}

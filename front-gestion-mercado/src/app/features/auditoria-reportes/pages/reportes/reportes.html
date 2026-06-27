@@ -1,0 +1,59 @@
+<div class="page">
+  <app-page-header
+    title="Reportes"
+    subtitle="Padron de habiles, morosidad y flujo de caja diario."
+  />
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+
+  <section class="panel">
+    <form class="panel__body report-toolbar" (ngSubmit)="cargar()">
+      <label class="field">
+        <span>Reporte</span>
+        <select name="tipoReporte" [(ngModel)]="tipo">
+          <option value="padron-habiles">Padron de habiles</option>
+          <option value="morosidad">Morosidad</option>
+          <option value="flujo-caja-diario">Flujo de caja diario</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Fecha</span>
+        <input
+          name="fechaReporte"
+          type="date"
+          [(ngModel)]="fecha"
+          [disabled]="tipo !== 'flujo-caja-diario'"
+        />
+      </label>
+      <label class="field">
+        <span>ID turno</span>
+        <input
+          name="idTurnoReporte"
+          type="number"
+          [(ngModel)]="idTurno"
+          [disabled]="tipo !== 'flujo-caja-diario'"
+        />
+      </label>
+      <div class="actions">
+        <button class="button button--primary" type="submit">Consultar</button>
+        <button class="button button--secondary" type="button" (click)="abrirPdf()">
+          Abrir PDF
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Resultado</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : rows().length + ' registros' }}
+        </p>
+      </div>
+    </div>
+    <app-data-table [columns]="columns()" [rows]="rows()" />
+  </section>
+</div>

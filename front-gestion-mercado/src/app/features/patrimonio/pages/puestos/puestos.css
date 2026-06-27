@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+.saneamiento-summary {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.saneamiento-summary h3 {
+  margin: 0;
+}
+
+.saneamiento-summary__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+}

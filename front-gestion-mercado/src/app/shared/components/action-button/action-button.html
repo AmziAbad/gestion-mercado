@@ -1,0 +1,9 @@
+<button
+  class="button"
+  [class]="'button button--' + tone"
+  type="button"
+  [disabled]="disabled"
+  (click)="pressed.emit()"
+>
+  {{ label }}
+</button>

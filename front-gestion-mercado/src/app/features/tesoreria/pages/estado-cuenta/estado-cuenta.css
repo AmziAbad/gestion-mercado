@@ -1,0 +1,12 @@
+.estado-search {
+  display: grid;
+  grid-template-columns: 180px minmax(220px, 1fr) auto;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+@media (max-width: 760px) {
+  .estado-search {
+    grid-template-columns: 1fr;
+  }
+}

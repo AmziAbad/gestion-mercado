@@ -1,0 +1,98 @@
+<div class="page">
+  <app-page-header title="Caja" subtitle="Turnos de recaudacion y cierre diario.">
+    <div class="list-toolbar">
+      <button class="button button--secondary" type="button" (click)="openCierreForm()">
+        Cerrar turno
+      </button>
+      <button class="button button--primary" type="button" (click)="openAperturaForm()">
+        Aperturar turno
+      </button>
+    </div>
+  </app-page-header>
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="message message--success">{{ message() }}</div>
+  }
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Turnos de caja</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : turnos().length + ' registros' }}
+        </p>
+      </div>
+
+      <form class="list-toolbar" (ngSubmit)="load()">
+        <label class="field">
+          <span>Fecha</span>
+          <input name="fechaTurnos" type="date" [(ngModel)]="fecha" />
+        </label>
+        <button class="button button--primary" type="submit">Filtrar</button>
+      </form>
+    </div>
+    <app-data-table [columns]="columns" [rows]="turnos()" />
+  </section>
+
+  <app-modal [open]="showAperturaForm" title="Aperturar turno" (closed)="closeAperturaForm()">
+    <form class="modal-form" (ngSubmit)="aperturar()">
+      <label class="field">
+        <span>Monto inicial</span>
+        <input
+          name="montoInicial"
+          type="number"
+          min="0"
+          step="0.01"
+          [(ngModel)]="apertura.montoInicial"
+        />
+      </label>
+
+      <label class="field modal-form__wide">
+        <span>Observacion</span>
+        <input name="observacionApertura" [(ngModel)]="apertura.observacionApertura" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeAperturaForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">Aperturar</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <app-modal [open]="showCierreForm" title="Cerrar turno" (closed)="closeCierreForm()">
+    <form class="modal-form" (ngSubmit)="cerrar()">
+      <label class="field">
+        <span>ID turno</span>
+        <input name="idTurnoCerrar" type="number" [(ngModel)]="cierre.idTurno" />
+      </label>
+
+      <label class="field">
+        <span>Monto contado</span>
+        <input
+          name="montoRecaudadoCerrar"
+          type="number"
+          min="0"
+          step="0.01"
+          [(ngModel)]="cierre.montoRecaudado"
+        />
+      </label>
+
+      <label class="field modal-form__wide">
+        <span>Observacion</span>
+        <input name="observacionCierre" [(ngModel)]="cierre.observacionCierre" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeCierreForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">Cerrar</button>
+      </div>
+    </form>
+  </app-modal>
+</div>

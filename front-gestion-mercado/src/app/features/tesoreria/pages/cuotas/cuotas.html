@@ -1,0 +1,189 @@
+<div class="page">
+  <app-page-header title="Cuotas" subtitle="Generacion masiva o especifica de deudas.">
+    <div class="list-toolbar">
+      <button class="button button--secondary" type="button" (click)="openEspecificaForm()">
+        + Cuota especifica
+      </button>
+      <button class="button button--primary" type="button" (click)="openMasivaForm()">
+        + Cuotas masivas
+      </button>
+    </div>
+  </app-page-header>
+
+  @if (error()) {
+    <div class="message message--error">{{ error() }}</div>
+  }
+  @if (message()) {
+    <div class="message message--success">{{ message() }}</div>
+  }
+
+  <section class="panel">
+    <div class="panel__header">
+      <div>
+        <h2 class="panel__title">Cuotas generadas</h2>
+        <p class="panel__subtitle">
+          {{ loading() ? 'Cargando...' : cuotas().length + ' registros' }}
+        </p>
+      </div>
+    </div>
+    <app-data-table
+      [columns]="columns"
+      [rows]="cuotas()"
+      [actions]="actions"
+      (actionSelected)="handleAction($event)"
+    />
+  </section>
+
+  <app-modal [open]="showMasivaForm" title="Generar cuotas masivas" (closed)="closeMasivaForm()">
+    <form class="modal-form" (ngSubmit)="generarMasivas()">
+      <label class="field">
+        <span>ID concepto</span>
+        <input name="masivaConcepto" type="number" [(ngModel)]="masiva.idConcepto" required />
+      </label>
+
+      <label class="field">
+        <span>Mes</span>
+        <input
+          name="masivaMes"
+          type="number"
+          min="1"
+          max="12"
+          [(ngModel)]="masiva.periodoMes"
+          required
+        />
+      </label>
+
+      <label class="field">
+        <span>Anio</span>
+        <input
+          name="masivaAnio"
+          type="number"
+          min="2020"
+          [(ngModel)]="masiva.periodoAnio"
+          required
+        />
+      </label>
+
+      <label class="field">
+        <span>Vencimiento</span>
+        <input name="masivaVencimiento" type="date" [(ngModel)]="masiva.fechaVencimiento" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeMasivaForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">Generar</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <app-modal
+    [open]="showEspecificaForm"
+    title="Generar cuota especifica"
+    (closed)="closeEspecificaForm()"
+  >
+    <form class="modal-form" (ngSubmit)="generarEspecifica()">
+      <label class="field">
+        <span>ID puesto</span>
+        <input name="espPuesto" type="number" [(ngModel)]="especifica.idPuesto" required />
+      </label>
+
+      <label class="field">
+        <span>ID contrato</span>
+        <input name="espContrato" type="number" [(ngModel)]="especifica.idContrato" />
+      </label>
+
+      <label class="field">
+        <span>ID concepto</span>
+        <input name="espConcepto" type="number" [(ngModel)]="especifica.idConcepto" required />
+      </label>
+
+      <label class="field">
+        <span>Monto</span>
+        <input
+          name="espMonto"
+          type="number"
+          min="0.01"
+          step="0.01"
+          [(ngModel)]="especifica.montoTotal"
+          required
+        />
+      </label>
+
+      <label class="field">
+        <span>Mes</span>
+        <input name="espMes" type="number" min="1" max="12" [(ngModel)]="especifica.periodoMes" />
+      </label>
+
+      <label class="field">
+        <span>Anio</span>
+        <input name="espAnio" type="number" min="2020" [(ngModel)]="especifica.periodoAnio" />
+      </label>
+
+      <label class="field">
+        <span>Vencimiento</span>
+        <input name="espVencimiento" type="date" [(ngModel)]="especifica.fechaVencimiento" />
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeEspecificaForm()">
+          Cancelar
+        </button>
+        <button class="button button--primary" type="submit">Generar</button>
+      </div>
+    </form>
+  </app-modal>
+
+  <app-modal
+    [open]="selectedCuota !== null"
+    [title]="currentAction === 'anular' ? 'Anular cuota' : 'Exonerar cuota'"
+    (closed)="closeModal()"
+  >
+    <form class="modal-form" (ngSubmit)="confirmarOperacion()">
+      @if (selectedCuota) {
+        <p class="modal-form__wide panel__subtitle">
+          ID cuota: <strong>{{ selectedCuota.idCuota }}</strong>
+        </p>
+      }
+
+      <label class="field modal-form__wide">
+        <span>Motivo {{ currentAction === 'anular' ? 'anulacion' : 'exoneracion' }}</span>
+        <input
+          name="motivoOperacion"
+          [(ngModel)]="motivoOperacion"
+          placeholder="Escribe el motivo..."
+        />
+      </label>
+
+      @if (currentAction === 'anular') {
+        <label class="field">
+          <span>Generar reemplazo</span>
+          <select name="generarReemplazo" [(ngModel)]="generarReemplazo">
+            <option [ngValue]="false">No</option>
+            <option [ngValue]="true">Si</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Monto reemplazo</span>
+          <input
+            name="montoReemplazo"
+            type="number"
+            min="0.01"
+            step="0.01"
+            [(ngModel)]="montoReemplazo"
+            [disabled]="!generarReemplazo"
+          />
+        </label>
+      }
+
+      <div class="modal-actions">
+        <button class="button button--secondary" type="button" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button class="button button--danger" type="submit">Confirmar</button>
+      </div>
+    </form>
+  </app-modal>
+</div>

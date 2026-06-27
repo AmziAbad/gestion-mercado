@@ -1,0 +1,9 @@
+.anulacion-motivo {
+  grid-column: span 2;
+}
+
+@media (max-width: 980px) {
+  .anulacion-motivo {
+    grid-column: span 1;
+  }
+}

@@ -1,0 +1,12 @@
+.report-toolbar {
+  display: grid;
+  grid-template-columns: 260px 180px auto;
+  gap: var(--space-3);
+  align-items: end;
+}
+
+@media (max-width: 760px) {
+  .report-toolbar {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,32 @@
+<aside class="sidebar">
+  <div class="sidebar__brand">
+    <div class="sidebar__mark">
+      <app-icon name="brand" [size]="20" />
+    </div>
+    <div class="sidebar__brand-text">
+      <strong>Gestion Mercado</strong>
+      <span>Saneamiento financiero</span>
+    </div>
+  </div>
+
+  <nav class="sidebar__nav" aria-label="Navegacion principal">
+    @for (group of navigationGroups(); track group.label) {
+      <section class="sidebar__group">
+        <h2>{{ group.label }}</h2>
+        @for (link of group.links; track link.route) {
+          <a
+            [routerLink]="link.route"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: link.route === '/dashboard' }"
+            class="sidebar__link"
+          >
+            <span class="sidebar__link-icon">
+              <app-icon [name]="link.icon" />
+            </span>
+            <span class="sidebar__link-text">{{ link.label }}</span>
+          </a>
+        }
+      </section>
+    }
+  </nav>
+</aside>
